@@ -1,0 +1,117 @@
+---
+type: spike
+title: goexeclatex — Gap Analysis
+description: What evaluatex covers vs the full evaluable LaTeX math spec, partitioned into tractable issues for goexeclatex v0.
+resource: https://github.com/stephen-mcelhose/goexeclatex
+tags: [goexeclatex, gap-analysis, reference-implementation, latex]
+timestamp: 2026-08-14T22:43:35Z
+---
+
+# goexeclatex — Gap Analysis
+
+Derived from [[evaluatex-reference-implementation]] (what the JS reference does)
+vs [[latex-math-evaluable-spec]] (what evaluable LaTeX math requires).
+
+The gaps are categorised by difficulty to guide milestone planning.
+
+---
+
+## Tier 1 — Already in evaluatex (port these first)
+
+These should be the baseline of goexeclatex v0.
+
+| Feature               | LaTeX                     | Notes                              |
+| --------------------- | ------------------------- | ---------------------------------- |
+| Arithmetic            | `+`, `-`, `*`, `/`, `^`   | Core grammar                       |
+| Implicit multiply     | `2x`, `(2)(3)`            | Parser lookahead rule              |
+| Grouping              | `()`, `[]`, `{}`          | Same precedence                    |
+| `\left\right`         | `\left( \right)`          | Token-level remap to parens        |
+| `\frac{a}{b}`         | Fraction                  | 2-arity command                    |
+| `\sqrt{x}`            | Square root               | 1-arity command                    |
+| `\times`, `\cdot`     | Multiplication            | Token remap                        |
+| `\sin/\cos/\tan`      | Trig                      | Forward to `math.Sin` etc.         |
+| `\sec/\csc/\cot`      | Recip trig                | `1/cos(x)` etc.                    |
+| `\asin/\acos/\atan`   | Inverse trig (short form) | Forward to `math.Asin` etc.        |
+| `\asec/\acsc/\acot`   | Inverse recip trig        |                                    |
+| `\|x\|` abs value     | `\|expr\|`                | Pipe-delimited                     |
+| `x!` factorial        | Postfix                   | Iterative implementation           |
+| Constants             | `\pi`, `e`, `\tau`, `\phi`| Pre-seeded symbol table            |
+| Custom vars/fns       | User-supplied scope       | Map[string]float64 / func          |
+
+---
+
+## Tier 2 — Small gaps; straightforward to add
+
+Well-understood semantics; no new grammar machinery needed beyond Tier 1.
+
+| Feature                    | LaTeX                          | Effort   | Notes                                      |
+| -------------------------- | ------------------------------ | -------- | ------------------------------------------ |
+| `\arcsin/\arccos/\arctan`  | Arc trig (canonical names)     | XS       | Aliases to asin/acos/atan                  |
+| `\ln`                      | Natural log                    | XS       | `math.Log`                                 |
+| `\exp`                     | Exponential                    | XS       | `math.Exp`                                 |
+| `\log` (base 10)           | Log base 10                    | XS       | `math.Log10`                               |
+| `\dfrac`, `\tfrac`         | Display/text fraction          | XS       | Same value as `\frac`                      |
+| `\sinh/\cosh/\tanh`        | Hyperbolic trig                | XS       | `math.Sinh` etc.                           |
+| `\coth/\sech/\csch`        | Hyperbolic recip               | XS       | `1/tanh(x)` etc.                           |
+| `\min(a,b)`, `\max(a,b)`   | Min / max                      | XS       | `math.Min/Max`, multi-arg via comma        |
+| `\infty`                   | Infinity constant              | XS       | `math.Inf(1)`                              |
+| `\lfloor x \rfloor`        | Floor                          | S        | New delimiter pair token                   |
+| `\lceil x \rceil`          | Ceiling                        | S        | New delimiter pair token                   |
+| `\sqrt[n]{x}`              | n-th root                      | S        | Optional `[n]` arg before `{x}`            |
+| `\gcd(a,b)`                | GCD                            | S        | Euclidean algorithm                        |
+| `\binom{n}{k}`             | Binomial coefficient           | S        | `n! / (k! * (n-k)!)`                       |
+| `\mod`, `\pmod`, `\bmod`   | Modulo                         | S        | Infix binary operator                      |
+| Greek letter variables      | `\alpha`, `\beta`, `\mu`…      | S        | Extend symbol table; user-supplied values  |
+
+---
+
+## Tier 3 — Significant new grammar
+
+Requires extending the parser with new production rules (subscripts, big operators).
+
+| Feature                     | LaTeX                        | Effort | Notes                                           |
+| --------------------------- | ---------------------------- | ------ | ----------------------------------------------- |
+| `\log_{b}(x)`               | Log base b (subscript)       | M      | Subscript `_` token + special case in `\log`    |
+| `x_{i}` subscript variables | Indexed variables            | M      | `_` token + symbol table with index             |
+| `\sum_{i=a}^{b} f(i)`       | Discrete summation           | L      | Big-op token, bounds parsing, iteration engine  |
+| `\prod_{i=a}^{b} f(i)`      | Discrete product             | L      | Same engine as `\sum`                           |
+| `\|v\|` norm (double pipe)  | Norm / Euclidean length      | M      | `\|` `\|` token pair vs single `|`              |
+
+---
+
+## Tier 4 — Out of scope for numeric evaluation
+
+These are symbolic or require a CAS. Intentionally excluded from goexeclatex.
+
+| Feature              | Reason                                      |
+| -------------------- | ------------------------------------------- |
+| `\int_{a}^{b}`       | Symbolic integration                        |
+| `\lim_{x\to a}`      | Symbolic limits                             |
+| `\sum_{i=1}^{\infty}` | Requires convergence analysis              |
+| `\partial`           | Symbolic partial derivative                 |
+| Matrix environments  | Linear algebra; separate domain            |
+| `\det` of a matrix   | Needs matrix type                           |
+| `\begin{cases}`      | Conditional — possible future extension     |
+
+---
+
+## Recommended Milestone Sequence
+
+```
+v0.1 — Tier 1 parity with evaluatex
+  Lexer, parser (recursive descent), evaluator, symbol table, implicit multiply
+
+v0.2 — Tier 2 functions & constants
+  Aliases, hyperbolic, floor/ceil, nth root, gcd, binom, modulo, Greek vars
+
+v0.3 — Tier 3: subscripts + big operators
+  _ token, \log_b, \sum, \prod with discrete bounds
+
+vFuture — \begin{cases} conditional eval, matrix support
+```
+
+## Sources
+
+- [[evaluatex-reference-implementation]]
+- [[latex-math-evaluable-spec]]
+- `~/repos/evaluatex/src/`
