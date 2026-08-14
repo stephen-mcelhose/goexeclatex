@@ -97,15 +97,18 @@ Symbol table (`Scope`) is a `map[string]float64` pre-seeded with built-in consta
 
 ## CLI interface (`cmd/goexeclatex/main.go`)
 
+Built with [Cobra](https://github.com/spf13/cobra).
+
 ```
 goexeclatex [flags]
 
 Reads a LaTeX math expression from stdin, prints the result to stdout.
 
 Flags:
-  -var name=value   bind a variable (repeatable, e.g. -var x=3.14)
-  -prec int         decimal places in output (default: full float64)
-  -e                interpret input as expression directly (skip stdin read)
+  -e, --expr string       expression to evaluate (skips stdin read)
+  -v, --var stringArray   bind a variable: -v x=3.14 (repeatable)
+  -p, --prec int          decimal places in output (-1 = full precision)
+  -h, --help              help for goexeclatex
 
 Exit codes:
   0   success
@@ -120,7 +123,7 @@ echo '\frac{22}{7}'                  | goexeclatex          # 3.142857...
 echo '\sin(\pi / 6)'                 | goexeclatex          # 0.5
 echo '2^{10}'                        | goexeclatex          # 1024
 goexeclatex -e '\sqrt{2}'                                   # 1.4142...
-goexeclatex -var x=3 -e 'x^2 + 2x + 1'                     # 16
+goexeclatex -v x=3 -e 'x^2 + 2x + 1'                       # 16
 ```
 
 ---
