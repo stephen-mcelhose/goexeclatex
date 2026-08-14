@@ -1,5 +1,6 @@
 {
   "skills": [
+    "local/llm-wiki",
     "csgdaa-core/commit",
     "csgdaa-core/explore",
     "csgdaa-core/lint",
