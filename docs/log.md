@@ -98,3 +98,7 @@ Fixed: library tests for empty expr (`*SyntaxError`), builtin override, `+\infty
 ## [2026-08-15] docs | zsh echo `\frac` footgun
 
 zsh `echo` interprets `\f`/`\b` escapes, so `echo '\frac{…}' | goexeclatex` fails as `undefined symbol: rac`. how-to/examples/cli/plan/README/CLI help now prefer `goexeclatex -e` or `printf '%s\n'`.
+
+## [2026-08-15] docs | ADR-016 — #20 packaging worked example
+
+Amended [[adrs/adr-016-self-host-agent-skills]]: capability twin (#8) vs packaging/facade twin (#20); same spine, different density. `ac-plan-loop` v1.2.1 points at both artifact dirs.

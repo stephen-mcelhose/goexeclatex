@@ -8,7 +8,7 @@ description: >
   skill packs and Tier B remain out of scope until revisit criteria fire.
 status: accepted
 date: 2026-08-15
-timestamp: 2026-08-15T17:43:37Z
+timestamp: 2026-08-15T18:40:00Z
 tags: [adr, agents, process, skills, self-host]
 ---
 
@@ -63,8 +63,25 @@ pins the durable decision and when to reopen it.
    - Org-specific defaults (Ready boards, foreign default repos) in hosted skills
 5. **Fidelity:** `ac-plan-loop` MUST preserve the #8 discriminators that made
    the loop work (Gate A defaults-OK, completion strategy, false-success
-   probes, gate-exit issue comments, Stage C GAN table). See worked example
-   `.agents/issues/issue-8/`.
+   probes, gate-exit issue comments, Stage C GAN table). See worked examples
+   below.
+
+### Worked examples (same spine, different density)
+
+The hosted loop is calibrated on two milestone shapes. Prefer matching the
+closer twin when unsure about slice count or ADR density:
+
+| Twin | Issue | Shape | Artifacts |
+| ---- | ----- | ----- | --------- |
+| **Capability** | [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) | Many grammar/eval slices; high math false-success hazard; several ADRs | `.agents/issues/issue-8/` |
+| **Packaging / facade** | [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) | Narrow public surface; one ADR; few TDD slices; freeze gate = CLI goldens / exit codes; docs honesty | `.agents/issues/issue-20/` |
+
+Both use the same spine (clarify → AC → Gate A → breakdown+Verify → Gate B →
+spec→TDD → GAN → PR). For packaging-shaped work, Gate A (narrow API) and one
+behaviour-freeze gate matter more than a long capability-slice ladder. Session
+note (#20): documented shell examples that use `echo` with LaTeX (`\frac`,
+`\bmod`) are a docs false-success class on zsh — prefer `-e` / `printf` in
+how-tos (caught in GAN, not Gate A).
 
 ## Revisit criteria
 
@@ -100,12 +117,16 @@ Until then:
 - Tier B / community adoption requires superseding or amending this ADR with
   spike evidence against the revisit criteria.
 - `#15` remains the historical decision record; this ADR is the durable one.
+- `#8` and `#20` are the in-repo worked examples (capability vs packaging).
 
 ## Sources
 
 - GitHub issue [#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15) — self-host skills (C+B)
 - Pull request [#21](https://github.com/stephen-mcelhose/goexeclatex/pull/21) — host Tier A + encode Phase 3
+- GitHub issue [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) / PR [#22](https://github.com/stephen-mcelhose/goexeclatex/pull/22) — packaging twin
 - Root `AGENTS.md` — planning loop + process Phase 3
-- `.agents/issues/issue-8/` — organic worked example
+- `.agents/issues/issue-8/` — capability worked example
+- `.agents/issues/issue-20/` — packaging / facade worked example
 - [[adrs/adr-012-plan-roadmap-separation]] — process/docs ADR precedent
 - [[adrs/adr-014-mixed-floor-ceil-round-out-of-scope]] — revisit-criteria shape
+- [[adrs/adr-017-public-library-api]] — public API decisions from the #20 run

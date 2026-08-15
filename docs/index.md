@@ -31,6 +31,6 @@
 | [[adrs/adr-013-drop-underscore-from-symbol]]      | ADR-013: Drop underscore from SYMBOL pattern; remove `\_` pre-pass                  | adr, lexer, symbol, underscore                      |
 | [[adrs/adr-014-mixed-floor-ceil-round-out-of-scope]] | ADR-014: Mixed `\lfloor…\rceil` round convention is out of scope                 | adr, parser, floor, ceil, round, out-of-scope       |
 | [[adrs/adr-015-odd-integer-roots-of-negatives]]   | ADR-015: Allow real odd-integer roots of negative radicands                     | adr, eval, sqrt, domain, v0.4                       |
-| [[adrs/adr-016-self-host-agent-skills]]           | ADR-016: Self-host Tier A agent skills (C+B); revisit on degraded experience    | adr, agents, process, skills, self-host             |
+| [[adrs/adr-016-self-host-agent-skills]]           | ADR-016: Self-host Tier A skills (C+B); #8 capability + #20 packaging twins  | adr, agents, process, skills, self-host             |
 | [[adrs/adr-017-public-library-api]]               | ADR-017: Public library API at module root; AST stays internal                  | adr, library, public-api, packaging, issue-20       |
 | [[runbooks/ingest-reference-implementation]]      | How to clone, read, and ingest a reference implementation into the wiki              | runbook, llm-wiki, ingest, reference-implementation |

@@ -7,10 +7,11 @@ description: >-
   plan with verification steps, confirm-then-loop, or says "ac-plan-loop",
   "clarify and plan", or "plan this issue with MUST/SHOULD". Thin orchestrator:
   runs clarify-issue and breakdown-issue; does not reimplement them. Worked
-  example: .agents/issues/issue-8/.
+  examples: .agents/issues/issue-8/ (capability), .agents/issues/issue-20/
+  (packaging).
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.2.1"
   hosted-in: goexeclatex
 ---
 
@@ -30,10 +31,13 @@ Optional later stages (`cognitive-locality-grouper`, `define-contracts`) are
 **Tier B — not hosted in this repo yet**. Skip them unless the user provides
 those skills or asks to improvise lightly.
 
-**Worked example (organic #8 run):** `.agents/issues/issue-8/` — clarification
-with completion strategy + dangerous status quo, breakdown with Verify, gate
-comments on the tracking issue, then slice TDD and GAN close. Decision record:
-`docs/adrs/adr-016-self-host-agent-skills.md`.
+**Worked examples** (same spine; see [[adrs/adr-016-self-host-agent-skills]]):
+
+- **Capability (#8):** `.agents/issues/issue-8/` — many slices, math false-success,
+  several ADRs, then GAN close.
+- **Packaging / facade (#20):** `.agents/issues/issue-20/` — narrow public API,
+  one ADR, few slices; freeze gate = CLI goldens / exit codes; docs honesty.
+  Prefer Gate A surface lock + one freeze gate over a long slice ladder.
 
 ```
 issue → clarify (+ AC + strategy + false-success) → [GATE A]
@@ -227,7 +231,9 @@ If `ARTIFACT_DIR` already has files:
 1. Read `clarification.md` / `breakdown.md` / `plan.md`
 2. Resume at the earliest incomplete gate
 3. Ask before overwriting
-4. Prefer matching the tone/structure of `.agents/issues/issue-8/` when unsure
+4. Prefer matching the tone/structure of `.agents/issues/issue-8/` (capability)
+   or `.agents/issues/issue-20/` (packaging) when unsure — see ADR-016 worked
+   examples
 
 ---
 
