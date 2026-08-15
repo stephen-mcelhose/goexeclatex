@@ -78,3 +78,7 @@ Fixed: roadmap v0.4 “pending GAN” stale header; AGENTS/roadmap Phase 3 proce
 ## [2026-08-15] docs | ac-plan-loop v1.2 — restore #8 fidelity
 
 Gate A defaults-OK loop; require Completion strategy + Dangerous status quo; Stage C GAN discriminator table; gate-exit issue comments; worked example `.agents/issues/issue-8/`. clarify-issue gains matching sections.
+
+## [2026-08-15] decision | ADR-016 self-host Tier A agent skills (C+B)
+
+Accepted [[adrs/adr-016-self-host-agent-skills]]: encode loop + host Tier A; Tier B/community deferred; revisit on degraded experience (loop ignored, shadowing, net slowdown, proven better spare parts).

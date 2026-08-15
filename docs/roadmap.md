@@ -19,7 +19,7 @@ For architecture context see [[plan]]. For the decision to split these documents
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
 | ~~[#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)~~ | ~~v0.4 parser extensions~~ | ✅ closed — merged #14 |
-| ~~[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)~~ | ~~Host agent skills (C+B)~~ | ✅ closed — landing via `chore/15-host-agent-skills` |
+| ~~[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)~~ | ~~Host agent skills (C+B)~~ | ✅ closed — [[adrs/adr-016-self-host-agent-skills]]; landing via `chore/15-host-agent-skills` |
 | ~~[#1](https://github.com/stephen-mcelhose/goexeclatex/issues/1)~~ | ~~Pre-pass byte offset drift corrupts downstream error positions~~ | ✅ closed — ADR-013 |
 | ~~[#2](https://github.com/stephen-mcelhose/goexeclatex/issues/2)~~ | ~~Spec gaps identified in GAN review (§6.1.3, whitespace, group context)~~ | ✅ closed |
 | [#3](https://github.com/stephen-mcelhose/goexeclatex/issues/3) | UTF-8 char-mode error message shows raw byte instead of full rune | Low — deferred (ADR-002) |

@@ -35,7 +35,10 @@ Artifacts live at `.agents/issues/issue-<IDENTIFIER>/`. Do not use personal
 
 Personal `~/.cursor/skills/` copies may exist; **prefer the in-repo skill** when
 both are available. Tier B skills (cognitive locality, define-contracts, …)
-are not hosted here yet — file a follow-up if needed ([#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15) recorded C+B).
+are not hosted here yet — see
+[`docs/adrs/adr-016-self-host-agent-skills.md`](docs/adrs/adr-016-self-host-agent-skills.md)
+(C+B; revisit on degraded experience). Historical record:
+[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15).
 
 ## Implementation strategy
 

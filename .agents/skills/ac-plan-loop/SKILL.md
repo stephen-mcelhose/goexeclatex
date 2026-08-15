@@ -32,7 +32,8 @@ those skills or asks to improvise lightly.
 
 **Worked example (organic #8 run):** `.agents/issues/issue-8/` — clarification
 with completion strategy + dangerous status quo, breakdown with Verify, gate
-comments on the tracking issue, then slice TDD and GAN close.
+comments on the tracking issue, then slice TDD and GAN close. Decision record:
+`docs/adrs/adr-016-self-host-agent-skills.md`.
 
 ```
 issue → clarify (+ AC + strategy + false-success) → [GATE A]
