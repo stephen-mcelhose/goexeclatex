@@ -1,8 +1,12 @@
 ---
 id: adr-005
+type: decision
 title: "ADR-005: Brackets are transparent — no GroupNode in the AST"
+description: Bracket groupings are transparent — the parser does not emit a GroupNode; brackets purely delimit sub-expression scope without appearing in the AST.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, parser, ast]
 ---
 
 # ADR-005: Brackets are transparent — no `GroupNode` in the AST

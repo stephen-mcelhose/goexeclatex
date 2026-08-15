@@ -1,8 +1,12 @@
 ---
 id: adr-001
+type: decision
 title: "ADR-001: Add inGroup parameter to lexExpression for unclosed-brace detection"
+description: Adds an inGroup boolean parameter to the recursive lexer call so unclosed brace groups emit a precise error instead of silently producing wrong tokens.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, lexer, error-handling]
 ---
 
 # ADR-001: Add `inGroup` parameter to `lexExpression` for unclosed-brace detection

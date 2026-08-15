@@ -1,8 +1,12 @@
 ---
 id: spec-parser
+type: rfc2119-spec
 title: Parser Specification
+description: Normative RFC 2119 specification for the goexeclatex recursive-descent parser — grammar rules, AST node types, operator precedence, and error policy.
 status: active
 version: 0.1
+tags: [parser, spec, goexeclatex]
+timestamp: 2026-08-15T00:00:00Z
 sources:
   - docs/plan.md                              # grammar, error policy, milestones
   - docs/evaluatex-reference-implementation.md  # reference grammar and node types

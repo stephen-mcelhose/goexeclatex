@@ -1,8 +1,12 @@
 ---
 id: adr-008
+type: decision
 title: "ADR-008: Match brackets by last character of token value, not full value"
+description: Bracket matching uses the last character of the token value (e.g. '}' from '\lbrace') rather than the full token string, unifying close-bracket detection across all bracket forms.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, parser, brackets]
 ---
 
 # ADR-008: Match brackets by last character of token value, not full value

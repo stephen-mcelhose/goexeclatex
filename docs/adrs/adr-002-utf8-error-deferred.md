@@ -1,8 +1,12 @@
 ---
 id: adr-002
+type: decision
 title: "ADR-002: Defer UTF-8 char-mode error message quality to post-Tier-1"
+description: Defers improvement of UTF-8 char-mode error messages to post-Tier-1, keeping the Tier-1 scope minimal while preserving a revisit marker.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, lexer, deferred]
 ---
 
 # ADR-002: Defer UTF-8 char-mode error message quality to post-Tier-1

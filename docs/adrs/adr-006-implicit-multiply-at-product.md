@@ -1,8 +1,12 @@
 ---
 id: adr-006
+type: decision
 title: "ADR-006: Implicit multiplication is resolved at the product rule"
+description: Implicit multiplication is inserted as a Product node at the product grammar rule, not as a distinct token type or a separate AST node kind.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, parser, implicit-multiply]
 ---
 
 # ADR-006: Implicit multiplication is resolved at the `product` rule

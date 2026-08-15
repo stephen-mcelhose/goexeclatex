@@ -3,6 +3,7 @@ type: how-to
 title: goexeclatex — Example Calls
 description: Concrete CLI invocations showing common evaluation patterns.
 tags: [goexeclatex, examples, cli]
+timestamp: 2026-08-14T23:00:00Z
 ---
 
 # goexeclatex — Example Calls

@@ -1,8 +1,12 @@
 ---
 id: spec-eval
+type: rfc2119-spec
 title: Evaluator Specification
+description: Normative RFC 2119 specification for the goexeclatex evaluator — scope resolution, arithmetic and function dispatch, domain error handling, and IEEE 754 special-value policy.
 status: active
 version: 0.1
+tags: [eval, spec, goexeclatex]
+timestamp: 2026-08-15T00:00:00Z
 sources:
   - docs/plan.md                              # error policy, milestone scope
   - docs/evaluatex-reference-implementation.md  # reference function implementations

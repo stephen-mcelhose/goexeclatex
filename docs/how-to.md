@@ -1,3 +1,11 @@
+---
+type: how-to
+title: How to use goexeclatex
+description: User-facing guide covering stdin and -e flag usage, -p precision, -v variable binding, supported syntax, error handling, and shell composition patterns.
+tags: [goexeclatex, cli, how-to]
+timestamp: 2026-08-15T03:04:00Z
+---
+
 # How to use goexeclatex
 
 `goexeclatex` evaluates a LaTeX math expression and prints the numeric result.

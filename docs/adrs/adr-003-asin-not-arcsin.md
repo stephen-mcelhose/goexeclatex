@@ -1,8 +1,12 @@
 ---
 id: adr-003
+type: decision
 title: "ADR-003: Use asin/acos/atan abbreviations (evaluatex convention) over arcsin/arccos/arctan (standard LaTeX)"
+description: Adopts evaluatex's abbreviated asin/acos/atan/asec/acsc/acot names over standard LaTeX arcsin etc., for consistency with the reference implementation.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, eval, trig, evaluatex]
 ---
 
 # ADR-003: Use `asin`/`acos`/`atan` abbreviations over `arcsin`/`arccos`/`arctan`

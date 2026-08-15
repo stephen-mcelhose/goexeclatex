@@ -1,8 +1,12 @@
 ---
 id: adr-010
+type: decision
 title: "ADR-010: ±Inf results print to stdout and exit 0"
+description: IEEE 754 ±Inf results are printed to stdout as +Inf/-Inf and the process exits 0, treating infinity as a valid numeric result rather than an error.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, cli, eval, ieee754]
 supersedes: ~
 related: docs/adrs/adr-009-explicit-domain-errors-over-nan.md
 ---

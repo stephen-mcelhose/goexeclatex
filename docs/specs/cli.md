@@ -1,8 +1,12 @@
 ---
 id: spec-cli
+type: rfc2119-spec
 title: CLI Specification
+description: Normative RFC 2119 specification for the goexeclatex CLI — flag definitions, input resolution priority, variable binding, output format, exit codes, and error presentation.
 status: active
 version: 0.1
+tags: [cli, spec, goexeclatex]
+timestamp: 2026-08-15T03:04:00Z
 sources:
   - docs/plan.md
   - docs/specs/eval.md

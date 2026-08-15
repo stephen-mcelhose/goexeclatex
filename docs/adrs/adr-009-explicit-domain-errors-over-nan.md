@@ -1,8 +1,12 @@
 ---
 id: adr-009
+type: decision
 title: "ADR-009: Return explicit errors for domain violations instead of propagating NaN"
+description: The evaluator returns typed errors for domain violations (sqrt of negative, division by zero, etc.) rather than silently propagating IEEE 754 NaN through the result.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, eval, errors, domain]
 ---
 
 # ADR-009: Return explicit errors for domain violations instead of propagating NaN

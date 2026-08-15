@@ -1,8 +1,12 @@
 ---
 id: spec-lexer
+type: rfc2119-spec
 title: Lexer Specification
+description: Normative RFC 2119 specification for the goexeclatex lexer — token types, char-mode tokenisation algorithm, pre-pass normalisation, and post-lex invariants.
 status: active
 version: 0.1
+tags: [lexer, spec, goexeclatex]
+timestamp: 2026-08-15T00:00:00Z
 sources:
   - docs/plan.md                              # token table, pre-pass, post-lex passes
   - docs/evaluatex-reference-implementation.md  # char-mode algorithm (elevated to normative)

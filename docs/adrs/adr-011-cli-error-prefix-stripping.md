@@ -1,8 +1,12 @@
 ---
 id: adr-011
+type: decision
 title: "ADR-011: CLI strips internal package prefixes from error messages"
+description: The CLI strips 'eval: ', 'lexer: ', and 'parser: ' package prefixes from internal error strings before printing 'error: <message>' to stderr, keeping the user-facing surface clean.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, cli, errors]
 ---
 
 # ADR-011: CLI strips internal package prefixes from error messages

@@ -1,8 +1,12 @@
 ---
 id: adr-007
+type: decision
 title: "ADR-007: Track absDepth to resolve PIPE implicit-multiply ambiguity"
+description: An absDepth counter tracks nesting of absolute-value bars to correctly distinguish an opening PIPE from a closing PIPE and from implicit-multiply insertion sites.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
+tags: [adr, parser, abs, implicit-multiply]
 ---
 
 # ADR-007: Track `absDepth` to resolve PIPE implicit-multiply ambiguity
