@@ -75,10 +75,10 @@ goexeclatex \
   -e 'AUPC + \frac{1}{2} * (val1 + val0) * (t1 - t0)'
 # => 362.5
 
-# v0.3 — subscript variable names
+# v0.3 — subscript variable names (-v uses x_0 key; expression uses x_{0})
 goexeclatex \
-  -v 'AUPC_{0}=100' -v 'val_{1}=85' -v 'val_{0}=90' \
-  -v 't_{1}=6' -v 't_{0}=3' \
+  -v AUPC_0=100 -v val_1=85 -v val_0=90 \
+  -v t_1=6 -v t_0=3 \
   -e 'AUPC_{0} + \frac{1}{2} * (val_{1} + val_{0}) * (t_{1} - t_{0})'
 # => 362.5
 ```
@@ -95,13 +95,12 @@ goexeclatex \
   -e '\frac{(x0*w0) + (x1*w1) + (x2*w2)}{x0 + x1 + x2}'
 # => 1.958333...
 
-# v0.3 — subscript variable names
+# v0.3 — subscript variable names (-v uses x_0 key; expression uses x_{0})
 goexeclatex \
-  -v 'x_{0}=80' -v 'x_{1}=90' -v 'x_{2}=70' \
-  -v 'w_{0}=1'  -v 'w_{1}=2'  -v 'w_{2}=3'  \
+  -v x_0=80 -v x_1=90 -v x_2=70 \
+  -v w_0=1  -v w_1=2  -v w_2=3  \
   -e '\frac{(x_{0}*w_{0})+(x_{1}*w_{1})+(x_{2}*w_{2})}{x_{0}+x_{1}+x_{2}}'
 # => 1.958333...
-```
 
 ## Townsend-Heuberger
 
@@ -115,10 +114,10 @@ goexeclatex \
   -e '\frac{(x0*w0) + (x1*w1) + (x2*w2)}{w2 * (x0 + x1 + x2)} * 100'
 # => 65.277...
 
-# v0.3 — subscript variable names
+# v0.3 — subscript variable names (-v uses x_0 key; expression uses x_{0})
 goexeclatex \
-  -v 'x_{0}=80' -v 'x_{1}=90' -v 'x_{2}=70' \
-  -v 'w_{0}=1'  -v 'w_{1}=2'  -v 'w_{2}=3'  \
+  -v x_0=80 -v x_1=90 -v x_2=70 \
+  -v w_0=1  -v w_1=2  -v w_2=3  \
   -e '\frac{(x_{0}*w_{0})+(x_{1}*w_{1})+(x_{2}*w_{2})}{w_{2}*(x_{0}+x_{1}+x_{2})}*100'
 # => 65.277...
 ```
