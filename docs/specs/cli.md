@@ -54,6 +54,9 @@ The tool **MUST** obtain the expression by the following priority:
 Each `-v` value **MUST** have the form `name=value` where:
 
 - `name` is trimmed of whitespace before insertion into the scope.
+- `name` **MUST** have all `{` and `}` characters removed after trimming, so
+  that `x_{0}` and `x_0` are equivalent keys. This allows the `-v` key to
+  mirror LaTeX subscript notation used in the expression.
 - `value` **MUST** be parseable by `strconv.ParseFloat(..., 64)`.
 
 On format violation the tool **MUST** print
