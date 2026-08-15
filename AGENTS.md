@@ -1,10 +1,14 @@
 # Agent Instructions — goexeclatex
 
+## Starting a new session
+
+**Open `docs/roadmap.md` first.** It shows current focus, open issues, and the
+next milestone. Then read `docs/plan.md` for architecture context if needed.
+
 ## What this project is
 
 A Go CLI that reads a LaTeX math expression from stdin and prints its numeric
-result.  See `docs/plan.md` for the full architecture, grammar, milestones, and
-error-handling policy.
+result.
 
 ## Implementation strategy
 
@@ -16,7 +20,7 @@ Before writing any implementation code, produce a normative spec document in
 `docs/specs/<name>.md` (OKF frontmatter, RFC 2119 language).  The spec must be
 grounded in two sources:
 
-1. **`docs/plan.md`** — the authoritative design for this project.
+1. **`docs/plan.md`** — the authoritative architecture for this project.
 2. **The evaluatex reference implementation** — ingested at
    `docs/raw/evaluatex-reference-implementation.md` and summarised in
    `docs/evaluatex-reference-implementation.md`.  Where our behaviour
@@ -38,28 +42,25 @@ red-phase confirmation.
 
 ```
 internal/lexer/    — done (Tier 1 complete)
-internal/parser/   — next
-internal/eval/     — after parser
-cmd/goexeclatex/   — after eval
+internal/parser/   — done (Tier 1 complete)
+internal/eval/     — done (Tier 1 complete)
+cmd/goexeclatex/   — done (Tier 1 complete)
 ```
-
-## Milestones
-
-See `docs/plan.md §Milestones` for the full breakdown.  Current target: **v0.1
-(Tier 1 — evaluatex parity)**.
 
 ## Key references
 
-| Path                                          | Purpose                              |
-| --------------------------------------------- | ------------------------------------ |
-| `docs/plan.md`                                | Architecture, grammar, milestones    |
-| `docs/specs/lexer.md`                         | Normative lexer spec (worked example)|
-| `docs/evaluatex-reference-implementation.md`  | Reference impl summary               |
-| `docs/raw/evaluatex-reference-implementation.md` | Raw reference source (read-only)  |
-| `docs/log.md`                                 | Append-only session log              |
+| Path                                             | Purpose                                              |
+| ------------------------------------------------ | ---------------------------------------------------- |
+| `docs/roadmap.md`                                | **Start here** — current focus, open issues, milestones |
+| `docs/plan.md`                                   | Stable architecture: pipeline, grammar, error policy |
+| `docs/specs/lexer.md`                            | Normative lexer spec (worked example)                |
+| `docs/evaluatex-reference-implementation.md`     | Reference impl summary                               |
+| `docs/raw/evaluatex-reference-implementation.md` | Raw reference source (read-only)                     |
+| `docs/log.md`                                    | Append-only session log                              |
 
 ## Conventions
 
 - Conventional Commits (`feat:`, `fix:`, `chore:`, `test:`, `docs:`)
 - Table-driven tests in `_test.go` files per package
 - No implementation code without a spec; no spec without a plan anchor
+- Update `docs/roadmap.md` at the end of each session
