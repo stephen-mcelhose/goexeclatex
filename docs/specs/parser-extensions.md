@@ -140,10 +140,39 @@ sqrt and a brace group.
 
 `\sqrt[3]{27}` **MUST NOT** parse as `BinaryNode("*")`.
 
-## 5. Variadic paren arguments — *pending Task 3–4*
+## 5. Variadic paren arguments (`\min`, `\max`, `\gcd`)
 
-Placeholder: COMMA lists; `\min`/`\max`/`\gcd` with n ≥ 2; unary `\sin(x)`
-preservation.
+### 5.1 Lexer
+
+`\min`, `\max`, and `\gcd` **MUST** have lexer arity **0** (no char-mode
+expansion). The parser reads the paren list.
+
+### 5.2 Parser
+
+```
+paren_args → LPAREN('(') sum { COMMA sum } RPAREN(')')
+variadic_cmd → COMMAND("min"|"max"|"gcd") paren_args
+```
+
+- Arity **MUST** be **n ≥ 2**. Fewer than two arguments **MUST** be a parse
+  error.
+- The AST **MUST** be `FunctionNode` with `Name` equal to the command and
+  `Args` the parsed list in order.
+- Bare `COMMA` outside these lists **MUST** remain a parse error.
+
+### 5.3 Unary paren form (arity-1 commands)
+
+Existing arity-1 commands that accept a single parenthesized expression
+(e.g. `\sin(x)`) **SHOULD** continue to parse successfully. Variadic lists
+**MUST NOT** break that path.
+
+### 5.4 Eval
+
+| Name | Semantics |
+| ---- | --------- |
+| `min` | Minimum of all arguments |
+| `max` | Maximum of all arguments |
+| `gcd` | Greatest common divisor of all arguments; each argument **MUST** be a non-negative integer (same integer check spirit as `\binom`); pairwise Euclidean algorithm left-associative |
 
 ## 6. `\log_{b}(x)` — *pending Task 5*
 

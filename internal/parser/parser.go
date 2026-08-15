@@ -339,6 +339,34 @@ func (p *parser) parseAtom() (Node, error) {
 	}
 }
 
+// parseVariadicParen handles \min/\max/\gcd(a,b,…) (parser-extensions §5.2).
+func (p *parser) parseVariadicParen(name string, pos int) (Node, error) {
+	if p.peek().Type != lexer.LPAREN || p.peek().Value != "(" {
+		return nil, fmt.Errorf("parser: \\%s expects (args) at position %d", name, p.peek().Pos)
+	}
+	p.consume() // '('
+	args := []Node{}
+	for {
+		arg, err := p.parseSum()
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, arg)
+		if p.peek().Type == lexer.COMMA {
+			p.consume()
+			continue
+		}
+		break
+	}
+	if _, err := p.expect(lexer.RPAREN, ")"); err != nil {
+		return nil, fmt.Errorf("parser: \\%s missing closing ')'", name)
+	}
+	if len(args) < 2 {
+		return nil, fmt.Errorf("parser: \\%s requires at least 2 arguments, got %d", name, len(args))
+	}
+	return &FunctionNode{Name: name, Args: args, Pos: pos}, nil
+}
+
 // parseSqrt handles \sqrt[n]{x} and \sqrt{x} (parser-extensions §4.2).
 func (p *parser) parseSqrt(pos int) (Node, error) {
 	var index Node
@@ -375,6 +403,10 @@ func (p *parser) parseCommand() (Node, error) {
 	// parser-extensions §4: optional [n] index before radicand.
 	if name == "sqrt" {
 		return p.parseSqrt(tok.Pos)
+	}
+	// parser-extensions §5: variadic paren-arg commands.
+	if name == "min" || name == "max" || name == "gcd" {
+		return p.parseVariadicParen(name, tok.Pos)
 	}
 
 	arity := commandArities[name]

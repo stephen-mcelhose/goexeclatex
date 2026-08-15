@@ -122,9 +122,61 @@ func callBuiltin(name string, args []float64) (float64, error) {
 	case "binom", "dbinom", "tbinom":
 		return binomCoeff(args[0], args[1])
 
+	case "min":
+		return minArgs(args), nil
+	case "max":
+		return maxArgs(args), nil
+	case "gcd":
+		return gcdArgs(args)
+
 	default:
 		return 0, fmt.Errorf("eval: unknown function: %s", name)
 	}
+}
+
+func minArgs(args []float64) float64 {
+	m := args[0]
+	for _, v := range args[1:] {
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}
+
+func maxArgs(args []float64) float64 {
+	m := args[0]
+	for _, v := range args[1:] {
+		if v > m {
+			m = v
+		}
+	}
+	return m
+}
+
+func gcdArgs(args []float64) (float64, error) {
+	vals := make([]int64, len(args))
+	for i, v := range args {
+		if v < 0 || v != math.Trunc(v) {
+			return 0, fmt.Errorf("eval: domain error: gcd requires non-negative integers")
+		}
+		vals[i] = int64(v)
+	}
+	g := vals[0]
+	for _, v := range vals[1:] {
+		g = gcd2(g, v)
+	}
+	return float64(g), nil
+}
+
+func gcd2(a, b int64) int64 {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	if a < 0 {
+		return -a
+	}
+	return a
 }
 
 // binomCoeff computes C(n, k) = n! / (k! * (n-k)!) (spec §6.6.1).
