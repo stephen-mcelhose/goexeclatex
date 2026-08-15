@@ -161,10 +161,10 @@ func TestNormSequence(t *testing.T) {
 	}
 }
 
-// ── §3 Big-op full token stream ───────────────────────────────────────────────
+// ── §3 Large-op full token stream ───────────────────────────────────────────────
 
-// TestBigOpTokenStream — \sum_{i=0}^{3} i → complete expected stream
-func TestBigOpTokenStream(t *testing.T) {
+// TestLargeOpTokenStream — \sum_{i=0}^{3} i → complete expected stream
+func TestLargeOpTokenStream(t *testing.T) {
 	want := []Token{
 		tok(COMMAND, "sum"),
 		tok(UNDERSCORE, "_"),

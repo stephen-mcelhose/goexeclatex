@@ -266,4 +266,4 @@ func Parse(tokens []lexer.Token) (Node, error)
 | `\sqrt[n]{x}` optional argument            | Tier 2 |
 | `\min(a,b)`, `\max(a,b)` variadic          | Tier 2 |
 | Subscript `_` operator                      | Tier 3 |
-| `\sum`, `\prod` big operators               | Tier 3 |
+| `\sum`, `\prod` large operators               | Tier 3 |

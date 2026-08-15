@@ -835,7 +835,7 @@ func TestEvalSubscriptBaseNotSymbol(t *testing.T) {
 	mustPipelineError(t, "5_{0}", "subscript base must be a symbol")
 }
 
-// ── v0.3 §6.2 BigOpNode ──────────────────────────────────────────────────────
+// ── v0.3 §6.2 LargeOpNode ──────────────────────────────────────────────────────
 
 // TestEvalSumBasic — \sum_{i=1}^{3} i = 1+2+3 = 6.
 func TestEvalSumBasic(t *testing.T) {

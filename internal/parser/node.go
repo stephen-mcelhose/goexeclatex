@@ -56,8 +56,8 @@ type SubscriptNode struct {
 
 func (n *SubscriptNode) node() {}
 
-// BigOpNode represents \sum or \prod over a discrete range (spec §5.2).
-type BigOpNode struct {
+// LargeOpNode represents \sum or \prod over a discrete range (spec §5.2).
+type LargeOpNode struct {
 	Op   string // "sum" or "prod"
 	Var  string // iteration variable name (e.g. "i")
 	From Node   // lower bound expression
@@ -65,7 +65,7 @@ type BigOpNode struct {
 	Body Node   // body expression (evaluated once per step)
 }
 
-func (n *BigOpNode) node() {}
+func (n *LargeOpNode) node() {}
 
 // NormNode represents \lVert expr \rVert — scalar absolute value (spec §5.3).
 type NormNode struct {

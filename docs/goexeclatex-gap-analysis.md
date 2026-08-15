@@ -69,7 +69,7 @@ Well-understood semantics; no new grammar machinery needed beyond Tier 1.
 
 ## Tier 3 — Significant new grammar
 
-Requires extending the parser with new production rules (subscripts, big operators).
+Requires extending the parser with new production rules (subscripts, large operators).
 
 | Feature                     | LaTeX                        | Effort | Notes                                           |
 | --------------------------- | ---------------------------- | ------ | ----------------------------------------------- |
@@ -106,7 +106,7 @@ v0.1 — Tier 1 parity with evaluatex
 v0.2 — Tier 2 functions & constants
   Aliases, hyperbolic, floor/ceil, nth root, gcd, binom, modulo, Greek vars
 
-v0.3 — Tier 3: subscripts + big operators
+v0.3 — Tier 3: subscripts + large operators
   _ token, \log_b, \sum, \prod with discrete bounds
 
 vFuture — \begin{cases} conditional eval, matrix support

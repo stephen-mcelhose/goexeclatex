@@ -1,7 +1,7 @@
 ---
-id: spec-subscripts-bigops
+id: spec-subscripts-largeops
 type: rfc2119-spec
-title: Subscripts and Big Operators Specification
+title: Subscripts and large operators Specification
 description: Normative RFC 2119 specification for v0.3 — SUBSCRIPT token, subscript variable resolution, discrete summation (\\sum) and product (\\prod) engines, and \\lVert norm support.
 status: active
 version: 0.3
@@ -10,7 +10,7 @@ timestamp: 2026-08-15T00:00:00Z
 sources:
   - docs/plan.md                              # pipeline architecture, error policy
   - docs/evaluatex-reference-implementation.md  # grammar patterns; no subscript/bigop support in reference
-  - docs/latex-math-evaluable-spec.md          # evaluable subset: §Subscripts, §Big Operators
+  - docs/latex-math-evaluable-spec.md          # evaluable subset: §Subscripts, §large operators
   - docs/specs/lexer.md                        # token types, char-mode, post-lex passes
   - docs/specs/parser.md                       # grammar baseline being extended
   - docs/specs/eval.md                         # evaluator scope, error policy
@@ -18,7 +18,7 @@ sources:
   - docs/adrs/adr-013-drop-underscore-from-symbol.md  # why _ is now a free token
 ---
 
-# Subscripts and Big Operators Specification
+# Subscripts and large operators Specification
 
 ## 1. Key Words
 
@@ -38,10 +38,10 @@ This specification defines the v0.3 extensions to `internal/lexer`,
 5. The `\lVert ... \rVert` norm form (scalar absolute value)
 
 > **Divergence from evaluatex:** The evaluatex reference implementation has
-> no subscript token, no big-operator support, and no `\lVert` support. All
+> no subscript token, no large-operator support, and no `\lVert` support. All
 > of v0.3 is genuinely new ground — reference behaviours are not applicable.
 > The canonical authority for semantics is the LaTeX math evaluable subset
-> (see `docs/latex-math-evaluable-spec.md §Subscripts` and `§Big Operators`).
+> (see `docs/latex-math-evaluable-spec.md §Subscripts` and `§large operators`).
 
 ## 3. Lexer Extensions
 
@@ -61,11 +61,11 @@ pattern table at the **same priority position as `POWER`** (`^`), i.e. after
 ### 3.2 EQUALS Token
 
 The lexer **MUST** recognise `=` (U+003D) as a new token type `EQUALS` with
-value `"="`. This token is used exclusively inside big-operator bound
+value `"="`. This token is used exclusively inside large-operator bound
 expressions (`\sum_{i=a}^{b}`) and **MUST NOT** be valid in a general
 expression context.
 
-If an `EQUALS` token is encountered outside a big-operator bound, the parser
+If an `EQUALS` token is encountered outside a large-operator bound, the parser
 **MUST** return an error.
 
 ### 3.3 NORM Token (lVert / rVert)
@@ -132,13 +132,13 @@ parser: superscript before subscript — write x_{i}^{2} not x^{2}_{i}
 > descent grammar cannot unambiguously resolve both orders without
 > backtracking. The constraint is documented rather than silently misparssed.
 
-### 4.2 Big Operator Rule
+### 4.2 large operator Rule
 
 When the parser encounters `COMMAND("sum")` or `COMMAND("prod")` in the
-`atom` production, it **MUST** parse a **big-operator expression** rather than
+`atom` production, it **MUST** parse a **large-operator expression** rather than
 a normal command-with-args.
 
-The big-operator production is:
+The large-operator production is:
 
 ```
 bigop → COMMAND("sum"|"prod")
@@ -188,7 +188,7 @@ level. The body **MAY** reference the iteration variable.
 > **MUST** use braces to group the intended body: `\sum_{i=1}^{3} {i+1}`.
 >
 > **Rationale:** This is consistent with standard LaTeX semantic parsing
-> where the big operator's scope is determined by explicit grouping, not
+> where the large operator's scope is determined by explicit grouping, not
 > lookahead.
 
 ### 4.3 Norm Rule
@@ -219,10 +219,10 @@ type SubscriptNode struct {
 `SubscriptNode` **MUST** be produced by the `subscript` rule whenever a
 `SUBSCRIPT` token follows an `atom`.
 
-### 5.2 BigOpNode
+### 5.2 LargeOpNode
 
 ```go
-type BigOpNode struct {
+type LargeOpNode struct {
     Op   string // "sum" or "prod"
     Var  string // iteration variable name
     From Node   // lower bound expression
@@ -282,9 +282,9 @@ To evaluate `SubscriptNode{Base, Sub}`:
 > **Variable binding:** Users supply subscript variables via `-v x_0=3.14`.
 > The key format is `<name>_<index>` with no spaces.
 
-### 6.2 BigOpNode — Iteration Engine
+### 6.2 LargeOpNode — Iteration Engine
 
-To evaluate `BigOpNode{Op, Var, From, To, Body}`:
+To evaluate `LargeOpNode{Op, Var, From, To, Body}`:
 
 1. Evaluate `From` in the current scope to yield `from` (float64). If
    `from` is not an integer, return:
@@ -351,12 +351,12 @@ To evaluate `NormNode{Arg}`:
 
 | Condition | Phase | Error message |
 | --------- | ----- | ------------- |
-| `EQUALS` outside big-op bound | Parser | `parser: unexpected '=' outside iteration bound` |
+| `EQUALS` outside large-op bound | Parser | `parser: unexpected '=' outside iteration bound` |
 | Chained subscripts `x_{i}_{j}` | Parser | `parser: chained subscripts are not supported` |
 | Superscript before subscript `x^2_i` | Parser | `parser: superscript before subscript — write x_{i}^{2} not x^{2}_{i}` |
-| Big-op missing subscript bound | Parser | `parser: expected '_{' after \sum/\prod — both bounds required; write \sum_{i=a}^{b}` |
-| Big-op missing superscript bound | Parser | `parser: expected '^' after \sum/\prod bound` |
-| Big-op variable not a symbol | Parser | `parser: iteration variable must be a symbol` |
+| large-op missing subscript bound | Parser | `parser: expected '_{' after \sum/\prod — both bounds required; write \sum_{i=a}^{b}` |
+| large-op missing superscript bound | Parser | `parser: expected '^' after \sum/\prod bound` |
+| large-op variable not a symbol | Parser | `parser: iteration variable must be a symbol` |
 | Unmatched `\lVert` | Parser | `parser: unmatched \lVert` |
 | Empty norm `\lVert\rVert` | Parser | `parser: empty \lVert...\rVert expression` |
 | SubscriptNode base not a symbol | Eval | `eval: subscript base must be a symbol, got <type>` |
@@ -378,7 +378,7 @@ The following items are explicitly **out of scope** for this specification:
   Deferred to issue #8.
 - **`x_{i}` where the subscript is a non-integer expression** — undefined;
   produces an eval error (§6.1).
-- **Nested big operators** — `\sum_{i=0}^{n} \sum_{j=0}^{m} f(i,j)` is
+- **Nested large operators** — `\sum_{i=0}^{n} \sum_{j=0}^{m} f(i,j)` is
   not explicitly prohibited but is expected to work naturally because the
   inner `\sum` is just the body expression of the outer one. No special
   handling is required.
@@ -392,7 +392,7 @@ The following items are explicitly **out of scope** for this specification:
 
 ## 9. Implementation Notes
 
-### 9.1 Inner Scope for Big Operators
+### 9.1 Inner Scope for large operators
 
 The iteration variable **MUST** shadow outer bindings without mutating the
 outer scope. The recommended implementation is a thin wrapper scope that
@@ -409,7 +409,7 @@ type innerScope struct {
 ### 9.2 EQUALS Token Validity Guard
 
 The `EQUALS` token is valid only inside the lower-bound position of a
-big-op. The parser **MUST** check for stray `EQUALS` tokens in the general
+large-op. The parser **MUST** check for stray `EQUALS` tokens in the general
 `sum` rule and return an error, ensuring users get a clear message rather
 than a confusing "unexpected token" if they accidentally write `=` in an
 expression.

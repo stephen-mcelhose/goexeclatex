@@ -1,6 +1,6 @@
 package parser_test
 
-// Tests for spec §4.1 (subscript rule), §4.2 (big operators), §4.3 (norm rule).
+// Tests for spec §4.1 (subscript rule), §4.2 (large operators), §4.3 (norm rule).
 // All tests in this file are RED until the corresponding implementation lands.
 
 import (
@@ -107,19 +107,19 @@ func TestSuperscriptBeforeSubscriptError(t *testing.T) {
 	mustFailWith(t, "x^2_i", "superscript before subscript")
 }
 
-// TestStrayEquals — x = 1 → parse error (EQUALS only valid in big-op bound)
+// TestStrayEquals — x = 1 → parse error (EQUALS only valid in large-op bound)
 func TestStrayEquals(t *testing.T) {
 	mustFailWith(t, "x = 1", "=")
 }
 
 // ── §4.2 Big operator rule ────────────────────────────────────────────────────
 
-// TestSumNode — \sum_{i=0}^{3} i → BigOpNode{sum, "i", 0, 3, SymbolNode(i)}
+// TestSumNode — \sum_{i=0}^{3} i → LargeOpNode{sum, "i", 0, 3, SymbolNode(i)}
 func TestSumNode(t *testing.T) {
 	node := parse(t, `\sum_{i=0}^{3} i`)
-	n, ok := node.(*parser.BigOpNode)
+	n, ok := node.(*parser.LargeOpNode)
 	if !ok {
-		t.Fatalf(`parse(\sum_{i=0}^{3} i) = %T, want *BigOpNode`, node)
+		t.Fatalf(`parse(\sum_{i=0}^{3} i) = %T, want *LargeOpNode`, node)
 	}
 	if n.Op != "sum" {
 		t.Errorf("Op = %q, want %q", n.Op, "sum")
@@ -141,12 +141,12 @@ func TestSumNode(t *testing.T) {
 	}
 }
 
-// TestProdNode — \prod_{i=1}^{4} i → BigOpNode{prod, "i", 1, 4, SymbolNode(i)}
+// TestProdNode — \prod_{i=1}^{4} i → LargeOpNode{prod, "i", 1, 4, SymbolNode(i)}
 func TestProdNode(t *testing.T) {
 	node := parse(t, `\prod_{i=1}^{4} i`)
-	n, ok := node.(*parser.BigOpNode)
+	n, ok := node.(*parser.LargeOpNode)
 	if !ok {
-		t.Fatalf(`parse(\prod_{i=1}^{4} i) = %T, want *BigOpNode`, node)
+		t.Fatalf(`parse(\prod_{i=1}^{4} i) = %T, want *LargeOpNode`, node)
 	}
 	if n.Op != "prod" {
 		t.Errorf("Op = %q, want %q", n.Op, "prod")
@@ -164,64 +164,64 @@ func TestProdNode(t *testing.T) {
 	}
 }
 
-// TestBigOpBodyIsSingleAtom — body parsed at parsePower level, so
-// \sum_{i=1}^{3} i + 1 → BinaryNode(+, BigOpNode, 1) not BigOpNode(body=i+1).
-func TestBigOpBodyIsSingleAtom(t *testing.T) {
+// TestLargeOpBodyIsSingleAtom — body parsed at parsePower level, so
+// \sum_{i=1}^{3} i + 1 → BinaryNode(+, LargeOpNode, 1) not LargeOpNode(body=i+1).
+func TestLargeOpBodyIsSingleAtom(t *testing.T) {
 	node := parse(t, `\sum_{i=1}^{3} i + 1`)
 	add, ok := node.(*parser.BinaryNode)
 	if !ok || add.Op != "+" {
 		t.Fatalf(`parse(\sum_{i=1}^{3} i + 1) = %T, want outer BinaryNode(+)`, node)
 	}
-	if _, ok := add.Left.(*parser.BigOpNode); !ok {
-		t.Errorf("Left = %T, want *BigOpNode", add.Left)
+	if _, ok := add.Left.(*parser.LargeOpNode); !ok {
+		t.Errorf("Left = %T, want *LargeOpNode", add.Left)
 	}
 	if _, ok := add.Right.(*parser.NumberNode); !ok {
 		t.Errorf("Right = %T, want *NumberNode", add.Right)
 	}
 }
 
-// TestBigOpBracedBody — \sum_{i=1}^{3} {i+1} → BigOpNode with body BinaryNode(+, i, 1)
-func TestBigOpBracedBody(t *testing.T) {
+// TestLargeOpBracedBody — \sum_{i=1}^{3} {i+1} → LargeOpNode with body BinaryNode(+, i, 1)
+func TestLargeOpBracedBody(t *testing.T) {
 	node := parse(t, `\sum_{i=1}^{3} {i+1}`)
-	n, ok := node.(*parser.BigOpNode)
+	n, ok := node.(*parser.LargeOpNode)
 	if !ok {
-		t.Fatalf(`parse(\sum_{i=1}^{3} {i+1}) = %T, want *BigOpNode`, node)
+		t.Fatalf(`parse(\sum_{i=1}^{3} {i+1}) = %T, want *LargeOpNode`, node)
 	}
 	if _, ok := n.Body.(*parser.BinaryNode); !ok {
 		t.Errorf("Body = %T, want *BinaryNode (i+1)", n.Body)
 	}
 }
 
-// TestBigOpMissingSubscript — \sum^{3} → parse error (lower bound required first)
-func TestBigOpMissingSubscript(t *testing.T) {
+// TestLargeOpMissingSubscript — \sum^{3} → parse error (lower bound required first)
+func TestLargeOpMissingSubscript(t *testing.T) {
 	mustFailWith(t, `\sum^{3} i`, `_{`)
 }
 
-// TestBigOpMissingBoth — \sum i → parse error (both bounds required)
-func TestBigOpMissingBoth(t *testing.T) {
+// TestLargeOpMissingBoth — \sum i → parse error (both bounds required)
+func TestLargeOpMissingBoth(t *testing.T) {
 	mustFailWith(t, `\sum i`, `_{`)
 }
 
-// TestBigOpMissingSuperscript — \sum_{i=0} i → parse error (upper bound required)
-func TestBigOpMissingSuperscript(t *testing.T) {
+// TestLargeOpMissingSuperscript — \sum_{i=0} i → parse error (upper bound required)
+func TestLargeOpMissingSuperscript(t *testing.T) {
 	mustFailWith(t, `\sum_{i=0} i`, `^`)
 }
 
-// TestBigOpVarNotSymbol — \sum_{1=0}^{3} 1 → parse error (variable must be symbol)
-func TestBigOpVarNotSymbol(t *testing.T) {
+// TestLargeOpVarNotSymbol — \sum_{1=0}^{3} 1 → parse error (variable must be symbol)
+func TestLargeOpVarNotSymbol(t *testing.T) {
 	mustFailWith(t, `\sum_{1=0}^{3} 1`, "iteration variable must be a symbol")
 }
 
-// TestBigOpVarShadowedInBody — nested iteration variable correctly binds
+// TestLargeOpVarShadowedInBody — nested iteration variable correctly binds
 // \sum_{i=1}^{2} \sum_{j=1}^{2} {i*j}: outer i=1..2, inner j=1..2
-func TestBigOpNestedSumNode(t *testing.T) {
+func TestLargeOpNestedSumNode(t *testing.T) {
 	node := parse(t, `\sum_{i=1}^{2} \sum_{j=1}^{2} {i*j}`)
-	outer, ok := node.(*parser.BigOpNode)
+	outer, ok := node.(*parser.LargeOpNode)
 	if !ok || outer.Op != "sum" {
-		t.Fatalf("outer = %T, want *BigOpNode(sum)", node)
+		t.Fatalf("outer = %T, want *LargeOpNode(sum)", node)
 	}
-	if _, ok := outer.Body.(*parser.BigOpNode); !ok {
-		t.Errorf("outer.Body = %T, want *BigOpNode", outer.Body)
+	if _, ok := outer.Body.(*parser.LargeOpNode); !ok {
+		t.Errorf("outer.Body = %T, want *LargeOpNode", outer.Body)
 	}
 }
 

@@ -156,7 +156,7 @@ func TestFlagCases(t *testing.T) {
 		{"subscript x_1^2", []string{"-v", "x_1=3", "-e", "x_{1}^2"}, "9", 0},
 		{"subscript sum", []string{"-v", "x_0=1", "-v", "x_1=2", "-v", "x_2=3", "-e", "x_{0}+x_{1}+x_{2}"}, "6", 0},
 
-		// v0.3 big operators (spec §6.2).
+		// v0.3 large operators (spec §6.2).
 		{"sum 1..5", []string{"-e", `\sum_{i=1}^{5} i`}, "15", 0},
 		{"prod 1..5 factorial", []string{"-e", `\prod_{i=1}^{5} i`}, "120", 0},
 		{"sum with var bound", []string{"-v", "n=4", "-e", `\sum_{i=1}^{n} i`}, "10", 0},

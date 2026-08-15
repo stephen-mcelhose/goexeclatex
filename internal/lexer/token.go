@@ -20,7 +20,7 @@ const (
 	BANG                        // spec §3: !
 	COMMA                       // spec §3: ,
 	UNDERSCORE                  // spec §3: _ (Tier 0.3 — subscript)
-	EQUALS                      // spec §3.2: = (big-op bound only)
+	EQUALS                      // spec §3.2: = (large-op bound only)
 	NORM                        // spec §3.3: \lVert / \rVert
 	EOF                         // spec §8: synthetic end-of-input sentinel
 )
