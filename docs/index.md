@@ -4,7 +4,7 @@
 | ------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
 | [[plan]]                                          | Stable architecture record: pipeline design, grammar, package layout, error policy   | goexeclatex, architecture, cli                      |
 | [[roadmap]]                                       | Forward-looking milestone tracker: current focus #20 library API, vFuture           | goexeclatex, roadmap, milestones                    |
-| [[examples]]                                      | Concrete CLI invocations: arithmetic, trig, AUPC, WI, TH                            | goexeclatex, examples, cli                          |
+| [[examples]]                                      | CLI examples: arithmetic, trig, AUPC (step + \\sum), WI, TH, subsample aggregates   | goexeclatex, examples, cli                          |
 | [[how-to]]                                        | User guide: stdin/-e/-p/-v flags, supported syntax, error handling, shell compose   | goexeclatex, cli, how-to                            |
 | [[latex-math-evaluable-spec]]                     | Catalogue of LaTeX math constructs with numeric evaluation semantics                 | latex, math, spec, goexeclatex                      |
 | [[evaluatex-reference-implementation]]            | Deep read of arthanzel/evaluatex JS parser-evaluator; architecture + gaps            | reference-implementation, javascript, latex         |

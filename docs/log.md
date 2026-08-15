@@ -102,3 +102,7 @@ zsh `echo` interprets `\f`/`\b` escapes, so `echo '\frac{…}' | goexeclatex` fa
 ## [2026-08-15] docs | ADR-016 — #20 packaging worked example
 
 Amended [[adrs/adr-016-self-host-agent-skills]]: capability twin (#8) vs packaging/facade twin (#20); same spine, different density. `ac-plan-loop` v1.2.1 points at both artifact dirs.
+
+## [2026-08-15] docs | examples — named AUPC/WI/TH/subsample cases
+
+Expanded [[examples]] with named calculated-process cases: AUPC step + `\sum` forms (PestProgress/EpidemicCurve/SpikeAndFade), WI/TH severity-class sets, PlotStripFive subsample aggregates. Links [[specs/subscripts-largeops]] for the sum engine.
