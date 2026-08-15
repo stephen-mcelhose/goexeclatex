@@ -102,7 +102,19 @@ func TestNumberLiteral(t *testing.T) {
 // ── §4.2 SymbolNode ───────────────────────────────────────────────────────────
 
 func TestUndefinedSymbolError(t *testing.T) {
-	mustError(t, "x", "eval: undefined symbol:")
+	// Error message must contain the symbol name (spec §7).
+	tokens, _ := lexer.Lex("x")
+	node, _ := parser.Parse(tokens)
+	_, err := eval.Eval(node, eval.NewScope())
+	if err == nil {
+		t.Fatal("Eval(\"x\") expected error, got nil")
+	}
+	if !strings.Contains(err.Error(), "x") {
+		t.Errorf("Eval(\"x\") error = %q, want it to contain symbol name \"x\"", err.Error())
+	}
+	if !strings.HasPrefix(err.Error(), "eval: undefined symbol:") {
+		t.Errorf("Eval(\"x\") error = %q, want prefix \"eval: undefined symbol:\"", err.Error())
+	}
 }
 
 func TestUserDefinedVariable(t *testing.T) {
@@ -333,11 +345,80 @@ func TestInverseTrig(t *testing.T) {
 	}
 }
 
+func TestInverseTrigHappyPath(t *testing.T) {
+	// asec and acsc have only domain-error tests above — add happy-path cases (spec §6.3).
+	cases := []struct {
+		input string
+		want  float64
+	}{
+		{`\asec{2}`, math.Acos(0.5)},   // asec(2) = acos(1/2) = π/3
+		{`\acsc{2}`, math.Asin(0.5)},   // acsc(2) = asin(1/2) = π/6
+		{`\asec{-1}`, math.Pi},         // asec(-1) = acos(-1) = π
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !approx(got, c.want) {
+			t.Errorf("Eval(%q) = %.15f, want %.15f", c.input, got, c.want)
+		}
+	}
+}
+
 func TestInverseTrigDomainErrors(t *testing.T) {
 	mustError(t, `\asin{2}`, "eval: domain error:")
 	mustError(t, `\acos{-2}`, "eval: domain error:")
 	mustError(t, `\asec{0}`, "eval: domain error:")
 	mustError(t, `\acsc{0}`, "eval: domain error:")
+}
+
+// ── §6.2 Trig pole behaviour ──────────────────────────────────────────────────
+
+func TestTrigNonTrivial(t *testing.T) {
+	// tan at a non-trivial value (spec §6.2 — not just zero).
+	got := evaluate(t, `\tan{\pi/4}`)
+	if !approx(got, 1.0) {
+		t.Errorf(`Eval(\tan{\pi/4}) = %.15f, want 1`, got)
+	}
+}
+
+func TestTrigPolesNoError(t *testing.T) {
+	// At poles, sec/csc/cot/tan produce ±Inf but MUST NOT return an error (spec §6.2).
+	// Use a value very close to π/2 where cos≈0, making sec very large.
+	// We verify no error is returned, not the exact value.
+	poleInputs := []string{
+		`\sec{\pi/2}`,
+		`\csc{\pi}`,
+	}
+	for _, input := range poleInputs {
+		tokens, err := lexer.Lex(input)
+		if err != nil {
+			t.Fatalf("Lex(%q) error: %v", input, err)
+		}
+		node, err := parser.Parse(tokens)
+		if err != nil {
+			t.Fatalf("Parse(%q) error: %v", input, err)
+		}
+		_, err = eval.Eval(node, eval.NewScope())
+		if err != nil {
+			t.Errorf("Eval(%q) at trig pole returned error %v, want nil (spec §6.2)", input, err)
+		}
+	}
+}
+
+// ── §4.5 Unknown function name ────────────────────────────────────────────────
+
+func TestUnknownFunctionError(t *testing.T) {
+	// Directly construct a FunctionNode with an unknown name to test the
+	// defensive default in callBuiltin (spec §4.5). Unreachable via the
+	// normal lex→parse pipeline (unknown commands become SymbolNodes), but
+	// the spec says Eval MUST return this error if Name is not in the table.
+	node := &parser.FunctionNode{Name: "unknownfn", Args: []parser.Node{&parser.NumberNode{Value: 1}}}
+	_, err := eval.Eval(node, eval.NewScope())
+	if err == nil {
+		t.Fatal("Eval(FunctionNode{unknownfn}) expected error, got nil")
+	}
+	if !strings.HasPrefix(err.Error(), "eval: unknown function:") {
+		t.Errorf("error = %q, want prefix \"eval: unknown function:\"", err.Error())
+	}
 }
 
 // ── §7 Error message prefix ───────────────────────────────────────────────────
