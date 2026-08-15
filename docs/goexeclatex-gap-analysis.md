@@ -71,13 +71,15 @@ Well-understood semantics; no new grammar machinery needed beyond Tier 1.
 
 Requires extending the parser with new production rules (subscripts, large operators).
 
-| Feature                     | LaTeX                        | Effort | Notes                                           |
-| --------------------------- | ---------------------------- | ------ | ----------------------------------------------- |
-| `\log_{b}(x)`               | Log base b (subscript)       | M      | Subscript `_` token + special case in `\log`    |
-| `x_{i}` subscript variables | Indexed variables            | M      | `_` token + symbol table with index             |
-| `\sum_{i=a}^{b} f(i)`       | Discrete summation           | L      | Big-op token, bounds parsing, iteration engine  |
-| `\prod_{i=a}^{b} f(i)`      | Discrete product             | L      | Same engine as `\sum`                           |
-| `\|v\|` norm (double pipe)  | Norm / Euclidean length      | M      | `\|` `\|` token pair vs single `|`              |
+✅ = implemented in v0.3. Remaining items deferred to #8.
+
+| Feature                     | LaTeX                        | Effort | Status   | Notes                                           |
+| --------------------------- | ---------------------------- | ------ | -------- | ----------------------------------------------- |
+| `\\log_{b}(x)`               | Log base b (subscript)       | M      | ⏳ #8    | Subscript `_` token + special case in `\\log`    |
+| `x_{i}` subscript variables | Indexed variables            | M      | ✅ v0.3  | `_` token + symbol table with index             |
+| `\\sum_{i=a}^{b} f(i)`       | Discrete summation           | L      | ✅ v0.3  | Big-op token, bounds parsing, iteration engine  |
+| `\\prod_{i=a}^{b} f(i)`      | Discrete product             | L      | ✅ v0.3  | Same engine as `\\sum`                           |
+| `\\lVert v \\rVert` norm      | Norm / Euclidean length      | M      | ✅ v0.3  | NORM token + `normDepth` guard (see ADR-004)    |
 
 ---
 

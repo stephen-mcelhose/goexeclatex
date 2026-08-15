@@ -29,3 +29,11 @@ Pages checked: 29 (all docs/**/*.md). Issues found:
 Advisory (not fixed — human judgment needed):
 - Orphan: ADRs 001–003, 005–008 referenced only from index.md. Adding inbound links from specs would improve graph density but requires editing spec bodies non-trivially.
 - Orphan: runbooks/ingest-reference-implementation.md — standalone runbook, acceptable.
+
+## [2026-08-15] lint | 30 pages checked, 4 issues found, 4 fixed
+
+Fixed: index gap (specs/subscripts-largeops added to index.md); ADR-004 status updated from accepted → superseded (lVert implemented v0.3); gap-analysis Tier 3 table updated with status column (4 items ✅, 1 ⏳ #8); roadmap "Current focus" updated to reflect v0.3 complete.
+
+## [2026-08-15] feat | v0.3 complete — subscripts, big operators, norm (closes #6)
+
+Implemented: UNDERSCORE + NORM lexer tokens; subscript grammar (`x_{i}`, `x_i`); `\sum`/`\prod` with integer bounds and iteration scope; `\lVert…\rVert` norm. Key design decisions: `ScopeLookup` interface for inner-scope shadowing; `parseSuperArg` to enforce `x_{i}^2` ordering; `normDepth` guard mirrors `absDepth`. `\\_` and `\log_b` deferred to #8. Specs: `docs/specs/subscripts-largeops.md`. testdata: `cmd/goexeclatex/testdata/stdin.txt` extended with v0.3 cases.

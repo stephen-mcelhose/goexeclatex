@@ -41,9 +41,9 @@ red-phase confirmation.
 ## Package layout
 
 ```
-internal/lexer/    — done (Tier 1 complete)
-internal/parser/   — done (Tier 1 complete)
-internal/eval/     — done (Tier 1 complete)
+internal/lexer/    — done (Tier 1 + v0.3: UNDERSCORE, NORM tokens)
+internal/parser/   — done (Tier 1 + v0.3: subscript grammar, parseLargeOp, parseNorm)
+internal/eval/     — done (Tier 1 + v0.3: SubscriptNode, LargeOpNode, NormNode, ScopeLookup)
 cmd/goexeclatex/   — done (Tier 1 complete)
 ```
 

@@ -3,7 +3,7 @@ id: adr-004
 type: decision
 title: "ADR-004: Defer \\lVert…\\rVert norm support to Tier 2"
 description: Defers double-bar norm syntax (\\lVert…\\rVert) to Tier 2, keeping Tier-1 scope to single-bar absolute value only.
-status: accepted
+status: superseded
 date: 2026-08-15
 timestamp: 2026-08-15T00:00:00Z
 tags: [adr, lexer, deferred]
@@ -13,7 +13,9 @@ tags: [adr, lexer, deferred]
 
 ## Status
 
-Accepted
+Superseded — `\lVert…\rVert` was implemented in v0.3 as a dedicated NORM token
+with a `normDepth` guard (mirroring the `absDepth` pattern from ADR-007).
+See [[specs/subscripts-largeops]].
 
 ## Context
 

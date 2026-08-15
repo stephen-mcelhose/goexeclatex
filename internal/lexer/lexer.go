@@ -50,11 +50,16 @@ var patterns = []scanPattern{
 	{PIPE, regexp.MustCompile(`^\|`)},
 	{BANG, regexp.MustCompile(`^!`)},
 	{COMMA, regexp.MustCompile(`^,`)},
-	// Priority 11: COMMAND before SYMBOL so \sin isn’t SYMBOL(sin) — spec §5.2
+	{UNDERSCORE, regexp.MustCompile(`^_`)},
+	{EQUALS, regexp.MustCompile(`^=`)},
+	// Priority 11a: NORM — \lVert / \rVert (capital V) before generic COMMAND.
+	// \lvert / \rvert (lowercase) fall through to COMMAND and are remapped to PIPE.
+	{NORM, regexp.MustCompile(`^\\(?:lVert|rVert)`)},
+	// Priority 12: COMMAND before SYMBOL so \sin isn't SYMBOL(sin) — spec §5.2
 	{COMMAND, regexp.MustCompile(`^\\[A-Za-z]+`)},
-	// Priority 12: SYMBOL — spec §5.2 and ADR-013 (no underscore in names)
+	// Priority 13: SYMBOL — spec §5.2 and ADR-013 (no underscore in names)
 	{SYMBOL, regexp.MustCompile(`^[A-Za-z][A-Za-z0-9]*`)},
-	// Priority 13: NUMBER — spec §5.2
+	// Priority 14: NUMBER — spec §5.2
 	{NUMBER, regexp.MustCompile(`^\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?`)},
 }
 

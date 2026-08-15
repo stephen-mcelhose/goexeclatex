@@ -14,7 +14,7 @@ For architecture context see [[plan]]. For the decision to split these documents
 
 ## Current focus
 
-**Pre-v0.2 cleanup** — resolve open bugs and spec gaps before starting new feature work.
+**v0.3 complete.** Next: vFuture items or #8 (paired brackets, variadic args, `\log_b`). No blocking issues.
 
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
@@ -61,17 +61,15 @@ Do not skip the red-phase confirmation.
 
 ---
 
-## v0.3 — Tier 3: subscripts + big operators ([#6](https://github.com/stephen-mcelhose/goexeclatex/issues/6))
+## ~~v0.3 — Tier 3: subscripts + big operators ([#6](https://github.com/stephen-mcelhose/goexeclatex/issues/6))~~ ✅ closed
 
-**Depends on:** v0.2 (#5) closed.
-
-- [ ] `\_` → literal `_` pre-pass in lexer (before subscript tokenisation)
-- [ ] `_` token; subscript grammar rule in parser
-- [ ] `\log_{b}(x)` — log base b
-- [ ] `x_{i}` — subscript variable lookup
-- [ ] `\sum_{i=a}^{b} f(i)` — discrete summation engine
-- [ ] `\prod_{i=a}^{b} f(i)` — discrete product engine
-- [ ] `\lVert v \rVert` — norm (double-pipe) — see [[adrs/adr-004-lVert-deferred]]
+- [x] `_` token; subscript grammar rule in parser
+- [x] `x_{i}` — subscript variable lookup
+- [x] `\\sum_{i=a}^{b} f(i)` — discrete summation engine
+- [x] `\\prod_{i=a}^{b} f(i)` — discrete product engine
+- [x] `\\lVert v \\rVert` — norm (double-pipe)
+- [ ] `\\_` → literal `_` pre-pass — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)
+- [ ] `\\log_{b}(x)` — log base b — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)
 
 ---
 

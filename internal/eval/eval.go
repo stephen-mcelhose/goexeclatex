@@ -9,7 +9,7 @@ import (
 
 // Eval reduces node to a float64 using scope for symbol lookup.
 // It performs a depth-first walk of the AST (spec §4).
-func Eval(node parser.Node, scope Scope) (float64, error) {
+func Eval(node parser.Node, scope ScopeLookup) (float64, error) {
 	switch n := node.(type) {
 
 	case *parser.NumberNode:
@@ -18,7 +18,7 @@ func Eval(node parser.Node, scope Scope) (float64, error) {
 
 	case *parser.SymbolNode:
 		// §4.2: look up in scope; error if absent.
-		v, ok := scope[n.Name]
+		v, ok := scope.Lookup(n.Name)
 		if !ok {
 			return 0, fmt.Errorf("eval: undefined symbol: %s", n.Name)
 		}
@@ -78,6 +78,81 @@ func Eval(node parser.Node, scope Scope) (float64, error) {
 			args[i] = v
 		}
 		return callBuiltin(n.Name, args)
+
+	case *parser.SubscriptNode:
+		// §6.1: resolve x_{k} → look up "x_<int(k)>" in scope.
+		base, ok := n.Base.(*parser.SymbolNode)
+		if !ok {
+			return 0, fmt.Errorf("eval: subscript base must be a symbol, got %T", n.Base)
+		}
+		idx, err := Eval(n.Sub, scope)
+		if err != nil {
+			return 0, err
+		}
+		rounded := math.Round(idx)
+		if math.IsNaN(idx) || math.IsInf(idx, 0) || math.Abs(idx-rounded) > 1e-9 || rounded < 0 {
+			return 0, fmt.Errorf("eval: subscript index must be a non-negative integer, got %v", idx)
+		}
+		key := fmt.Sprintf("%s_%d", base.Name, int(rounded))
+		v, found := scope.Lookup(key)
+		if !found {
+			return 0, fmt.Errorf("eval: undefined symbol: %s", key)
+		}
+		return v, nil
+
+	case *parser.LargeOpNode:
+		// §6.2: evaluate \sum or \prod over a discrete integer range.
+		fromVal, err := Eval(n.From, scope)
+		if err != nil {
+			return 0, err
+		}
+		toVal, err := Eval(n.To, scope)
+		if err != nil {
+			return 0, err
+		}
+		// Bounds must be finite integers (no epsilon tolerance — they are control values).
+		if math.IsNaN(fromVal) || math.IsInf(fromVal, 0) || fromVal != math.Trunc(fromVal) {
+			return 0, fmt.Errorf("eval: \\%s lower bound must be an integer, got %v", n.Op, fromVal)
+		}
+		if math.IsNaN(toVal) || math.IsInf(toVal, 0) || toVal != math.Trunc(toVal) {
+			return 0, fmt.Errorf("eval: \\%s upper bound must be a finite integer, got %v", n.Op, toVal)
+		}
+		from, to := int(fromVal), int(toVal)
+
+		switch n.Op {
+		case "sum":
+			acc := 0.0
+			for i := from; i <= to; i++ {
+				inner := &innerScope{parent: scope, name: n.Var, value: float64(i)}
+				v, err := Eval(n.Body, inner)
+				if err != nil {
+					return 0, err
+				}
+				acc += v
+			}
+			return acc, nil
+		case "prod":
+			acc := 1.0
+			for i := from; i <= to; i++ {
+				inner := &innerScope{parent: scope, name: n.Var, value: float64(i)}
+				v, err := Eval(n.Body, inner)
+				if err != nil {
+					return 0, err
+				}
+				acc *= v
+			}
+			return acc, nil
+		default:
+			return 0, fmt.Errorf("eval: unknown large operator: %s", n.Op)
+		}
+
+	case *parser.NormNode:
+		// §6.3: scalar absolute value (Euclidean norm for scalars).
+		v, err := Eval(n.Arg, scope)
+		if err != nil {
+			return 0, err
+		}
+		return math.Abs(v), nil
 
 	default:
 		return 0, fmt.Errorf("eval: unknown node type: %T", node)

@@ -51,9 +51,10 @@ func Parse(tokens []lexer.Token) (Node, error) {
 // so the product rule does not greedily consume a closing | as an implicit-
 // multiply trigger (spec §4.2 ambiguity note).
 type parser struct {
-	tokens   []lexer.Token
-	pos      int
-	absDepth int
+	tokens    []lexer.Token
+	pos       int
+	absDepth  int // counts nesting of |…| groups
+	normDepth int // counts nesting of ‖…‖ groups
 }
 
 func (p *parser) peek() lexer.Token {
@@ -108,6 +109,8 @@ func (p *parser) canBeginPower(tok lexer.Token) bool {
 	switch tok.Type {
 	case lexer.NUMBER, lexer.SYMBOL, lexer.COMMAND, lexer.LPAREN:
 		return true
+	case lexer.NORM:
+		return p.normDepth == 0
 	case lexer.PIPE:
 		return p.absDepth == 0
 	}
@@ -169,7 +172,7 @@ func (p *parser) parseProduct() (Node, error) {
 	return left, nil
 }
 
-// parsePower → parseUnary [POWER parsePower]  (right-associative)
+// parsePower → parseUnary [POWER parseSuperArg]  (right-associative)
 func (p *parser) parsePower() (Node, error) {
 	base, err := p.parseUnary()
 	if err != nil {
@@ -177,9 +180,54 @@ func (p *parser) parsePower() (Node, error) {
 	}
 	if p.peek().Type == lexer.POWER {
 		p.consume()
-		exp, err := p.parsePower() // right-recursive
+		// Use parseSuperArg (not recursive parsePower) so that a bare subscript
+		// following the exponent is not silently absorbed into the exponent.
+		// e.g. x^2_i → exp=2, then peek=UNDERSCORE → error (spec §4.1).
+		exp, err := p.parseSuperArg()
 		if err != nil {
 			return nil, err
+		}
+		if p.peek().Type == lexer.UNDERSCORE {
+			return nil, fmt.Errorf("parser: superscript before subscript is not allowed; write x_{i}^2, not x^2_i")
+		}
+		return &BinaryNode{Op: "^", Left: base, Right: exp}, nil
+	}
+	return base, nil
+}
+
+// parseSuperArg parses a superscript argument (spec §4.1), right-associatively.
+//
+// A brace group `{…}` is parsed as a full expression (subscripts allowed inside).
+// A bare token chain is parsed without attaching subscripts at this level —
+// this is what lets parsePower detect the x^2_i order violation.
+//
+// Right-associativity is preserved: 2^3^4 → parseSuperArg sees 3, then recursively
+// handles ^4, yielding BinaryNode(^, 3, 4) as the exponent of 2.
+func (p *parser) parseSuperArg() (Node, error) {
+	if p.peek().Type == lexer.LPAREN && p.peek().Value == "{" {
+		p.consume() // consume '{'
+		arg, err := p.parseSum()
+		if err != nil {
+			return nil, err
+		}
+		if _, err := p.expect(lexer.RPAREN, "}"); err != nil {
+			return nil, fmt.Errorf("parser: superscript {…} missing closing }")
+		}
+		return arg, nil
+	}
+	// Bare: single atom (no subscript), then optionally chain more ^ (right-recursive).
+	base, err := p.parseAtom()
+	if err != nil {
+		return nil, err
+	}
+	if p.peek().Type == lexer.POWER {
+		p.consume()
+		exp, err := p.parseSuperArg()
+		if err != nil {
+			return nil, err
+		}
+		if p.peek().Type == lexer.UNDERSCORE {
+			return nil, fmt.Errorf("parser: superscript before subscript is not allowed; write x_{i}^2, not x^2_i")
 		}
 		return &BinaryNode{Op: "^", Left: base, Right: exp}, nil
 	}
@@ -199,17 +247,47 @@ func (p *parser) parseUnary() (Node, error) {
 	return p.parsePostfix()
 }
 
-// parsePostfix → parseAtom [BANG]
+// parsePostfix → parseAtom [UNDERSCORE sub_arg] [BANG]
 func (p *parser) parsePostfix() (Node, error) {
 	base, err := p.parseAtom()
 	if err != nil {
 		return nil, err
+	}
+	// spec §4.1: optional subscript (binds tighter than power).
+	if p.peek().Type == lexer.UNDERSCORE {
+		p.consume()
+		sub, err := p.parseSubArg()
+		if err != nil {
+			return nil, err
+		}
+		if p.peek().Type == lexer.UNDERSCORE {
+			return nil, fmt.Errorf("parser: chained subscripts are not allowed: x_{i}_{j}")
+		}
+		base = &SubscriptNode{Base: base, Sub: sub}
 	}
 	if p.peek().Type == lexer.BANG {
 		p.consume()
 		return &UnaryNode{Op: "!", Operand: base}, nil
 	}
 	return base, nil
+}
+
+// parseSubArg parses one subscript argument.
+// If the next token is LPAREN('{'), it parses the full brace group.
+// Otherwise it parses a single atom (char-mode).
+func (p *parser) parseSubArg() (Node, error) {
+	if p.peek().Type == lexer.LPAREN && p.peek().Value == "{" {
+		p.consume() // consume '{'
+		arg, err := p.parseSum()
+		if err != nil {
+			return nil, err
+		}
+		if _, err := p.expect(lexer.RPAREN, "}"); err != nil {
+			return nil, fmt.Errorf("parser: subscript {…} missing closing }")
+		}
+		return arg, nil
+	}
+	return p.parseAtom()
 }
 
 // parseAtom → NUMBER | SYMBOL | COMMAND args | LPAREN sum RPAREN | PIPE sum PIPE
@@ -238,6 +316,9 @@ func (p *parser) parseAtom() (Node, error) {
 	case lexer.PIPE:
 		return p.parseAbsValue()
 
+	case lexer.NORM:
+		return p.parseNorm()
+
 	case lexer.EOF:
 		return nil, fmt.Errorf("parser: unexpected EOF")
 
@@ -250,6 +331,12 @@ func (p *parser) parseAtom() (Node, error) {
 func (p *parser) parseCommand() (Node, error) {
 	tok := p.consume() // consume COMMAND
 	name := tok.Value  // already normalised by lexer (no backslash, lowercased)
+
+	// spec §4.2: large operators require their own grammar.
+	if name == "sum" || name == "prod" {
+		return p.parseLargeOp(name)
+	}
+
 	arity := commandArities[name]
 
 	if arity == 0 {
@@ -330,4 +417,85 @@ func (p *parser) parseAbsValue() (Node, error) {
 		return nil, fmt.Errorf("parser: unexpected EOF: unclosed absolute value")
 	}
 	return &FunctionNode{Name: "abs", Args: []Node{inner}}, nil
+}
+
+// parseNorm handles NORM sum NORM → NormNode (spec §4.3).
+// \lVert and \rVert both produce NORM tokens; any NORM closes the expression.
+// normDepth is incremented while parsing the inner expression so that the
+// closing \rVert is not mistakenly consumed as an implicit-multiply trigger.
+func (p *parser) parseNorm() (Node, error) {
+	p.consume() // consume opening NORM
+	p.normDepth++
+	if p.peek().Type == lexer.EOF {
+		p.normDepth--
+		return nil, fmt.Errorf("parser: empty \\lVert\\rVert body")
+	}
+	inner, err := p.parseSum()
+	p.normDepth--
+	if err != nil {
+		return nil, err
+	}
+	if p.peek().Type != lexer.NORM {
+		return nil, fmt.Errorf("parser: unmatched \\lVert: expected closing \\rVert")
+	}
+	p.consume() // consume closing NORM
+	return &NormNode{Arg: inner}, nil
+}
+
+// parseLargeOp handles \sum and \prod with their bound and body (spec §4.2).
+//
+// Grammar:
+//
+//	largop → COMMAND("sum"|"prod")
+//	         UNDERSCORE LPAREN('{') SYMBOL EQUALS parseSum RPAREN('}')
+//	         POWER super_arg
+//	         parsePower
+func (p *parser) parseLargeOp(op string) (Node, error) {
+	// Lower bound: _{var=from}
+	if p.peek().Type != lexer.UNDERSCORE {
+		return nil, fmt.Errorf("parser: \\%s requires _{var=from}^{to}: expected '_{' after \\%s", op, op)
+	}
+	p.consume() // consume UNDERSCORE
+
+	if p.peek().Type != lexer.LPAREN || p.peek().Value != "{" {
+		return nil, fmt.Errorf("parser: \\%s requires _{var=from}^{to}: expected '{' after '_'", op)
+	}
+	p.consume() // consume '{'
+
+	if p.peek().Type != lexer.SYMBOL {
+		return nil, fmt.Errorf("parser: \\%s iteration variable must be a symbol, got %q", op, p.peek().Value)
+	}
+	varTok := p.consume()
+
+	if _, err := p.expect(lexer.EQUALS, "="); err != nil {
+		return nil, fmt.Errorf("parser: \\%s requires _{var=from}: expected '=' after variable", op)
+	}
+
+	from, err := p.parseSum()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := p.expect(lexer.RPAREN, "}"); err != nil {
+		return nil, fmt.Errorf("parser: \\%s lower bound missing closing '}'", op)
+	}
+
+	// Upper bound: ^{to}
+	if p.peek().Type != lexer.POWER {
+		return nil, fmt.Errorf("parser: \\%s requires ^{to} after lower bound: expected '^'", op)
+	}
+	p.consume() // consume '^'
+
+	to, err := p.parseCommandArg(op)
+	if err != nil {
+		return nil, err
+	}
+
+	// Body: parsed at parsePower level so that + and * are outside the sum.
+	body, err := p.parsePower()
+	if err != nil {
+		return nil, err
+	}
+
+	return &LargeOpNode{Op: op, Var: varTok.Value, From: from, To: to, Body: body}, nil
 }
