@@ -156,6 +156,11 @@ func TestFlagCases(t *testing.T) {
 		{"subscript x_1^2", []string{"-v", "x_1=3", "-e", "x_{1}^2"}, "9", 0},
 		{"subscript sum", []string{"-v", "x_0=1", "-v", "x_1=2", "-v", "x_2=3", "-e", "x_{0}+x_{1}+x_{2}"}, "6", 0},
 
+		// #9: brace normalization in -v keys (x_{0} and x_0 are equivalent).
+		{"subscript brace key", []string{"-v", "x_{0}=5", "-e", "x_{0}"}, "5", 0},
+		{"subscript brace key sum", []string{"-v", "x_{0}=1", "-v", "x_{1}=2", "-v", "x_{2}=3", "-e", "x_{0}+x_{1}+x_{2}"}, "6", 0},
+		{"subscript brace and flat mixed", []string{"-v", "x_{0}=10", "-v", "x_1=20", "-e", "x_{0}+x_{1}"}, "30", 0},
+
 		// v0.3 large operators (spec §6.2).
 		{"sum 1..5", []string{"-e", `\sum_{i=1}^{5} i`}, "15", 0},
 		{"prod 1..5 factorial", []string{"-e", `\prod_{i=1}^{5} i`}, "120", 0},
