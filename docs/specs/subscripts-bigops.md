@@ -53,16 +53,10 @@ pattern table at the **same priority position as `POWER`** (`^`), i.e. after
 `BANG` and before `NUMBER`.
 
 > **Rationale:** ADR-013 removed `_` from the SYMBOL pattern. The character
-> is now free for use as a structural operator.
-
-`\_` (backslash followed by `_`) **MUST NOT** be treated as a subscript
-operator. In standard LaTeX, `\_` produces a literal underscore glyph in
-text; it is not the subscript operator in math mode. The lexer **MUST**
-reject `\_` in math mode and return an error.
-
-> **Rationale:** ADR-013 explicitly removed `\_` support. Treating it as a
-> subscript would be a non-standard extension that violates the project
-> principle of not making up syntax.
+> is now free for use as a structural operator. `\_` is not handled specially;
+> the `\` character requires letters to form a valid `COMMAND` token
+> (`\\[A-Za-z]+`), so `\_` produces a lexer "unexpected character" error
+> naturally without any additional logic.
 
 ### 3.2 EQUALS Token
 
