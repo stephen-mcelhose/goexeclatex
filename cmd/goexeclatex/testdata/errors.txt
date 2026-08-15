@@ -1,0 +1,16 @@
+# Tab-separated: expr<TAB>want_stderr_contains<TAB>want_exit
+# ── Eval errors (exit 2) ────────────────────────────────────────────────────
+1/0	division by zero	2
+\frac{1}{0}	division by zero	2
+\sqrt{-1}	domain error	2
+\sqrt{-4}	domain error	2
+\asin{2}	domain error	2
+\acos{-2}	domain error	2
+\asec{0}	domain error	2
+\acsc{0}	domain error	2
+(-1)!	factorial	2
+1.5!	factorial	2
+undefined_var	undefined symbol: undefined_var	2
+my_var	undefined symbol: my_var	2
+# ── Lex errors (exit 1) ─────────────────────────────────────────────────────
+\frac{1}{2	unclosed '{'	1
