@@ -27,6 +27,12 @@ func callBuiltin(name string, args []float64) (float64, error) {
 	case "abs":
 		return math.Abs(args[0]), nil
 
+	case "floor":
+		return math.Floor(args[0]), nil
+
+	case "ceil":
+		return math.Ceil(args[0]), nil
+
 	// §6.2 Trigonometric
 	case "sin":
 		return math.Sin(args[0]), nil

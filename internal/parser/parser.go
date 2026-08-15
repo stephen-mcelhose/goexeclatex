@@ -51,10 +51,12 @@ func Parse(tokens []lexer.Token) (Node, error) {
 // so the product rule does not greedily consume a closing | as an implicit-
 // multiply trigger (spec §4.2 ambiguity note).
 type parser struct {
-	tokens    []lexer.Token
-	pos       int
-	absDepth  int // counts nesting of |…| groups
-	normDepth int // counts nesting of ‖…‖ groups
+	tokens     []lexer.Token
+	pos        int
+	absDepth   int // counts nesting of |…| groups
+	normDepth  int // counts nesting of ‖…‖ groups
+	floorDepth int // counts nesting of ⌊…⌋ groups
+	ceilDepth  int // counts nesting of ⌈…⌉ groups
 }
 
 func (p *parser) peek() lexer.Token {
@@ -113,6 +115,10 @@ func (p *parser) canBeginPower(tok lexer.Token) bool {
 		return p.normDepth == 0
 	case lexer.PIPE:
 		return p.absDepth == 0
+	case lexer.FLOOR:
+		return p.floorDepth == 0 && p.ceilDepth == 0
+	case lexer.CEIL:
+		return p.floorDepth == 0 && p.ceilDepth == 0
 	}
 	return false
 }
@@ -319,6 +325,12 @@ func (p *parser) parseAtom() (Node, error) {
 	case lexer.NORM:
 		return p.parseNorm()
 
+	case lexer.FLOOR:
+		return p.parseFloor()
+
+	case lexer.CEIL:
+		return p.parseCeil()
+
 	case lexer.EOF:
 		return nil, fmt.Errorf("parser: unexpected EOF")
 
@@ -417,6 +429,70 @@ func (p *parser) parseAbsValue() (Node, error) {
 		return nil, fmt.Errorf("parser: unexpected EOF: unclosed absolute value")
 	}
 	return &FunctionNode{Name: "abs", Args: []Node{inner}}, nil
+}
+
+// parseFloor handles FLOOR("lfloor") sum FLOOR("rfloor") → FunctionNode("floor")
+// (parser-extensions §3.2). Mixed closers are a mismatch error (ADR-014).
+func (p *parser) parseFloor() (Node, error) {
+	open := p.consume()
+	if open.Value != "lfloor" {
+		return nil, fmt.Errorf("parser: unexpected FLOOR %q at position %d", open.Value, open.Pos)
+	}
+	p.floorDepth++
+	if p.peek().Type == lexer.FLOOR && p.peek().Value == "rfloor" {
+		p.floorDepth--
+		return nil, fmt.Errorf("parser: empty \\lfloor\\rfloor body")
+	}
+	if p.peek().Type == lexer.CEIL && p.peek().Value == "rceil" {
+		p.floorDepth--
+		return nil, fmt.Errorf("parser: mismatched floor/ceil delimiters")
+	}
+	inner, err := p.parseSum()
+	p.floorDepth--
+	if err != nil {
+		return nil, err
+	}
+	closeTok := p.peek()
+	if closeTok.Type == lexer.CEIL {
+		return nil, fmt.Errorf("parser: mismatched floor/ceil delimiters")
+	}
+	if closeTok.Type != lexer.FLOOR || closeTok.Value != "rfloor" {
+		return nil, fmt.Errorf("parser: unmatched \\lfloor: expected closing \\rfloor")
+	}
+	p.consume()
+	return &FunctionNode{Name: "floor", Args: []Node{inner}}, nil
+}
+
+// parseCeil handles CEIL("lceil") sum CEIL("rceil") → FunctionNode("ceil")
+// (parser-extensions §3.2). Mixed closers are a mismatch error (ADR-014).
+func (p *parser) parseCeil() (Node, error) {
+	open := p.consume()
+	if open.Value != "lceil" {
+		return nil, fmt.Errorf("parser: unexpected CEIL %q at position %d", open.Value, open.Pos)
+	}
+	p.ceilDepth++
+	if p.peek().Type == lexer.CEIL && p.peek().Value == "rceil" {
+		p.ceilDepth--
+		return nil, fmt.Errorf("parser: empty \\lceil\\rceil body")
+	}
+	if p.peek().Type == lexer.FLOOR && p.peek().Value == "rfloor" {
+		p.ceilDepth--
+		return nil, fmt.Errorf("parser: mismatched floor/ceil delimiters")
+	}
+	inner, err := p.parseSum()
+	p.ceilDepth--
+	if err != nil {
+		return nil, err
+	}
+	closeTok := p.peek()
+	if closeTok.Type == lexer.FLOOR {
+		return nil, fmt.Errorf("parser: mismatched floor/ceil delimiters")
+	}
+	if closeTok.Type != lexer.CEIL || closeTok.Value != "rceil" {
+		return nil, fmt.Errorf("parser: unmatched \\lceil: expected closing \\rceil")
+	}
+	p.consume()
+	return &FunctionNode{Name: "ceil", Args: []Node{inner}}, nil
 }
 
 // parseNorm handles NORM sum NORM → NormNode (spec §4.3).

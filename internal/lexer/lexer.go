@@ -55,6 +55,9 @@ var patterns = []scanPattern{
 	// Priority 11a: NORM — \lVert / \rVert (capital V) before generic COMMAND.
 	// \lvert / \rvert (lowercase) fall through to COMMAND and are remapped to PIPE.
 	{NORM, regexp.MustCompile(`^\\(?:lVert|rVert)`)},
+	// Priority 11b: FLOOR / CEIL before COMMAND (parser-extensions §3.1).
+	{FLOOR, regexp.MustCompile(`^\\(?:lfloor|rfloor)`)},
+	{CEIL, regexp.MustCompile(`^\\(?:lceil|rceil)`)},
 	// Priority 12: COMMAND before SYMBOL so \sin isn't SYMBOL(sin) — spec §5.2
 	{COMMAND, regexp.MustCompile(`^\\[A-Za-z]+`)},
 	// Priority 13: SYMBOL — spec §5.2 and ADR-013 (no underscore in names)
@@ -259,6 +262,12 @@ func (l *lexer) skipWhitespace() {
 func postLexRemap(in []Token) []Token {
 	out := make([]Token, 0, len(in))
 	for _, tok := range in {
+		if tok.Type == FLOOR || tok.Type == CEIL {
+			// parser-extensions §3.1: strip leading backslash from delimiter values.
+			tok.Value = strings.TrimPrefix(tok.Value, `\`)
+			out = append(out, tok)
+			continue
+		}
 		if tok.Type != COMMAND {
 			out = append(out, tok)
 			continue

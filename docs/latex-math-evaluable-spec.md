@@ -90,7 +90,7 @@ Source: AMS Short Math Guide v2.0 (2017), Michael Downes / AMS. Raw file:
 | ---------------------------- | ------------- | ---------- |
 | `\lfloor x \rfloor`          | Floor         | ✅          |
 | `\lceil x \rceil`            | Ceiling       | ✅          |
-| `\lfloor x \rceil`           | Round (nearest) | ✅ (convention) |
+| `\lfloor x \rceil`           | Round (nearest) | ❌ out of scope — [[adrs/adr-014-mixed-floor-ceil-round-out-of-scope]] |
 
 > **Note (from AMS guide §Vertical bar notations):** `|...|` is ambiguous for
 > spacing. The guide recommends `\lvert...\rvert` for absolute value and

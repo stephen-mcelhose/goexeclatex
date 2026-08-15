@@ -37,3 +37,7 @@ Fixed: index gap (specs/subscripts-largeops added to index.md); ADR-004 status u
 ## [2026-08-15] feat | v0.3 complete — subscripts, big operators, norm (closes #6)
 
 Implemented: UNDERSCORE + NORM lexer tokens; subscript grammar (`x_{i}`, `x_i`); `\sum`/`\prod` with integer bounds and iteration scope; `\lVert…\rVert` norm. Key design decisions: `ScopeLookup` interface for inner-scope shadowing; `parseSuperArg` to enforce `x_{i}^2` ordering; `normDepth` guard mirrors `absDepth`. `\\_` and `\log_b` deferred to #8. Specs: `docs/specs/subscripts-largeops.md`. testdata: `cmd/goexeclatex/testdata/stdin.txt` extended with v0.3 cases.
+
+## [2026-08-15] decision | ADR-014 — mixed floor/ceil round out of scope
+
+Accepted [[adrs/adr-014-mixed-floor-ceil-round-out-of-scope]]: `\lfloor x \rceil` is not AMS “round”; out of scope for #8. Revisit only with external demand, no better surface (or cited standard), and spec+tests first. Evaluable-spec row updated to ❌; index entry added. Q6 on issue #8 answered.

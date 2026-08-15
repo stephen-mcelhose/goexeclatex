@@ -22,13 +22,15 @@ const (
 	UNDERSCORE                  // spec §3: _ (Tier 0.3 — subscript)
 	EQUALS                      // spec §3.2: = (large-op bound only)
 	NORM                        // spec §3.3: \lVert / \rVert
+	FLOOR                       // parser-extensions §3.1: \lfloor / \rfloor
+	CEIL                        // parser-extensions §3.1: \lceil / \rceil
 	EOF                         // spec §8: synthetic end-of-input sentinel
 )
 
 var tokenTypeNames = [...]string{
 	"NUMBER", "SYMBOL", "COMMAND", "PLUS", "MINUS", "TIMES", "DIVIDE",
 	"POWER", "LPAREN", "RPAREN", "PIPE", "BANG", "COMMA", "UNDERSCORE",
-	"EQUALS", "NORM", "EOF",
+	"EQUALS", "NORM", "FLOOR", "CEIL", "EOF",
 }
 
 // String returns the name of the token type.
