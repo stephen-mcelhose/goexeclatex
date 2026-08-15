@@ -47,9 +47,10 @@ reference explicitly.
 3. Implement until all tests pass (green).
 4. Commit with a conventional commit message.
 
-**Phase 3 — Closing review.**
+**Phase 3 — Closing review (process).**
 GAN-style docs pass, wiki lint on touched pages, goldens/tests green, tracking
-issue + roadmap updated.
+issue + roadmap updated. (Distinct from [[plan]] architecture “Phase 3 —
+Evaluator”.)
 
 Do not write implementation code before the spec exists.
 Do not skip the red-phase confirmation.
@@ -87,7 +88,7 @@ Plan aloud, then execute.
 
 ---
 
-## ~~v0.4 — Parser extensions ([#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8))~~ ✅ closed (pending GAN)
+## ~~v0.4 — Parser extensions ([#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8))~~ ✅ closed
 
 - [x] Floor / ceil paired delimiters
 - [x] `\sqrt[n]{x}` (incl. odd roots of negatives — [[adrs/adr-015-odd-integer-roots-of-negatives]])

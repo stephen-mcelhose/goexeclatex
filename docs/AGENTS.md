@@ -1,7 +1,9 @@
 # Wiki Schema
 
-This wiki is maintained by an LLM using the llm-wiki skill
-(https://gist.github.com/karpathy/442a6bf555914893e9541c11519de94f).
+This wiki is maintained by an LLM using the in-repo `llm-wiki` skill at
+`.agents/skills/llm-wiki/` (Karpathy pattern:
+https://gist.github.com/karpathy/442a6bf555914893e9541c11519de94f).
+Prefer that copy over any personal `~/.cursor/skills/llm-wiki`.
 
 ## Wiki Root
 
