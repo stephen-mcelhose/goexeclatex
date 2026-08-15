@@ -13,7 +13,7 @@ import (
 var commandArities = map[string]int{
 	// Arithmetic
 	"frac": 2, "dfrac": 2, "tfrac": 2, "cfrac": 2,
-	"sqrt": 1,
+	// sqrt arity 0 in lexer — parser owns [n] and radicand (parser-extensions §4.1)
 	// Trigonometric
 	"sin": 1, "cos": 1, "tan": 1,
 	"sec": 1, "csc": 1, "cot": 1,

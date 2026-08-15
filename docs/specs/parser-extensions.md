@@ -104,10 +104,41 @@ evaluate as round.
 After this section is implemented, `\lfloor 3.2 \rfloor` **MUST NOT** parse as
 an implicit-multiply `BinaryNode` product of symbols.
 
-## 4. Optional nth-root — *pending Task 2*
+## 4. Optional nth-root (`\sqrt[n]{x}`)
 
-Placeholder: `\sqrt[n]{x}` normative rules to be added before Task 2
-implementation.
+### 4.1 Lexer
+
+`\sqrt` **MUST NOT** consume char-mode arguments in the lexer (arity **0** in
+the lexer arity table). The parser owns optional `[n]` and the radicand so that
+`[` is not mistaken for the sole command argument.
+
+> **Divergence from Tier 1:** Tier 1 listed `\sqrt` as arity 1 in both tables.
+> v0.4 moves argument collection to the parser for `\sqrt` only.
+
+### 4.2 Parser
+
+```
+sqrt → COMMAND("sqrt") [ LPAREN('[') sum RPAREN(']') ] command_arg
+```
+
+- If an optional `[…]` index is present, the AST **MUST** be
+  `FunctionNode{Name: "sqrt", Args: [radicand, index]}` (radicand first).
+- If absent, the AST **MUST** be `FunctionNode{Name: "sqrt", Args: [radicand]}`.
+- `\sqrt{x}` and `\sqrt x` (single-token arg) **MUST** remain valid.
+
+`\sqrt[n]{x}` **MUST NOT** parse as an implicit-multiply product of a one-arg
+sqrt and a brace group.
+
+### 4.3 Eval
+
+| Args | Semantics |
+| ---- | --------- |
+| 1 (`x`) | `math.Sqrt(x)`; domain error if `x < 0` |
+| 2 (`x`, `n`) | `math.Pow(x, 1/n)`; domain error if `n == 0`; domain error if `x < 0` |
+
+### 4.4 False-success regression
+
+`\sqrt[3]{27}` **MUST NOT** parse as `BinaryNode("*")`.
 
 ## 5. Variadic paren arguments — *pending Task 3–4*
 

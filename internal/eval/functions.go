@@ -19,6 +19,16 @@ func callBuiltin(name string, args []float64) (float64, error) {
 		return args[0] / args[1], nil
 
 	case "sqrt":
+		if len(args) == 2 {
+			x, n := args[0], args[1]
+			if n == 0 {
+				return 0, fmt.Errorf("eval: domain error: root index must not be zero")
+			}
+			if x < 0 {
+				return 0, fmt.Errorf("eval: domain error: root of negative")
+			}
+			return math.Pow(x, 1/n), nil
+		}
 		if args[0] < 0 {
 			return 0, fmt.Errorf("eval: domain error: sqrt of negative")
 		}

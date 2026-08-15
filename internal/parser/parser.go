@@ -12,7 +12,7 @@ import (
 var commandArities = map[string]int{
 	// Arithmetic
 	"frac": 2, "dfrac": 2, "tfrac": 2, "cfrac": 2,
-	"sqrt": 1,
+	// sqrt handled by parseSqrt (optional [n]); not a fixed arity
 	// Trigonometric
 	"sin": 1, "cos": 1, "tan": 1,
 	"sec": 1, "csc": 1, "cot": 1,
@@ -339,6 +339,30 @@ func (p *parser) parseAtom() (Node, error) {
 	}
 }
 
+// parseSqrt handles \sqrt[n]{x} and \sqrt{x} (parser-extensions §4.2).
+func (p *parser) parseSqrt(pos int) (Node, error) {
+	var index Node
+	if p.peek().Type == lexer.LPAREN && p.peek().Value == "[" {
+		p.consume() // '['
+		idx, err := p.parseSum()
+		if err != nil {
+			return nil, err
+		}
+		if _, err := p.expect(lexer.RPAREN, "]"); err != nil {
+			return nil, fmt.Errorf("parser: \\sqrt optional index missing closing ']'")
+		}
+		index = idx
+	}
+	radicand, err := p.parseCommandArg("sqrt")
+	if err != nil {
+		return nil, err
+	}
+	if index != nil {
+		return &FunctionNode{Name: "sqrt", Args: []Node{radicand, index}, Pos: pos}, nil
+	}
+	return &FunctionNode{Name: "sqrt", Args: []Node{radicand}, Pos: pos}, nil
+}
+
 // parseCommand handles a COMMAND token and its arity-N arguments (spec §6).
 func (p *parser) parseCommand() (Node, error) {
 	tok := p.consume() // consume COMMAND
@@ -347,6 +371,10 @@ func (p *parser) parseCommand() (Node, error) {
 	// spec §4.2: large operators require their own grammar.
 	if name == "sum" || name == "prod" {
 		return p.parseLargeOp(name)
+	}
+	// parser-extensions §4: optional [n] index before radicand.
+	if name == "sqrt" {
+		return p.parseSqrt(tok.Pos)
 	}
 
 	arity := commandArities[name]
