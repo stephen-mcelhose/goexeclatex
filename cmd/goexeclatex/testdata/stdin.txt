@@ -84,13 +84,37 @@ e	2.718281828459045	0
 \cfrac{22}{7}	3.142857142857143	0
 # ── arcsin / arccos / arctan ─────────────────────────────────────────────────
 \arcsin{0}	0	0
+\arcsin{1}	1.5707963267948966	0
+\arcsin{-1}	-1.5707963267948966	0
 \arccos{1}	0	0
+\arccos{0}	1.5707963267948966	0
+\arccos{-1}	3.141592653589793	0
+\arctan{0}	0	0
 \arctan{1}	0.7853981633974483	0
+\arctan{-1}	-0.7853981633974483	0
+# alias == aX equivalents
+\arcsin{1} - \asin{1}	0	0
+\arccos{0} - \acos{0}	0	0
+\arctan{1} - \atan{1}	0	0
+# composition identities
+\arcsin{\sin{\pi/6}}	0.5235987755982988	0
+\arccos{\cos{\pi/3}}	1.0471975511965974	0
 # ── ln / exp / log ───────────────────────────────────────────────────────────
 \ln{1}	0	0
-\exp{0}	1	0
-\log{100}	2	0
 \ln{\e}	1	0
+\exp{0}	1	0
+\exp{1}	2.718281828459045	0
+\log{1}	0	0
+\log{10}	1	0
+\log{100}	2	0
+\log{1000}	3	0
+# ln and log are distinct: log(10)=1, ln(10)≠1
+\log{10} - \ln{10}	-1.302585092994046	0
+# composition identities
+\ln{\exp{2}}	2	0
+\ln{\e^2}	2	0
+# log law: log(4)+log(25) = log(100) = 2
+\log{4} + \log{25}	2	0
 # ── Hyperbolic ───────────────────────────────────────────────────────────────
 \sinh{0}	0	0
 \cosh{0}	1	0
@@ -98,8 +122,32 @@ e	2.718281828459045	0
 \sech{0}	1	0
 \coth{0}	+Inf	0
 \csch{0}	+Inf	0
+# cosh(ln2)=(2+0.5)/2=1.25, sinh(ln2)=(2-0.5)/2=0.75 — exact rationals, not tautologies
+\cosh{\ln{2}}	1.25	0
+\sinh{\ln{2}}	0.75	0
+# tanh(ln3)=(3-1/3)/(3+1/3)=0.8
+\tanh{\ln{3}}	0.7999999999999999	0
+# reciprocal roundtrips
+\coth{1} * \tanh{1}	1	0
+\sech{1} * \cosh{1}	1	0
+\csch{1} * \sinh{1}	1	0
 # ── Binomial coefficient ─────────────────────────────────────────────────────
 \binom{5}{2}	10	0
 \binom{6}{3}	20	0
+\binom{4}{0}	1	0
+\binom{4}{4}	1	0
+\binom{10}{0}	1	0
+\binom{10}{10}	1	0
+# C(10,5)=252 — catches naive factorial overflow
+\binom{10}{5}	252	0
+# symmetry: C(n,k)=C(n,n-k)
+\binom{10}{3}	120	0
+\binom{10}{7}	120	0
+# Pascal's identity: C(9,2)+C(9,3)=36+84=120=C(10,3)
+\binom{9}{2} + \binom{9}{3}	120	0
+# display aliases
 \dbinom{4}{0}	1	0
 \tbinom{4}{4}	1	0
+\dbinom{10}{5} - \tbinom{10}{5}	0	0
+# frac aliases in compound expression
+\dfrac{1}{2} + \dfrac{1}{3}	0.8333333333333333	0

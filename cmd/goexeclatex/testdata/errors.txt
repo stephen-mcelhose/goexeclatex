@@ -15,6 +15,12 @@ myvar	undefined symbol: myvar	2
 # ── Lex errors (exit 1) ─────────────────────────────────────────────────────
 \frac{1}{2	unclosed '{'	1
 \ln{0}	domain error	2
+\ln{-1}	domain error	2
+\log{0}	domain error	2
 \log{-1}	domain error	2
 \arcsin{2}	domain error	2
+\arccos{-2}	domain error	2
 \binom{5}{6}	domain error	2
+\binom{-1}{2}	domain error	2
+\binom{5}{1.5}	domain error	2
+\dfrac{1}{0}	division by zero	2
