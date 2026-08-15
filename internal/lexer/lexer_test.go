@@ -92,6 +92,92 @@ func TestCommands(t *testing.T) {
 	}
 }
 
+// TestCommandTokenStreams verifies the full token sequence for command
+// invocations, including correct {}-group wrapping and nested brace handling.
+// TestCommands above only checks tokens[0]; this test checks the whole stream.
+func TestCommandTokenStreams(t *testing.T) {
+	cases := []struct {
+		input string
+		want  []Token
+	}{
+		{
+			// arity-0: no brace args, just the command + EOF
+			`\pi`,
+			[]Token{tok(COMMAND, "pi"), tok(EOF, "")},
+		},
+		{
+			// arity-1 with single-char arg (char-mode, not brace group)
+			`\sin x`,
+			[]Token{tok(COMMAND, "sin"), tok(SYMBOL, "x"), tok(EOF, "")},
+		},
+		{
+			// arity-1 with brace group arg
+			`\sqrt{4}`,
+			[]Token{
+				tok(COMMAND, "sqrt"),
+				tok(LPAREN, "{"), tok(NUMBER, "4"), tok(RPAREN, "}"),
+				tok(EOF, ""),
+			},
+		},
+		{
+			// arity-2: two sibling brace groups
+			`\frac{1}{2}`,
+			[]Token{
+				tok(COMMAND, "frac"),
+				tok(LPAREN, "{"), tok(NUMBER, "1"), tok(RPAREN, "}"),
+				tok(LPAREN, "{"), tok(NUMBER, "2"), tok(RPAREN, "}"),
+				tok(EOF, ""),
+			},
+		},
+		{
+			// nested: \sqrt inside first arg of \frac
+			`\frac{\sqrt{2}}{3}`,
+			[]Token{
+				tok(COMMAND, "frac"),
+				tok(LPAREN, "{"),
+				tok(COMMAND, "sqrt"),
+				tok(LPAREN, "{"), tok(NUMBER, "2"), tok(RPAREN, "}"),
+				tok(RPAREN, "}"),
+				tok(LPAREN, "{"), tok(NUMBER, "3"), tok(RPAREN, "}"),
+				tok(EOF, ""),
+			},
+		},
+		{
+			// deeply nested: \frac inside \sqrt inside \frac
+			`\frac{\sqrt{\frac{1}{2}}}{3}`,
+			[]Token{
+				tok(COMMAND, "frac"),
+				tok(LPAREN, "{"),
+				tok(COMMAND, "sqrt"),
+				tok(LPAREN, "{"),
+				tok(COMMAND, "frac"),
+				tok(LPAREN, "{"), tok(NUMBER, "1"), tok(RPAREN, "}"),
+				tok(LPAREN, "{"), tok(NUMBER, "2"), tok(RPAREN, "}"),
+				tok(RPAREN, "}"),
+				tok(RPAREN, "}"),
+				tok(LPAREN, "{"), tok(NUMBER, "3"), tok(RPAREN, "}"),
+				tok(EOF, ""),
+			},
+		},
+		{
+			// POWER with brace group
+			`2^{10}`,
+			[]Token{
+				tok(NUMBER, "2"),
+				tok(POWER, "^"),
+				tok(LPAREN, "{"), tok(NUMBER, "10"), tok(RPAREN, "}"),
+				tok(EOF, ""),
+			},
+		},
+	}
+	for _, c := range cases {
+		tokens := lex(t, c.input)
+		if !equalTokens(tokens, c.want) {
+			t.Errorf("Lex(%q)\n got  %v\n want %v", c.input, tokens, c.want)
+		}
+	}
+}
+
 // TestOperators covers spec §3 PLUS/MINUS/TIMES/DIVIDE/POWER tokens.
 // POWER requires a char-mode argument (spec §6.2), so it is tested with one.
 func TestOperators(t *testing.T) {
@@ -123,7 +209,7 @@ func TestGrouping(t *testing.T) {
 	}{
 		{"(", LPAREN, "("},
 		{"[", LPAREN, "["},
-		{"{", LPAREN, "{"},
+		{"{1}", LPAREN, "{"}, // bare { is an unclosed group — needs content + closing }
 		{")", RPAREN, ")"},
 		{"]", RPAREN, "]"},
 		{"}", RPAREN, "}"},
@@ -450,6 +536,56 @@ func TestExprSinPi(t *testing.T) {
 		t.Errorf("token[1] = %v, want LPAREN", tokens[1])
 	}
 }
+
+// ---- Helpers ----------------------------------------------------------------
+
+// ---- Error paths (spec §9) --------------------------------------------------
+
+// lexErr is a helper that asserts Lex returns a non-nil error and returns it.
+func lexErr(t *testing.T, input string) error {
+	t.Helper()
+	_, err := Lex(input)
+	if err == nil {
+		t.Fatalf("Lex(%q): expected error, got nil", input)
+	}
+	return err
+}
+
+// TestErrorUnclosedBraceGroup verifies that unclosed { groups produce an error
+// (spec §9). BLOCKING: previously these silently succeeded.
+func TestErrorUnclosedBraceGroup(t *testing.T) {
+	cases := []string{
+		"2^{12",      // unclosed brace after POWER
+		`\sqrt{4`,    // unclosed brace after 1-arg command
+		`\frac{1}{2`, // unclosed second brace of 2-arg command
+	}
+	for _, input := range cases {
+		_, err := Lex(input)
+		if err == nil {
+			t.Errorf("Lex(%q): expected error for unclosed '{' group, got nil", input)
+		}
+	}
+}
+
+// TestErrorEOFInCharMode verifies that EOF reached in char mode returns an error
+// (spec §9). Covers POWER with no arg and a command with no arg.
+func TestErrorEOFInCharMode(t *testing.T) {
+	cases := []string{
+		"2^",   // POWER with no argument
+		`\sin`, // arity-1 command with no argument
+	}
+	for _, input := range cases {
+		_, err := Lex(input)
+		if err == nil {
+			t.Errorf("Lex(%q): expected error for EOF in char mode, got nil", input)
+		}
+	}
+}
+
+// Known limitation: multi-byte UTF-8 runes in char-mode (e.g. 2^α) produce an
+// error with an escaped byte in the message (\xce) rather than the full rune (α).
+// LaTeX math expressions are ASCII-dominant so this is not fixed in Tier 1.
+// See GAN review §D advisory "Broken UTF-8 Representation in Unexpected Character Error".
 
 // ---- Helpers ----------------------------------------------------------------
 

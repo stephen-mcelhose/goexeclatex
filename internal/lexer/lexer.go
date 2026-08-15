@@ -71,7 +71,7 @@ func Lex(input string) ([]Token, error) {
 	input = strings.ReplaceAll(input, `\_`, "_")
 
 	l := &lexer{input: input}
-	if err := l.lexExpression(false); err != nil {
+	if err := l.lexExpression(false, false); err != nil {
 		return nil, err
 	}
 
@@ -89,16 +89,22 @@ func Lex(input string) ([]Token, error) {
 // (spec §6.1) then returns.  When charMode is false it reads until the buffer
 // is empty or a closing "}" ends a group (spec §6.3).
 //
+// inGroup must be true when the call was triggered by a "{" opener; in that
+// case reaching EOF without a matching "}" is an error (spec §9).
+//
 // Algorithm mirrors evaluatex lexExpression(charMode) from
 // evaluatex/src/lexer.js, elevated to normative in spec §6.
-func (l *lexer) lexExpression(charMode bool) error {
+func (l *lexer) lexExpression(charMode, inGroup bool) error {
 	for {
-		// Skip whitespace before checking whether there is anything left,
-		// so trailing spaces do not cause a spurious end-of-input error.
+		// Skip whitespace before each token (spec §5.3). We do this here—not in
+		// next()—so trailing spaces do not cause a spurious end-of-input error.
 		l.skipWhitespace()
 		if l.pos >= len(l.input) {
 			if charMode {
 				return fmt.Errorf("lexer: unexpected end of input at position %d", l.pos)
+			}
+			if inGroup {
+				return fmt.Errorf("lexer: unexpected end of input: unclosed '{' group at position %d", l.pos)
 			}
 			break
 		}
@@ -120,7 +126,7 @@ func (l *lexer) lexExpression(charMode bool) error {
 		switch tok.Type {
 		case POWER:
 			// §6.2: POWER reads exactly 1 char-mode argument.
-			if err := l.lexExpression(true); err != nil {
+			if err := l.lexExpression(true, false); err != nil {
 				return err
 			}
 
@@ -132,7 +138,7 @@ func (l *lexer) lexExpression(charMode bool) error {
 			name := strings.ToLower(tok.Value[1:]) // strip leading backslash
 			arity := commandArities[name]           // 0 if not in table — spec §6.4
 			for i := 0; i < arity; i++ {
-				if err := l.lexExpression(true); err != nil {
+				if err := l.lexExpression(true, false); err != nil {
 					return err
 				}
 			}
@@ -140,7 +146,8 @@ func (l *lexer) lexExpression(charMode bool) error {
 		case LPAREN:
 			if tok.Value == "{" {
 				// §6.3: { opens a group — recurse in normal mode until matching }.
-				if err := l.lexExpression(false); err != nil {
+				// inGroup=true so EOF inside returns an error (spec §9).
+				if err := l.lexExpression(false, true); err != nil {
 					return err
 				}
 			}
