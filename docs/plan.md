@@ -192,7 +192,7 @@ goexeclatex/
 - [x] `cmd/goexeclatex` — stdin pipe, `-var`, `-prec`, `-e` flags ([[specs/cli]])
 - [x] Table-driven unit tests for all of the above
 
-### v0.2 — Tier 2: function completeness
+### v0.2 — Tier 2: function completeness ([#5](https://github.com/stephen-mcelhose/goexeclatex/issues/5))
 
 - [ ] `\arcsin/\arccos/\arctan` (canonical names)
 - [ ] `\ln`, `\exp`, `\log` (base 10)
@@ -207,7 +207,7 @@ goexeclatex/
 - [ ] `\mod`, `\pmod`, `\bmod`, `\pod`
 - [ ] Greek letter variables (`\alpha`, `\beta`, … — user-supplied via `-var`)
 
-### v0.3 — Tier 3: subscripts + big operators
+### v0.3 — Tier 3: subscripts + big operators ([#6](https://github.com/stephen-mcelhose/goexeclatex/issues/6))
 
 - [ ] `\\_` → literal `_` pre-pass in lexer (before subscript tokenisation)
 - [ ] `_` token; subscript grammar rule
@@ -217,7 +217,7 @@ goexeclatex/
 - [ ] `\prod_{i=a}^{b} f(i)` — discrete product engine
 - [ ] `\lVert v \rVert` — norm (double-pipe)
 
-### vFuture
+### vFuture ([#7](https://github.com/stephen-mcelhose/goexeclatex/issues/7))
 
 - `\begin{cases}` conditional evaluation
 - Matrix input + `\det`
