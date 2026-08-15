@@ -44,24 +44,26 @@ These should be the baseline of goexeclatex v0.
 
 Well-understood semantics; no new grammar machinery needed beyond Tier 1.
 
-| Feature                    | LaTeX                          | Effort   | Notes                                      |
-| -------------------------- | ------------------------------ | -------- | ------------------------------------------ |
-| `\arcsin/\arccos/\arctan`  | Arc trig (canonical names)     | XS       | Aliases to asin/acos/atan                  |
-| `\ln`                      | Natural log                    | XS       | `math.Log`                                 |
-| `\exp`                     | Exponential                    | XS       | `math.Exp`                                 |
-| `\log` (base 10)           | Log base 10                    | XS       | `math.Log10`                               |
-| `\dfrac`, `\tfrac`         | Display/text fraction          | XS       | Same value as `\frac`                      |
-| `\sinh/\cosh/\tanh`        | Hyperbolic trig                | XS       | `math.Sinh` etc.                           |
-| `\coth/\sech/\csch`        | Hyperbolic recip               | XS       | `1/tanh(x)` etc.                           |
-| `\min(a,b)`, `\max(a,b)`   | Min / max                      | XS       | `math.Min/Max`, multi-arg via comma        |
-| `\infty`                   | Infinity constant              | XS       | `math.Inf(1)`                              |
-| `\lfloor x \rfloor`        | Floor                          | S        | New delimiter pair token                   |
-| `\lceil x \rceil`          | Ceiling                        | S        | New delimiter pair token                   |
-| `\sqrt[n]{x}`              | n-th root                      | S        | Optional `[n]` arg before `{x}`            |
-| `\gcd(a,b)`                | GCD                            | S        | Euclidean algorithm                        |
-| `\binom{n}{k}`             | Binomial coefficient           | S        | `n! / (k! * (n-k)!)`                       |
-| `\mod`, `\pmod`, `\bmod`   | Modulo                         | S        | Infix binary operator                      |
-| Greek letter variables      | `\alpha`, `\beta`, `\mu`…      | S        | Extend symbol table; user-supplied values  |
+✅ = implemented in v0.2. Remaining items require parser changes (deferred to #8).
+
+| Feature                    | LaTeX                          | Effort   | Status | Notes                                      |
+| -------------------------- | ------------------------------ | -------- | ------ | ------------------------------------------ |
+| `\arcsin/\arccos/\arctan`  | Arc trig (canonical names)     | XS       | ✅ v0.2 | Aliases to asin/acos/atan                 |
+| `\ln`                      | Natural log                    | XS       | ✅ v0.2 | `math.Log`                                |
+| `\exp`                     | Exponential                    | XS       | ✅ v0.2 | `math.Exp`                                |
+| `\log` (base 10)           | Log base 10                    | XS       | ✅ v0.2 | `math.Log10`                              |
+| `\dfrac`, `\tfrac`, `\cfrac` | Display/text fraction        | XS       | ✅ v0.2 | Same value as `\frac`                     |
+| `\sinh/\cosh/\tanh`        | Hyperbolic trig                | XS       | ✅ v0.2 | `math.Sinh` etc.                          |
+| `\coth/\sech/\csch`        | Hyperbolic recip               | XS       | ✅ v0.2 | `1/tanh(x)` etc.                          |
+| `\infty`                   | Infinity constant              | XS       | ✅ v0.2 | `math.Inf(1)` seeded in NewScope          |
+| `\binom{n}{k}`             | Binomial coefficient           | S        | ✅ v0.2 | `n! / (k! * (n-k)!)`                      |
+| `\min(a,b)`, `\max(a,b)`   | Min / max                      | XS       | ⏳ #8  | Requires paren-arg parser support         |
+| `\lfloor x \rfloor`        | Floor                          | S        | ⏳ #8  | Requires paired delimiter tokens          |
+| `\lceil x \rceil`          | Ceiling                        | S        | ⏳ #8  | Requires paired delimiter tokens          |
+| `\sqrt[n]{x}`              | n-th root                      | S        | ⏳ #8  | Optional `[n]` arg before `{x}`           |
+| `\gcd(a,b)`                | GCD                            | S        | ⏳ #8  | Requires paren-arg parser support         |
+| `\mod`, `\pmod`, `\bmod`   | Modulo                         | S        | ⏳ #8  | Infix binary operator                     |
+| Greek letter variables      | `\alpha`, `\beta`, `\mu`…      | S        | ✅ v0.2 | Work via `-v alpha=1.5` with no changes   |
 
 ---
 

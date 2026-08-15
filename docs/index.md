@@ -15,7 +15,7 @@
 | [[specs/cli]]                                     | Normative RFC 2119 CLI spec: flags, input resolution, exit codes, output format      | cli, spec, goexeclatex                              |
 | [[adrs/adr-001-lexer-ingroup-param]]              | ADR-001: Add inGroup param to lexExpression for unclosed-brace detection             | adr, lexer                                          |
 | [[adrs/adr-002-utf8-error-deferred]]              | ADR-002: Defer UTF-8 char-mode error quality to post-Tier-1                         | adr, lexer, deferred                                |
-| [[adrs/adr-003-asin-not-arcsin]]                  | ADR-003: Use asin/acos/atan abbreviations (evaluatex convention) over arcsin etc.   | adr, eval, trig                                     |
+| [[adrs/adr-003-asin-not-arcsin]]                  | ADR-003: asin/acos/atan for Tier 1; arcsin/arccos/arctan added as aliases in v0.2   | adr, eval, trig                                     |
 | [[adrs/adr-004-lVert-deferred]]                   | ADR-004: Defer \\lVert…\\rVert norm support to Tier 2                                | adr, lexer, deferred                                |
 | [[adrs/adr-005-no-group-node]]                    | ADR-005: Brackets are transparent — no GroupNode in the AST                          | adr, parser, ast                                    |
 | [[adrs/adr-006-implicit-multiply-at-product]]     | ADR-006: Implicit multiplication resolved at the product rule                        | adr, parser, implicit-multiply                      |

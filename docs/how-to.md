@@ -89,26 +89,33 @@ goexeclatex -v pi=3 -e '\pi * r^2' -v r=1
 
 ## Supported syntax
 
-| Construct                     | Example                        |
-| ----------------------------- | ------------------------------ |
-| Arithmetic operators          | `1+2`, `10-3`, `3*4`, `10/4`   |
-| Exponentiation (right-assoc)  | `2^3`, `2^{10}`, `2^{3^2}`     |
-| Grouping                      | `(1+2)*3`, `[a+b]`, `{c+d}`    |
-| Fractions                     | `\frac{1}{2}`, `\frac{22}{7}`  |
-| Square root                   | `\sqrt{4}`, `\sqrt{x^2+y^2}`   |
-| Absolute value                | `\|-3\|`, `\lvert -5 \rvert`   |
-| Factorial                     | `5!`, `0!`                     |
-| Implicit multiply             | `2\pi`, `3\sqrt{4}`            |
-| Trig functions                | `\sin`, `\cos`, `\tan`, `\sec`, `\csc`, `\cot` |
-| Inverse trig                  | `\asin`, `\acos`, `\atan`, `\asec`, `\acsc`, `\acot` |
-| Built-in constants            | `\pi`, `e`, `\tau`, `\phi`     |
+| Construct                     | Example                                              |
+| ----------------------------- | ---------------------------------------------------- |
+| Arithmetic operators          | `1+2`, `10-3`, `3*4`, `10/4`                         |
+| Exponentiation (right-assoc)  | `2^3`, `2^{10}`, `2^{3^2}`                           |
+| Grouping                      | `(1+2)*3`, `[a+b]`, `{c+d}`                          |
+| Fractions                     | `\frac{1}{2}`, `\dfrac{1}{2}`, `\tfrac{1}{2}`        |
+| Square root                   | `\sqrt{4}`, `\sqrt{x^2+y^2}`                         |
+| Absolute value                | `\|-3\|`, `\lvert -5 \rvert`                         |
+| Factorial                     | `5!`, `0!`                                           |
+| Implicit multiply             | `2\pi`, `3\sqrt{4}`                                  |
+| Trig functions                | `\sin`, `\cos`, `\tan`, `\sec`, `\csc`, `\cot`       |
+| Inverse trig                  | `\arcsin`, `\arccos`, `\arctan` (also `\asin` etc.)  |
+| Hyperbolic trig               | `\sinh`, `\cosh`, `\tanh`, `\coth`, `\sech`, `\csch` |
+| Log / exp                     | `\ln`, `\log` (base 10), `\exp`                      |
+| Binomial coefficient          | `\binom{n}{k}`, `\dbinom{n}{k}`, `\tbinom{n}{k}`    |
+| Built-in constants            | `\pi`, `e`, `\tau`, `\phi`, `\infty`                 |
 
 Arguments to functions use `{}` braces:
 
 ```sh
-goexeclatex -e '\sin{\pi/6}'      # 0.5 (approximately)
-goexeclatex -e '\acos{0}'         # 1.5707963267948966  (π/2)
+goexeclatex -e '\sin{\pi/6}'        # 0.5 (approximately)
+goexeclatex -e '\arccos{0}'         # 1.5707963267948966  (π/2)
+goexeclatex -e '\ln{\e}'            # 1
+goexeclatex -e '\binom{5}{2}'       # 10
 ```
+
+See [[examples]] for more complete invocation patterns.
 
 ## Error handling
 

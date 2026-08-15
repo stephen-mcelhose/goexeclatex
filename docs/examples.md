@@ -14,8 +14,29 @@ timestamp: 2026-08-14T23:00:00Z
 echo '2^{10}'                          | goexeclatex   # 1024
 echo '\frac{22}{7}'                    | goexeclatex   # 3.142857...
 goexeclatex -e '\sqrt{2}'                              # 1.414213...
-goexeclatex -e '\sqrt[3]{27}'                          # 3  (v0.2)
 goexeclatex -e '\frac{1}{2} + \sqrt{9}'               # 3.5
+```
+
+> `\sqrt[3]{27}` (nth root) is deferred to a future milestone — see [[roadmap]].
+
+## Trigonometry
+
+```sh
+goexeclatex -e '\sin{\pi/6}'                           # 0.5
+goexeclatex -e '\cos{0}'                               # 1
+goexeclatex -e '\tan{\pi/4}'                           # 1
+goexeclatex -e '\arctan{1} * 4'                        # 3.141592...
+```
+
+> `\\sqrt[3]{27}` (nth root) is deferred to a future milestone — see [[roadmap]].
+
+## Trigonometry
+
+```sh
+goexeclatex -e '\\sin{\\pi/6}'                          # 0.5
+goexeclatex -e '\\cos{0}'                              # 1
+goexeclatex -e '\\tan{\\pi/4}'                          # 1
+goexeclatex -e '\\arctan{1} * 4'                       # 3.141592...
 ```
 
 ## Trigonometry

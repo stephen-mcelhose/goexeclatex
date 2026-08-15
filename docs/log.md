@@ -17,3 +17,15 @@ Advisory (not fixed — human judgment needed):
 - No wikilinks from plan.md body into specs, and specs don't wikilink back. Cross-link graph is sparse in this direction.
 
 ## [2026-08-15] ingest | runbooks/ingest-reference-implementation — how to ingest a reference impl
+## [2026-08-15] lint | 29 pages checked, 9 issues found, 7 fixed
+
+Pages checked: 29 (all docs/**/*.md). Issues found:
+- Stale (fixed): adrs/adr-003 — amended to reflect v0.2 arcsin/arccos/arctan aliases; status → amended.
+- Stale (fixed): goexeclatex-gap-analysis.md — Tier 2 table updated with ✅/⏳ status column; v0.2 items marked done.
+- Stale (fixed): how-to.md — Supported syntax table expanded with v0.2 functions (hyperbolic, ln/log/exp, binom, dfrac, arcsin); stale \acos example replaced with \arccos.
+- Stale (fixed): examples.md — paren-syntax shell examples corrected to brace syntax (\sin{\pi/6} etc.); \sqrt[3]{27} (v0.2) note corrected to "deferred to future milestone".
+- Index gap (fixed): index.md ADR-003 summary updated to reflect amended status.
+- Orphan (fixed): examples.md — added [[examples]] wikilink from how-to.md.
+Advisory (not fixed — human judgment needed):
+- Orphan: ADRs 001–003, 005–008 referenced only from index.md. Adding inbound links from specs would improve graph density but requires editing spec bodies non-trivially.
+- Orphan: runbooks/ingest-reference-implementation.md — standalone runbook, acceptable.

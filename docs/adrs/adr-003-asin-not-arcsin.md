@@ -1,19 +1,19 @@
 ---
 id: adr-003
 type: decision
-title: "ADR-003: Use asin/acos/atan abbreviations (evaluatex convention) over arcsin/arccos/arctan (standard LaTeX)"
-description: Adopts evaluatex's abbreviated asin/acos/atan/asec/acsc/acot names over standard LaTeX arcsin etc., for consistency with the reference implementation.
-status: accepted
+title: "ADR-003: asin/acos/atan abbreviations for Tier 1; arcsin/arccos/arctan added as aliases in v0.2"
+description: Tier 1 followed evaluatex's abbreviated asin/acos/atan convention. v0.2 added arcsin/arccos/arctan as canonical LaTeX aliases — both forms now work.
+status: amended
 date: 2026-08-15
 timestamp: 2026-08-15T00:00:00Z
 tags: [adr, eval, trig, evaluatex]
 ---
 
-# ADR-003: Use `asin`/`acos`/`atan` abbreviations over `arcsin`/`arccos`/`arctan`
+# ADR-003: `asin`/`acos`/`atan` for Tier 1; `arcsin`/`arccos`/`arctan` aliases added in v0.2
 
 ## Status
 
-Accepted
+Amended (v0.2 — see Amendment below)
 
 ## Context
 
@@ -35,8 +35,16 @@ This divergence is explicitly documented in `docs/specs/parser.md §6.1`.
 
 ## Consequences
 
-- Users who write standard LaTeX `\arcsin` will get a clear evaluator error
-  rather than a wrong result.
-- Tier 2 will add `arcsin`/`arccos`/`arctan` as aliases (see plan.md §v0.2).
+- Users who write standard LaTeX `\\arcsin` will get a clear evaluator error
+  rather than a wrong result (Tier 1 only — see Amendment).
 - No special handling needed at the parser level — unknown commands produce
   `SymbolNode` which the evaluator resolves against the scope.
+
+## Amendment — v0.2 (2026-08-15)
+
+`\\arcsin`, `\\arccos`, `\\arctan` were added as arity-1 aliases in v0.2 alongside
+the existing `\\asin`/`\\acos`/`\\atan` abbreviations. Both spellings are now valid.
+`\\asec`, `\\acsc`, `\\acot` remain evaluatex-convention only (no `arc` prefix) since
+those are non-standard in LaTeX anyway.
+
+See [[specs/eval]] §6.3 for the normative function table.
