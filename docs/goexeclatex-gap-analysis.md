@@ -57,12 +57,13 @@ Well-understood semantics; no new grammar machinery needed beyond Tier 1.
 | `\coth/\sech/\csch`        | Hyperbolic recip               | XS       | ✅ v0.2 | `1/tanh(x)` etc.                          |
 | `\infty`                   | Infinity constant              | XS       | ✅ v0.2 | `math.Inf(1)` seeded in NewScope          |
 | `\binom{n}{k}`             | Binomial coefficient           | S        | ✅ v0.2 | `n! / (k! * (n-k)!)`                      |
-| `\min(a,b)`, `\max(a,b)`   | Min / max                      | XS       | ⏳ #8  | Requires paren-arg parser support         |
-| `\lfloor x \rfloor`        | Floor                          | S        | ⏳ #8  | Requires paired delimiter tokens          |
-| `\lceil x \rceil`          | Ceiling                        | S        | ⏳ #8  | Requires paired delimiter tokens          |
-| `\sqrt[n]{x}`              | n-th root                      | S        | ⏳ #8  | Optional `[n]` arg before `{x}`           |
-| `\gcd(a,b)`                | GCD                            | S        | ⏳ #8  | Requires paren-arg parser support         |
-| `\mod`, `\pmod`, `\bmod`   | Modulo                         | S        | ⏳ #8  | Infix binary operator                     |
+| `\min(a,b)`, `\max(a,b)`   | Min / max                      | XS       | ✅ v0.4 | Variadic n≥2 paren args (#8)              |
+| `\lfloor x \rfloor`        | Floor                          | S        | ✅ v0.4 | FLOOR tokens + depth (#8)                 |
+| `\lceil x \rceil`          | Ceiling                        | S        | ✅ v0.4 | CEIL tokens + depth (#8)                  |
+| `\sqrt[n]{x}`              | n-th root                      | S        | ✅ v0.4 | Optional `[n]` (#8)                       |
+| `\gcd(a,b)`                | GCD                            | S        | ✅ v0.4 | Variadic n≥2 (#8)                         |
+| `\bmod`                    | Binary modulo                  | S        | ✅ v0.4 | BMOD token (#8)                           |
+| `\mod`, `\pmod`, `\pod`    | Congruence annotations         | S        | ⏳ deferred | Not binary remainder; see ADR/spec §7.4 |
 | Greek letter variables      | `\alpha`, `\beta`, `\mu`…      | S        | ✅ v0.2 | Work via `-v alpha=1.5` with no changes   |
 
 ---
@@ -75,7 +76,7 @@ Requires extending the parser with new production rules (subscripts, large opera
 
 | Feature                     | LaTeX                        | Effort | Status   | Notes                                           |
 | --------------------------- | ---------------------------- | ------ | -------- | ----------------------------------------------- |
-| `\\log_{b}(x)`               | Log base b (subscript)       | M      | ⏳ #8    | Subscript `_` token + special case in `\\log`    |
+| `\\log_{b}(x)`               | Log base b (subscript)       | M      | ✅ v0.4  | `#8` / parser-extensions §6                |
 | `x_{i}` subscript variables | Indexed variables            | M      | ✅ v0.3  | `_` token + symbol table with index             |
 | `\\sum_{i=a}^{b} f(i)`       | Discrete summation           | L      | ✅ v0.3  | Big-op token, bounds parsing, iteration engine  |
 | `\\prod_{i=a}^{b} f(i)`      | Discrete product             | L      | ✅ v0.3  | Same engine as `\\sum`                           |
