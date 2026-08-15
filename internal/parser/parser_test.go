@@ -50,6 +50,34 @@ func TestInvalidTokenStream(t *testing.T) {
 	}
 }
 
+func TestOnlyEOF(t *testing.T) {
+	// A stream containing only EOF has no expression — must error.
+	_, err := parser.Parse([]lexer.Token{{Type: lexer.EOF}})
+	if err == nil {
+		t.Error("Parse([EOF]) expected error, got nil")
+	}
+}
+
+// ── §3.2 Post-lex invariants ──────────────────────────────────────────────────
+
+func TestLeftRightDecoratorStripped(t *testing.T) {
+	// \left and \right are dropped by the lexer; the brackets remain as LPAREN/RPAREN.
+	// The parser must treat \left( x \right) identically to ( x ).
+	node := parse(t, `\left( 1+2 \right)`)
+	if _, ok := node.(*parser.BinaryNode); !ok {
+		t.Errorf(`Parse(\left( 1+2 \right)) = %T, want *BinaryNode (transparent)`, node)
+	}
+}
+
+func TestCdotIsTimes(t *testing.T) {
+	// \cdot is remapped to TIMES by the lexer (spec §3.2).
+	node := parse(t, `3\cdot4`)
+	n, ok := node.(*parser.BinaryNode)
+	if !ok || n.Op != "*" {
+		t.Errorf(`Parse(3\cdot4) = %T op=%q, want BinaryNode(*)`, node, "")
+	}
+}
+
 // ── §7.1 NumberNode ───────────────────────────────────────────────────────────
 
 func TestNumber(t *testing.T) {
@@ -149,6 +177,19 @@ func TestBinaryMulDiv(t *testing.T) {
 
 // ── §4.1 Associativity ────────────────────────────────────────────────────────
 
+// Left-associativity of division: 6/2/3 → (6/2)/3
+func TestLeftAssociativityDivision(t *testing.T) {
+	node := parse(t, "6/2/3")
+	outer, ok := node.(*parser.BinaryNode)
+	if !ok || outer.Op != "/" {
+		t.Fatalf("Parse(\"6/2/3\") = %T, want BinaryNode(/)", node)
+	}
+	inner, ok := outer.Left.(*parser.BinaryNode)
+	if !ok || inner.Op != "/" {
+		t.Errorf("Parse(\"6/2/3\").Left = %T, want BinaryNode(/) — left-associativity", outer.Left)
+	}
+}
+
 // Left-associativity: 1-2-3 → (1-2)-3
 func TestLeftAssociativity(t *testing.T) {
 	node := parse(t, "1-2-3")
@@ -214,6 +255,31 @@ func TestUnaryNegation(t *testing.T) {
 	}
 }
 
+func TestUnaryNegationOfGroup(t *testing.T) {
+	// -(1+2) — negation wraps a grouped sub-expression
+	node := parse(t, "-(1+2)")
+	n, ok := node.(*parser.UnaryNode)
+	if !ok || n.Op != "-" {
+		t.Errorf("Parse(\"-(1+2)\") = %T, want UnaryNode(-)", node)
+	}
+	if _, ok := n.Operand.(*parser.BinaryNode); !ok {
+		t.Errorf("Parse(\"-(1+2)\").Operand = %T, want BinaryNode", n.Operand)
+	}
+}
+
+// -3^2 → -(3^2): unary minus has lower precedence than power (spec grammar order:
+// unary → postfix; power → unary [POWER power])
+func TestUnaryNegationPowerPrecedence(t *testing.T) {
+	node := parse(t, "-3^2")
+	outer, ok := node.(*parser.UnaryNode)
+	if !ok || outer.Op != "-" {
+		t.Fatalf("Parse(\"-3^2\") = %T, want UnaryNode(-)", node)
+	}
+	if _, ok := outer.Operand.(*parser.BinaryNode); !ok {
+		t.Errorf("Parse(\"-3^2\").Operand = %T, want BinaryNode(^)", outer.Operand)
+	}
+}
+
 func TestUnaryFactorial(t *testing.T) {
 	node := parse(t, "5!")
 	n, ok := node.(*parser.UnaryNode)
@@ -222,6 +288,18 @@ func TestUnaryFactorial(t *testing.T) {
 	}
 	if _, ok := n.Operand.(*parser.NumberNode); !ok {
 		t.Errorf("Parse(\"5!\").Operand = %T, want NumberNode", n.Operand)
+	}
+}
+
+func TestFactorialOfGroup(t *testing.T) {
+	// (5+1)! — factorial of a grouped sub-expression
+	node := parse(t, "(5+1)!")
+	n, ok := node.(*parser.UnaryNode)
+	if !ok || n.Op != "!" {
+		t.Errorf("Parse(\"(5+1)!\") = %T, want UnaryNode(!)", node)
+	}
+	if _, ok := n.Operand.(*parser.BinaryNode); !ok {
+		t.Errorf("Parse(\"(5+1)!\").Operand = %T, want BinaryNode", n.Operand)
 	}
 }
 
@@ -253,6 +331,15 @@ func TestMismatchedBracketError(t *testing.T) {
 	mustFail(t, "(1+2]")
 	mustFail(t, "[1+2)")
 	mustFail(t, "{1+2)")
+	mustFail(t, "{1+2]")
+	mustFail(t, "(1+2}")
+}
+
+func TestUnclosedBracketError(t *testing.T) {
+	// An opened bracket with no closer must produce an error.
+	mustFail(t, "(1+2")
+	mustFail(t, "[1+2")
+	// Note: "{1+2" is caught at lex time (unclosed brace — spec §3.1), not parser time.
 }
 
 // ── §4.2 Absolute value ───────────────────────────────────────────────────────
@@ -276,6 +363,24 @@ func TestAbsoluteValueLvert(t *testing.T) {
 	}
 }
 
+func TestUnclosedAbsValueError(t *testing.T) {
+	// A PIPE with no closing PIPE must produce an error.
+	mustFail(t, "|3+4")
+}
+
+func TestImplicitMultiplyWithAbs(t *testing.T) {
+	// 2|x| → 2 * abs(x): PIPE triggers implicit multiply at absDepth == 0 (ADR-007)
+	node := parse(t, "2|x|")
+	outer, ok := node.(*parser.BinaryNode)
+	if !ok || outer.Op != "*" {
+		t.Fatalf("Parse(\"2|x|\") = %T, want BinaryNode(*)", node)
+	}
+	fn, ok := outer.Right.(*parser.FunctionNode)
+	if !ok || fn.Name != "abs" {
+		t.Errorf("Parse(\"2|x|\").Right = %T, want FunctionNode(abs)", outer.Right)
+	}
+}
+
 // ── §5 Implicit multiplication ────────────────────────────────────────────────
 
 func TestImplicitMultiplyNumberSymbol(t *testing.T) {
@@ -291,6 +396,19 @@ func TestImplicitMultiplyNumberParen(t *testing.T) {
 	n, ok := node.(*parser.BinaryNode)
 	if !ok || n.Op != "*" {
 		t.Errorf("Parse(\"2(3+4)\") = %T, want BinaryNode(*)", node)
+	}
+}
+
+func TestImplicitMultiplyWithCommand(t *testing.T) {
+	// 2\sin x → 2 * sin(x) — spec §5 example table
+	node := parse(t, `2\sin x`)
+	outer, ok := node.(*parser.BinaryNode)
+	if !ok || outer.Op != "*" {
+		t.Fatalf(`Parse(2\sin x) = %T, want BinaryNode(*)`, node)
+	}
+	fn, ok := outer.Right.(*parser.FunctionNode)
+	if !ok || fn.Name != "sin" {
+		t.Errorf(`Parse(2\sin x).Right = %T, want FunctionNode(sin)`, outer.Right)
 	}
 }
 
@@ -331,6 +449,16 @@ func TestCommandArity0Symbol(t *testing.T) {
 		if !ok || n.Name != c.want {
 			t.Errorf("Parse(%q) = %T(%v), want SymbolNode(%s)", c.input, node, node, c.want)
 		}
+	}
+}
+
+func TestUnknownCommandIsSymbol(t *testing.T) {
+	// An unknown command (not in the arity table) → arity 0 → SymbolNode.
+	// \arcsin is the documented divergence case (spec §6.1, ADR-003).
+	node := parse(t, `\arcsin`)
+	n, ok := node.(*parser.SymbolNode)
+	if !ok || n.Name != "arcsin" {
+		t.Errorf(`Parse(\arcsin) = %T, want SymbolNode("arcsin")`, node)
 	}
 }
 
@@ -389,7 +517,25 @@ func TestCommandAllTrig(t *testing.T) {
 	}
 }
 
-// ── §8 Error conditions ───────────────────────────────────────────────────────
+// ── §6.2 Missing command argument errors ─────────────────────────────────────
+
+func TestMissingArgSqrt(t *testing.T) {
+	// \sqrt with no argument — should error, not silently return
+	err := mustFail(t, `\sqrt`)
+	if err == nil {
+		t.Error(`Parse(\sqrt) expected error, got nil`)
+	}
+}
+
+func TestMissingSecondArgFrac(t *testing.T) {
+	// \frac{1} with no second argument — should error
+	err := mustFail(t, `\frac{1}`)
+	if err == nil {
+		t.Error(`Parse(\frac{1}) expected error, got nil`)
+	}
+}
+
+// ── §8 Error conditions + message prefix ─────────────────────────────────────
 
 func TestUnexpectedEOF(t *testing.T) {
 	// "1+" — trailing operator with no right operand
@@ -400,6 +546,26 @@ func TestUnexpectedToken(t *testing.T) {
 	// "+" at start — nothing to be a left operand for a binary op, and
 	// unary minus is allowed but unary plus is not
 	mustFail(t, "+1")
+}
+
+func TestErrorMessagePrefix(t *testing.T) {
+	// All parser errors must begin with "parser: " (spec §8).
+	cases := []string{"1+", "+1", "(1+2]", `\sqrt`}
+	for _, c := range cases {
+		tokens, lexErr := lexer.Lex(c)
+		if lexErr != nil {
+			continue // lex error — skip, not testing parser here
+		}
+		_, err := parser.Parse(tokens)
+		if err == nil {
+			t.Errorf("Parse(%q) expected error, got nil", c)
+			continue
+		}
+		msg := err.Error()
+		if len(msg) < 8 || msg[:8] != "parser: " {
+			t.Errorf("Parse(%q) error = %q, want prefix \"parser: \"", c, msg)
+		}
+	}
 }
 
 // ── Integration: compound expressions ────────────────────────────────────────

@@ -118,12 +118,13 @@ A token can begin a `power` if it is one of:
 
 **Examples:**
 
-| Input        | Parsed as        |
-| ------------ | ---------------- |
-| `2x`         | `2 * x`          |
-| `2(3+4)`     | `2 * (3+4)`      |
-| `xy`         | `x * y`          |
-| `2\sin x`    | `2 * sin(x)`     |
+| Input        | Parsed as        | Note                                       |
+| ------------ | ---------------- | ------------------------------------------ |
+| `2x`         | `2 * x`          |                                            |
+| `2(3+4)`     | `2 * (3+4)`      |                                            |
+| `x y`        | `x * y`          | `xy` (no space) is one identifier (ADR-003 evaluatex convention) |
+| `2\sin x`    | `2 * sin(x)`     |                                            |
+| `2\|x\|`     | `2 * abs(x)`     | PIPE only starts implicit-multiply when absDepth == 0 (ADR-007) |
 
 ## 6. Command Arity Dispatch
 

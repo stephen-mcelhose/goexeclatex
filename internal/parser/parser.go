@@ -73,14 +73,19 @@ func (p *parser) expect(typ lexer.TokenType, value string) (lexer.Token, error) 
 	return p.consume(), nil
 }
 
-// closerFor returns the expected closing bracket value for a given opener.
+// closerFor returns the expected closing bracket character for a given opener
+// token value. The lexer may emit full forms like `\left(` or bare `(`;
+// we key on the last character only (always the actual bracket).
 func closerFor(opener string) string {
-	switch opener {
-	case "(":
+	if len(opener) == 0 {
+		return ""
+	}
+	switch opener[len(opener)-1] {
+	case '(':
 		return ")"
-	case "[":
+	case '[':
 		return "]"
-	case "{":
+	case '{':
 		return "}"
 	}
 	return ""
@@ -293,7 +298,8 @@ func (p *parser) parseGroup() (Node, error) {
 		}
 		return nil, fmt.Errorf("parser: expected %q at position %d, got %q", closer, tok.Pos, tok.Value)
 	}
-	if tok.Value != closer {
+	// The RPAREN value may be a full form like `\right)` — compare on last char only.
+	if len(tok.Value) == 0 || string(tok.Value[len(tok.Value)-1]) != closer {
 		return nil, fmt.Errorf("parser: expected %q at position %d, got %q", closer, tok.Pos, tok.Value)
 	}
 	p.consume() // consume RPAREN
