@@ -454,11 +454,19 @@ func TestCommandArity0Symbol(t *testing.T) {
 
 func TestUnknownCommandIsSymbol(t *testing.T) {
 	// An unknown command (not in the arity table) → arity 0 → SymbolNode.
-	// \arcsin is the documented divergence case (spec §6.1, ADR-003).
-	node := parse(t, `\arcsin`)
+	node := parse(t, `\unknowncmd`)
 	n, ok := node.(*parser.SymbolNode)
-	if !ok || n.Name != "arcsin" {
-		t.Errorf(`Parse(\arcsin) = %T, want SymbolNode("arcsin")`, node)
+	if !ok || n.Name != "unknowncmd" {
+		t.Errorf(`Parse(\unknowncmd) = %T, want SymbolNode("unknowncmd")`, node)
+	}
+}
+
+func TestArcsinIsFunction(t *testing.T) {
+	// \arcsin is a known arity-1 command → FunctionNode (spec §6.3).
+	node := parse(t, `\arcsin{1}`)
+	n, ok := node.(*parser.FunctionNode)
+	if !ok || n.Name != "arcsin" || len(n.Args) != 1 {
+		t.Errorf(`Parse(\arcsin{1}) = %T, want FunctionNode("arcsin", 1 arg)`, node)
 	}
 }
 

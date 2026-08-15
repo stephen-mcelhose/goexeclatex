@@ -11,23 +11,23 @@ import (
 // to the number of char-mode arguments they consume.
 // See spec §6.4.
 var commandArities = map[string]int{
-	"frac":  2,
-	"dfrac": 2,
-	"tfrac": 2,
-	"cfrac": 2,
-	"sqrt":  1,
-	"sin":   1,
-	"cos":   1,
-	"tan":   1,
-	"asin":  1,
-	"acos":  1,
-	"atan":  1,
-	"sec":   1,
-	"csc":   1,
-	"cot":   1,
-	"asec":  1,
-	"acsc":  1,
-	"acot":  1,
+	// Arithmetic
+	"frac": 2, "dfrac": 2, "tfrac": 2, "cfrac": 2,
+	"sqrt": 1,
+	// Trigonometric
+	"sin": 1, "cos": 1, "tan": 1,
+	"sec": 1, "csc": 1, "cot": 1,
+	// Inverse trigonometric (evaluatex abbreviations — ADR-003; canonical arcX also supported)
+	"asin": 1, "acos": 1, "atan": 1,
+	"asec": 1, "acsc": 1, "acot": 1,
+	"arcsin": 1, "arccos": 1, "arctan": 1,
+	// Logarithmic and exponential
+	"ln": 1, "log": 1, "exp": 1,
+	// Hyperbolic
+	"sinh": 1, "cosh": 1, "tanh": 1,
+	"coth": 1, "sech": 1, "csch": 1,
+	// Combinatorics
+	"binom": 2, "dbinom": 2, "tbinom": 2,
 }
 
 type scanPattern struct {

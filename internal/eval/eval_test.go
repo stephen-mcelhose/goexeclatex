@@ -463,3 +463,235 @@ func TestImplicitMultiplyEval(t *testing.T) {
 		t.Errorf("Eval(\"2x\", x=3) = %v, want 6", got)
 	}
 }
+
+// ── §5 infty constant (spec §5) ───────────────────────────────────────────────
+
+func TestInftyConstant(t *testing.T) {
+	got := evaluate(t, `\infty`)
+	if !math.IsInf(got, 1) {
+		t.Errorf(`Eval(\infty) = %v, want +Inf`, got)
+	}
+}
+
+func TestInftyArithmetic(t *testing.T) {
+	// IEEE 754 arithmetic on +Inf — no error (ADR-010).
+	cases := []struct {
+		input string
+		check func(float64) bool
+	}{
+		{`\infty + 1`, func(v float64) bool { return math.IsInf(v, 1) }},
+		{`1 / \infty`, func(v float64) bool { return v == 0 }},
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !c.check(got) {
+			t.Errorf("Eval(%q) = %v, unexpected result", c.input, got)
+		}
+	}
+}
+
+// ── §6.1 Frac aliases (spec §6.1) ────────────────────────────────────────────
+
+func TestFracAliases(t *testing.T) {
+	cases := []struct {
+		input string
+		want  float64
+	}{
+		// Basic: display-mode aliases must equal \frac numerically.
+		{`\dfrac{1}{2}`, 0.5},
+		{`\tfrac{3}{4}`, 0.75},
+		{`\cfrac{1}{3}`, 1.0 / 3.0},
+		// Compound: adding two dfrac terms — exercises implicit multiply + nested arities.
+		{`\dfrac{1}{2} + \dfrac{1}{3}`, 5.0 / 6.0},
+		// Same value, three different aliases.
+		{`\dfrac{22}{7} - \tfrac{22}{7}`, 0},
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !approx(got, c.want) {
+			t.Errorf("Eval(%q) = %.15f, want %.15f", c.input, got, c.want)
+		}
+	}
+}
+
+// ── §6.3 arcsin / arccos / arctan (spec §6.3) ─────────────────────────────────
+
+func TestArcTrig(t *testing.T) {
+	cases := []struct {
+		input string
+		want  float64
+	}{
+		// Boundary values.
+		{`\arcsin{0}`, 0},
+		{`\arcsin{1}`, math.Pi / 2},
+		{`\arcsin{-1}`, -math.Pi / 2},
+		{`\arccos{1}`, 0},
+		{`\arccos{0}`, math.Pi / 2},
+		{`\arccos{-1}`, math.Pi}, // the π edge case
+		{`\arctan{0}`, 0},
+		{`\arctan{1}`, math.Pi / 4},
+		{`\arctan{-1}`, -math.Pi / 4},
+		// Composition identities: arcX(X(θ)) = θ for θ in principal range.
+		// These catch sign errors and wrong-function bugs that boundary tests miss.
+		{`\arcsin{\sin{\pi/6}}`, math.Pi / 6},  // sin(π/6)=0.5, arcsin(0.5)=π/6
+		{`\arccos{\cos{\pi/3}}`, math.Pi / 3},  // cos(π/3)=0.5, arccos(0.5)=π/3
+		{`\arctan{\tan{\pi/4}}`, math.Pi / 4},  // tan(π/4)=1,   arctan(1)=π/4
+		// arcX and aX aliases must produce identical results.
+		{`\arcsin{1} - \asin{1}`, 0},
+		{`\arccos{0} - \acos{0}`, 0},
+		{`\arctan{1} - \atan{1}`, 0},
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !approx(got, c.want) {
+			t.Errorf("Eval(%q) = %.15f, want %.15f", c.input, got, c.want)
+		}
+	}
+}
+
+func TestArcTrigDomainErrors(t *testing.T) {
+	mustError(t, `\arcsin{2}`, "eval: domain error:")
+	mustError(t, `\arccos{-2}`, "eval: domain error:")
+	// Boundary: exactly ±1 must NOT error (the limit of the domain).
+	_ = evaluate(t, `\arcsin{1}`)
+	_ = evaluate(t, `\arccos{-1}`)
+}
+
+// ── §6.4 ln / log / exp (spec §6.4) ──────────────────────────────────────────
+
+func TestLogExp(t *testing.T) {
+	cases := []struct {
+		input string
+		want  float64
+	}{
+		// ln basics.
+		{`\ln{1}`, 0},
+		{`\ln{\e}`, 1},
+		// exp basics.
+		{`\exp{0}`, 1},
+		{`\exp{1}`, math.E},
+		// log (base-10) basics.
+		{`\log{1}`, 0},
+		{`\log{10}`, 1},
+		{`\log{100}`, 2},
+		{`\log{1000}`, 3},
+		// ln vs log are distinct: ln(10) ≠ 1, log(10) = 1.
+		{`\log{10} - \ln{10}`, 1 - math.Log(10)},
+		// Composition identities: ln(exp(x)) = x and exp(ln(x)) = x.
+		{`\ln{\exp{2}}`, 2},
+		{`\ln{\exp{-3}}`, -3},
+		// Nested: ln(e²) = 2 — exercises ^ inside a brace arg.
+		{`\ln{\e^2}`, 2},
+		// log laws: log(a)+log(b) = log(a*b).
+		{`\log{4} + \log{25}`, 2}, // log(4)+log(25) = log(100) = 2
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !approx(got, c.want) {
+			t.Errorf("Eval(%q) = %.15f, want %.15f", c.input, got, c.want)
+		}
+	}
+}
+
+func TestLogDomainErrors(t *testing.T) {
+	mustError(t, `\ln{0}`, "eval: domain error:")
+	mustError(t, `\ln{-1}`, "eval: domain error:")
+	mustError(t, `\log{0}`, "eval: domain error:")
+	mustError(t, `\log{-5}`, "eval: domain error:")
+}
+
+// ── §6.5 Hyperbolic (spec §6.5) ───────────────────────────────────────────────
+
+func TestHyperbolic(t *testing.T) {
+	cases := []struct {
+		input string
+		want  float64
+	}{
+		// At x=0: sinh(0)=0, cosh(0)=1, tanh(0)=0, sech(0)=1.
+		{`\sinh{0}`, 0},
+		{`\cosh{0}`, 1},
+		{`\tanh{0}`, 0},
+		{`\sech{0}`, 1},
+		// cosh(ln 2) = (2 + 1/2)/2 = 5/4 — exact rational, avoids tautology.
+		{`\cosh{\ln{2}}`, 1.25},
+		// sinh(ln 2) = (2 - 1/2)/2 = 3/4.
+		{`\sinh{\ln{2}}`, 0.75},
+		// tanh(ln 3) = (3 - 1/3)/(3 + 1/3) = (8/3)/(10/3) = 4/5.
+		{`\tanh{\ln{3}}`, 0.8},
+		// coth(1) = 1/tanh(1) — roundtrip: coth * tanh = 1.
+		{`\coth{1} * \tanh{1}`, 1},
+		// sech(1) = 1/cosh(1) — roundtrip.
+		{`\sech{1} * \cosh{1}`, 1},
+		// csch(1) = 1/sinh(1) — roundtrip.
+		{`\csch{1} * \sinh{1}`, 1},
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !approx(got, c.want) {
+			t.Errorf("Eval(%q) = %.15f, want %.15f", c.input, got, c.want)
+		}
+	}
+}
+
+func TestHyperbolicPolesNoError(t *testing.T) {
+	// coth(0) and csch(0) are ±Inf — not an error (ADR-010, spec §6.5).
+	for _, input := range []string{`\coth{0}`, `\csch{0}`} {
+		tokens, err := lexer.Lex(input)
+		if err != nil {
+			t.Fatalf("Lex(%q) error: %v", input, err)
+		}
+		node, err := parser.Parse(tokens)
+		if err != nil {
+			t.Fatalf("Parse(%q) error: %v", input, err)
+		}
+		v, err := eval.Eval(node, eval.NewScope())
+		if err != nil {
+			t.Errorf("Eval(%q) returned error %v, want nil (±Inf is not an error)", input, err)
+		}
+		if !math.IsInf(v, 0) {
+			t.Errorf("Eval(%q) = %v, want ±Inf", input, v)
+		}
+	}
+}
+
+// ── §6.6 Binomial coefficient (spec §6.6) ────────────────────────────────────
+
+func TestBinom(t *testing.T) {
+	cases := []struct {
+		input string
+		want  float64
+	}{
+		// Small known values.
+		{`\binom{5}{2}`, 10},
+		{`\binom{6}{3}`, 20},
+		// Boundary: C(n,0)=1 and C(n,n)=1 for all n.
+		{`\binom{4}{0}`, 1},
+		{`\binom{4}{4}`, 1},
+		{`\binom{10}{0}`, 1},
+		{`\binom{10}{10}`, 1},
+		// Larger value: C(10,5)=252 — catches integer overflow in naive factorial approach.
+		{`\binom{10}{5}`, 252},
+		// Symmetry: C(n,k) = C(n,n-k).
+		{`\binom{10}{3}`, 120},
+		{`\binom{10}{7}`, 120},
+		// Pascal's identity: C(n,k) = C(n-1,k-1) + C(n-1,k).
+		// C(9,2)=36, C(9,3)=84 → sum=120 = C(10,3).
+		{`\binom{9}{2} + \binom{9}{3}`, 120},
+		// Display-mode aliases produce identical results.
+		{`\dbinom{5}{2}`, 10},
+		{`\tbinom{5}{2}`, 10},
+		{`\dbinom{10}{5} - \tbinom{10}{5}`, 0},
+	}
+	for _, c := range cases {
+		got := evaluate(t, c.input)
+		if !approx(got, c.want) {
+			t.Errorf("Eval(%q) = %.15f, want %.15f", c.input, got, c.want)
+		}
+	}
+}
+
+func TestBinomDomainErrors(t *testing.T) {
+	mustError(t, `\binom{5}{6}`, "eval: domain error:")   // k > n
+	mustError(t, `\binom{-1}{2}`, "eval: domain error:")  // negative n
+	mustError(t, `\binom{5}{1.5}`, "eval: domain error:") // non-integer k
+}

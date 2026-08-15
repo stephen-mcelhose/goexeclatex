@@ -10,8 +10,9 @@ import (
 // Returns (result, error).
 func callBuiltin(name string, args []float64) (float64, error) {
 	switch name {
+
 	// §6.1 Arithmetic
-	case "frac":
+	case "frac", "dfrac", "tfrac", "cfrac":
 		if args[1] == 0 {
 			return 0, fmt.Errorf("eval: division by zero")
 		}
@@ -40,20 +41,20 @@ func callBuiltin(name string, args []float64) (float64, error) {
 	case "cot":
 		return 1 / math.Tan(args[0]), nil
 
-	// §6.3 Inverse trigonometric
-	case "asin":
+	// §6.3 Inverse trigonometric (aX abbreviations + canonical arcX)
+	case "asin", "arcsin":
 		if math.Abs(args[0]) > 1 {
-			return 0, fmt.Errorf("eval: domain error: asin argument out of range")
+			return 0, fmt.Errorf("eval: domain error: %s argument out of range", name)
 		}
 		return math.Asin(args[0]), nil
 
-	case "acos":
+	case "acos", "arccos":
 		if math.Abs(args[0]) > 1 {
-			return 0, fmt.Errorf("eval: domain error: acos argument out of range")
+			return 0, fmt.Errorf("eval: domain error: %s argument out of range", name)
 		}
 		return math.Acos(args[0]), nil
 
-	case "atan":
+	case "atan", "arctan":
 		return math.Atan(args[0]), nil
 
 	case "asec":
@@ -71,7 +72,61 @@ func callBuiltin(name string, args []float64) (float64, error) {
 	case "acot":
 		return math.Atan(1 / args[0]), nil
 
+	// §6.4 Logarithmic and exponential
+	case "ln":
+		if args[0] <= 0 {
+			return 0, fmt.Errorf("eval: domain error: ln argument out of range")
+		}
+		return math.Log(args[0]), nil
+
+	case "log":
+		if args[0] <= 0 {
+			return 0, fmt.Errorf("eval: domain error: log argument out of range")
+		}
+		return math.Log10(args[0]), nil
+
+	case "exp":
+		return math.Exp(args[0]), nil
+
+	// §6.5 Hyperbolic
+	case "sinh":
+		return math.Sinh(args[0]), nil
+	case "cosh":
+		return math.Cosh(args[0]), nil
+	case "tanh":
+		return math.Tanh(args[0]), nil
+	case "coth":
+		return 1 / math.Tanh(args[0]), nil
+	case "sech":
+		return 1 / math.Cosh(args[0]), nil
+	case "csch":
+		return 1 / math.Sinh(args[0]), nil
+
+	// §6.6 Combinatorics
+	case "binom", "dbinom", "tbinom":
+		return binomCoeff(args[0], args[1])
+
 	default:
 		return 0, fmt.Errorf("eval: unknown function: %s", name)
 	}
+}
+
+// binomCoeff computes C(n, k) = n! / (k! * (n-k)!) (spec §6.6.1).
+func binomCoeff(n, k float64) (float64, error) {
+	if n < 0 || n != math.Trunc(n) || k < 0 || k != math.Trunc(k) {
+		return 0, fmt.Errorf("eval: domain error: binom requires non-negative integer arguments")
+	}
+	if k > n {
+		return 0, fmt.Errorf("eval: domain error: binom requires k \u2264 n")
+	}
+	// Multiplicative formula: avoids computing large factorials.
+	result := 1.0
+	ki := k
+	if n-k < ki {
+		ki = n - k // use the smaller of k and n-k
+	}
+	for i := 0.0; i < ki; i++ {
+		result = result * (n - i) / (i + 1)
+	}
+	return math.Round(result), nil
 }

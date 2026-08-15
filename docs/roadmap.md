@@ -44,22 +44,20 @@ Do not skip the red-phase confirmation.
 
 ---
 
-## v0.2 — Tier 2: function completeness ([#5](https://github.com/stephen-mcelhose/goexeclatex/issues/5))
+## ~~v0.2 — Tier 2: function completeness ([#5](https://github.com/stephen-mcelhose/goexeclatex/issues/5))~~ ✅ closed
 
-**Depends on:** #1 and #2 closed.
-
-- [ ] `\arcsin` / `\arccos` / `\arctan` (canonical names alongside `\asin` etc.)
-- [ ] `\ln`, `\exp`, `\log` (base 10)
-- [ ] `\dfrac`, `\tfrac`, `\cfrac` (aliases for `\frac`)
-- [ ] `\sinh` / `\cosh` / `\tanh` / `\coth` / `\sech` / `\csch`
-- [ ] `\min(a,b)`, `\max(a,b)` (variadic)
-- [ ] `\infty` → `math.Inf(1)`
-- [ ] `\lfloor x \rfloor`, `\lceil x \rceil`
-- [ ] `\sqrt[n]{x}` — optional arg before brace
-- [ ] `\gcd(a,b)` — Euclidean
-- [ ] `\binom{n}{k}`, `\dbinom`, `\tbinom`
-- [ ] `\mod`, `\pmod`, `\bmod`, `\pod`
-- [ ] Greek letter variables (`\alpha`, `\beta`, … — user-supplied via `-v`)
+- [x] `\arcsin` / `\arccos` / `\arctan` (canonical names alongside `\asin` etc.)
+- [x] `\ln`, `\exp`, `\log` (base 10)
+- [x] `\dfrac`, `\tfrac`, `\cfrac` (aliases for `\frac`)
+- [x] `\sinh` / `\cosh` / `\tanh` / `\coth` / `\sech` / `\csch`
+- [x] `\infty` → `math.Inf(1)`
+- [x] `\binom{n}{k}`, `\dbinom`, `\tbinom`
+- [x] Greek letter variables (`\alpha`, `\beta`, … — user-supplied via `-v`)
+- [ ] `\min(a,b)`, `\max(a,b)` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: variadic paren args)
+- [ ] `\lfloor x \rfloor`, `\lceil x \rceil` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: paired brackets)
+- [ ] `\sqrt[n]{x}` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: optional arg)
+- [ ] `\gcd(a,b)` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: variadic paren args)
+- [ ] `\mod`, `\pmod`, `\bmod`, `\pod` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: binary infix)
 
 ---
 
