@@ -174,9 +174,34 @@ Existing arity-1 commands that accept a single parenthesized expression
 | `max` | Maximum of all arguments |
 | `gcd` | Greatest common divisor of all arguments; each argument **MUST** be a non-negative integer (same integer check spirit as `\binom`); pairwise Euclidean algorithm left-associative |
 
-## 6. `\log_{b}(x)` — *pending Task 5*
+## 6. `\log_{b}(x)` — logarithm with subscript base
 
-Placeholder.
+### 6.1 Lexer
+
+`\log` **MUST** have lexer arity **0** so a following `_` is available to the
+parser (not consumed as a char-mode argument).
+
+### 6.2 Parser
+
+```
+log → COMMAND("log") [ UNDERSCORE sub_arg ] log_value
+log_value → LPAREN('(') sum RPAREN(')')   // when subscript base present: required
+          | command_arg                   // when no base: brace or single-token arg
+```
+
+- With base: AST **MUST** be `FunctionNode{Name: "log", Args: [value, base]}`.
+- Without base: AST **MUST** be `FunctionNode{Name: "log", Args: [value]}`
+  (base-10), preserving `\log{10}` / `\log 10`.
+- When a subscript base is present, the value argument **MUST** be a
+  parenthesized `(…)`. Brace-only `\log_{b}{x}` is **not** the supported form
+  (Non-Scope).
+
+### 6.3 Eval
+
+| Args | Semantics |
+| ---- | --------- |
+| 1 (`x`) | `math.Log10(x)`; domain error if `x ≤ 0` |
+| 2 (`x`, `b`) | `math.Log(x)/math.Log(b)`; domain error if `x ≤ 0`, `b ≤ 0`, or `b == 1` |
 
 ## 7. `\bmod` — *pending Task 6*
 

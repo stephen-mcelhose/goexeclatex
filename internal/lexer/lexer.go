@@ -22,7 +22,8 @@ var commandArities = map[string]int{
 	"asec": 1, "acsc": 1, "acot": 1,
 	"arcsin": 1, "arccos": 1, "arctan": 1,
 	// Logarithmic and exponential
-	"ln": 1, "log": 1, "exp": 1,
+	"ln": 1, "exp": 1,
+	// log arity 0 — parser handles optional _{b} and value (parser-extensions §6.1)
 	// Hyperbolic
 	"sinh": 1, "cosh": 1, "tanh": 1,
 	"coth": 1, "sech": 1, "csch": 1,

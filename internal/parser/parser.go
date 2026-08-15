@@ -21,7 +21,8 @@ var commandArities = map[string]int{
 	"asec": 1, "acsc": 1, "acot": 1,
 	"arcsin": 1, "arccos": 1, "arctan": 1,
 	// Logarithmic and exponential
-	"ln": 1, "log": 1, "exp": 1,
+	"ln": 1, "exp": 1,
+	// log handled by parseLog
 	// Hyperbolic
 	"sinh": 1, "cosh": 1, "tanh": 1,
 	"coth": 1, "sech": 1, "csch": 1,
@@ -339,6 +340,36 @@ func (p *parser) parseAtom() (Node, error) {
 	}
 }
 
+// parseLog handles \log{x} and \log_{b}(x) (parser-extensions §6.2).
+func (p *parser) parseLog(pos int) (Node, error) {
+	var base Node
+	if p.peek().Type == lexer.UNDERSCORE {
+		p.consume()
+		b, err := p.parseSubArg()
+		if err != nil {
+			return nil, err
+		}
+		base = b
+		if p.peek().Type != lexer.LPAREN || p.peek().Value != "(" {
+			return nil, fmt.Errorf("parser: \\log_{b} expects (x) after subscript base")
+		}
+		p.consume() // '('
+		val, err := p.parseSum()
+		if err != nil {
+			return nil, err
+		}
+		if _, err := p.expect(lexer.RPAREN, ")"); err != nil {
+			return nil, fmt.Errorf("parser: \\log_{b} missing closing ')'")
+		}
+		return &FunctionNode{Name: "log", Args: []Node{val, base}, Pos: pos}, nil
+	}
+	val, err := p.parseCommandArg("log")
+	if err != nil {
+		return nil, err
+	}
+	return &FunctionNode{Name: "log", Args: []Node{val}, Pos: pos}, nil
+}
+
 // parseVariadicParen handles \min/\max/\gcd(a,b,…) (parser-extensions §5.2).
 func (p *parser) parseVariadicParen(name string, pos int) (Node, error) {
 	if p.peek().Type != lexer.LPAREN || p.peek().Value != "(" {
@@ -407,6 +438,9 @@ func (p *parser) parseCommand() (Node, error) {
 	// parser-extensions §5: variadic paren-arg commands.
 	if name == "min" || name == "max" || name == "gcd" {
 		return p.parseVariadicParen(name, tok.Pos)
+	}
+	if name == "log" {
+		return p.parseLog(tok.Pos)
 	}
 
 	arity := commandArities[name]

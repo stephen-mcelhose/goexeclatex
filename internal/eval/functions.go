@@ -96,6 +96,16 @@ func callBuiltin(name string, args []float64) (float64, error) {
 		return math.Log(args[0]), nil
 
 	case "log":
+		if len(args) == 2 {
+			x, b := args[0], args[1]
+			if x <= 0 {
+				return 0, fmt.Errorf("eval: domain error: log argument out of range")
+			}
+			if b <= 0 || b == 1 {
+				return 0, fmt.Errorf("eval: domain error: log base out of range")
+			}
+			return math.Log(x) / math.Log(b), nil
+		}
 		if args[0] <= 0 {
 			return 0, fmt.Errorf("eval: domain error: log argument out of range")
 		}
