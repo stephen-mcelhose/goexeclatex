@@ -31,16 +31,19 @@ stdin → Lexer → []Token → Parser → AST → Evaluator → float64 → std
 
 ### Phase 1 — Lexer (`internal/lexer/`) — [[specs/lexer]]
 
-Reads a `string` (entire stdin, trimmed), emits `[]Token`.
+> **Superseded (partial):** The `\_` escape rule and `_`-in-SYMBOL pattern
+> originally described here were removed by [[adrs/adr-013-drop-underscore-from-symbol]].
+> In evaluable LaTeX math, `_` is the subscript operator only; multi-word
+> identifiers are out of scope.
 
-**Escape rule:** `\\_` is a literal underscore within a symbol name, not a subscript trigger. The lexer must resolve `\\_` → `_` before the `_` token rule fires, so that `MY\\_CODE_{0}` lexes as `SYMBOL("MY_CODE")` `SUBSCRIPT` `NUMBER(0)`.
+Reads a `string` (entire stdin, trimmed), emits `[]Token`.
 
 Token types:
 
 | Type      | Pattern / source                              |
 | --------- | --------------------------------------------- |
 | NUMBER    | `\d+(\.\d+)?([eE][+-]?\d+)?`                 |
-| SYMBOL    | `[A-Za-z_][A-Za-z_0-9]*`                     |
+| SYMBOL    | `[A-Za-z][A-Za-z0-9]*`                       |
 | COMMAND   | `\\[A-Za-z]+`                                 |
 | PLUS      | `+`                                           |
 | MINUS     | `-`                                           |

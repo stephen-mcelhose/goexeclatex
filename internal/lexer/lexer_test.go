@@ -55,8 +55,7 @@ func TestSymbols(t *testing.T) {
 		{"x", tok(SYMBOL, "x")},
 		{"abc", tok(SYMBOL, "abc")},
 		{"x1", tok(SYMBOL, "x1")},
-		{"MY_CODE", tok(SYMBOL, "MY_CODE")},
-		{"_foo", tok(SYMBOL, "_foo")},
+		{"MyVar", tok(SYMBOL, "MyVar")},
 	}
 	for _, c := range cases {
 		tokens := lex(t, c.input)
@@ -244,38 +243,6 @@ func TestMisc(t *testing.T) {
 	last := tokens[len(tokens)-1]
 	if last.Type != EOF {
 		t.Errorf("last token = %v, want EOF", last)
-	}
-}
-
-// ---- §4 Pre-Pass: Escaped Underscore ----------------------------------------
-
-// TestEscapedUnderscore covers spec §4: \_ → literal underscore in symbol name.
-func TestEscapedUnderscore(t *testing.T) {
-	// MY\_CODE should lex as a single SYMBOL with value MY_CODE (not split on _).
-	tokens := lex(t, `MY\_CODE`)
-	want := []Token{
-		tok(SYMBOL, "MY_CODE"),
-		tok(EOF, ""),
-	}
-	if !equalTokens(tokens, want) {
-		t.Errorf("Lex(`MY\\_CODE`) = %v, want %v", tokens, want)
-	}
-}
-
-// TestEscapedUnderscoreSubscriptContext covers spec §4 in Tier 0.1.
-//
-// After the pre-pass, MY\_CODE_{0} becomes MY_CODE_{0}.  In Tier 0.1 the SYMBOL
-// pattern [A-Za-z_][A-Za-z_0-9]* greedily consumes MY_CODE_ (including the
-// trailing underscore), so the first token is SYMBOL(MY_CODE_).
-//
-// In Tier 0.3 the SYMBOL pattern will be restricted to [A-Za-z][A-Za-z_0-9]*
-// and a standalone _ will produce UNDERSCORE, splitting the stream into
-// SYMBOL(MY_CODE) UNDERSCORE LPAREN({) NUMBER(0) RPAREN(}).
-func TestEscapedUnderscoreSubscriptContext(t *testing.T) {
-	tokens := lex(t, `MY\_CODE_{0}`)
-	// Tier 0.1: trailing _ is consumed as part of the symbol name.
-	if tokens[0].Type != SYMBOL || tokens[0].Value != "MY_CODE_" {
-		t.Errorf("first token = %v, want SYMBOL(MY_CODE_)", tokens[0])
 	}
 }
 
@@ -581,7 +548,6 @@ func TestErrorEOFInCharMode(t *testing.T) {
 		}
 	}
 }
-
 // Known limitation: multi-byte UTF-8 runes in char-mode (e.g. 2^α) produce an
 // error with an escaped byte in the message (\xce) rather than the full rune (α).
 // LaTeX math expressions are ASCII-dominant so this is not fixed in Tier 1.

@@ -25,4 +25,5 @@
 | [[adrs/adr-010-inf-result-exits-zero]]            | ADR-010: ±Inf results print to stdout and exit 0                                     | adr, cli, inf                                       |
 | [[adrs/adr-011-cli-error-prefix-stripping]]       | ADR-011: CLI strips internal package prefixes from user-facing error messages        | adr, cli, errors                                    |
 | [[adrs/adr-012-plan-roadmap-separation]]          | ADR-012: Separate stable architecture plan from forward-looking roadmap              | adr, docs, project-management                       |
+| [[adrs/adr-013-drop-underscore-from-symbol]]      | ADR-013: Drop underscore from SYMBOL pattern; remove `\_` pre-pass                  | adr, lexer, symbol, underscore                      |
 | [[runbooks/ingest-reference-implementation]]      | How to clone, read, and ingest a reference implementation into the wiki              | runbook, llm-wiki, ingest, reference-implementation |

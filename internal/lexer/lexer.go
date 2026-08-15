@@ -49,9 +49,10 @@ var patterns = []scanPattern{
 	{PIPE, regexp.MustCompile(`^\|`)},
 	{BANG, regexp.MustCompile(`^!`)},
 	{COMMA, regexp.MustCompile(`^,`)},
-	// Priority 11: COMMAND before SYMBOL so \sin isn't SYMBOL(sin) — spec §5.2
+	// Priority 11: COMMAND before SYMBOL so \sin isn’t SYMBOL(sin) — spec §5.2
 	{COMMAND, regexp.MustCompile(`^\\[A-Za-z]+`)},
-	{SYMBOL, regexp.MustCompile(`^[A-Za-z_][A-Za-z_0-9]*`)},
+	// Priority 12: SYMBOL — spec §5.2 and ADR-013 (no underscore in names)
+	{SYMBOL, regexp.MustCompile(`^[A-Za-z][A-Za-z0-9]*`)},
 	// Priority 13: NUMBER — spec §5.2
 	{NUMBER, regexp.MustCompile(`^\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?`)},
 }
@@ -64,12 +65,9 @@ type lexer struct {
 
 // Lex tokenises input and returns a flat []Token terminated by an EOF token.
 //
-// It implements spec §4 (pre-pass), §5 (pattern matching), §6 (char-mode),
+// It implements spec §5 (pattern matching), §6 (char-mode),
 // §7 (post-lex remapping), and §8 (EOF sentinel).
 func Lex(input string) ([]Token, error) {
-	// §4 Pre-pass: \_ → literal underscore.
-	input = strings.ReplaceAll(input, `\_`, "_")
-
 	l := &lexer{input: input}
 	if err := l.lexExpression(false, false); err != nil {
 		return nil, err

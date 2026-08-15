@@ -60,17 +60,16 @@ The `Value` field of a token **MUST** contain the raw matched text, except:
   `"*"` and `"/"` respectively.
 - `PIPE` tokens that arose from a remap **MUST** carry the value `"|"`.
 
-## 4. Pre-Pass: Escaped Underscore
+## 4. Underscore
 
-Before tokenisation begins, the lexer **MUST** replace every occurrence of the
-two-character sequence `\_` (backslash followed by underscore) in the input
-string with a single `_` character.
+`_` is **not** a valid character in a `SYMBOL` token name (see §5.2, priority 12
+and ADR-013).  In evaluable LaTeX math, `_` is exclusively the subscript
+operator (Tier 0.3); multi-word identifiers are out of scope.
 
-This ensures that `\_` within a symbol name (e.g. `MY\_CODE`) is treated as a
-literal underscore and does **not** trigger the `UNDERSCORE` subscript token
-that a bare `_` would produce in Tier 0.3.
+The sequence `\_` **MUST** produce an "unexpected character" error.  There is
+no pre-pass or escape-rewrite mechanism.
 
-> **Source:** `docs/plan.md` §Phase 1 escape rule.
+> **Source:** [[adrs/adr-013-drop-underscore-from-symbol]].
 
 ## 5. Pattern Matching
 
@@ -85,21 +84,21 @@ patterns **MUST NOT** be tried for that position.
 Patterns are anchored to the current position (equivalent to a `^` anchor).
 Whitespace **MUST** be skipped before each pattern attempt.
 
-| Priority | Type         | Anchored pattern                                     |
-| -------- | ------------ | ---------------------------------------------------- |
-| 1        | `LPAREN`     | `(?:\\left[(\[{]\|[(\[{])`                           |
-| 2        | `RPAREN`     | `(?:\\right[)\]}]\|[)\]}])`                          |
-| 3        | `PLUS`       | `\+`                                                 |
-| 4        | `MINUS`      | `-`                                                  |
-| 5        | `TIMES`      | `\*`                                                 |
-| 6        | `DIVIDE`     | `/`                                                  |
-| 7        | `POWER`      | `\^`                                                 |
-| 8        | `PIPE`       | `\|`                                                 |
-| 9        | `BANG`       | `!`                                                  |
-| 10       | `COMMA`      | `,`                                                  |
-| 11       | `COMMAND`    | `\\[A-Za-z]+`                                        |
-| 12       | `SYMBOL`     | `[A-Za-z_][A-Za-z_0-9]*`                            |
-| 13       | `NUMBER`     | `\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?`                   |
+| Priority | Type      | Anchored pattern                              |
+| -------- | --------- | --------------------------------------------- |
+| 1        | `LPAREN`  | `(?:\\left[(\[{]\|[(\[{])`               |
+| 2        | `RPAREN`  | `(?:\\right[)\]}]\|[)\]}])`              |
+| 3        | `PLUS`    | `\+`                                         |
+| 4        | `MINUS`   | `-`                                           |
+| 5        | `TIMES`   | `\*`                                         |
+| 6        | `DIVIDE`  | `/`                                           |
+| 7        | `POWER`   | `\^`                                         |
+| 8        | `PIPE`    | `\|`                                         |
+| 9        | `BANG`    | `!`                                           |
+| 10       | `COMMA`   | `,`                                           |
+| 11       | `COMMAND` | `\\[A-Za-z]+`                               |
+| 12       | `SYMBOL`  | `[A-Za-z][A-Za-z0-9]*`                       |
+| 13       | `NUMBER`  | `\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?`       |
 
 > **Rationale for ordering:**
 > `LPAREN`/`RPAREN` precede `COMMAND` so that `\left(` is consumed as a single
@@ -108,9 +107,17 @@ Whitespace **MUST** be skipped before each pattern attempt.
 
 ### 5.3 Whitespace
 
-The lexer **MUST** skip any sequence of Unicode whitespace characters
-(`U+0009`, `U+000A`, `U+000D`, `U+0020`) before each token read.
-Whitespace **MUST NOT** produce a token.
+The lexer **MUST** skip any sequence of the following whitespace code points
+before each token read: `U+0009` (HT), `U+000A` (LF), `U+000D` (CR),
+`U+0020` (SP).  Whitespace **MUST NOT** produce a token.
+
+> **Divergence from evaluatex:** the evaluatex reference implementation does not
+> have an explicit whitespace-skipping pass; it relies on JavaScript's regex
+> engine to handle spacing implicitly.  This implementation uses an explicit
+> `skipWhitespace` helper that recognises exactly the four ASCII code points
+> above.  The divergence is intentional: LaTeX math input is ASCII-dominant and
+> the stricter set avoids ambiguity with non-breaking or Unicode-only space
+> characters.
 
 ### 5.4 Unknown Characters
 
@@ -139,7 +146,15 @@ When reading in char mode, the lexer **MUST** behave as follows:
 1. Skip whitespace.
 2. If the next character is `\`, read a complete `COMMAND` token (greedy,
    not single-character).
-3. Otherwise, read exactly **one byte** and match it against the pattern table.
+3. Otherwise, read exactly **one UTF-8 rune** and match it against the pattern
+   table.  The window passed to the pattern matcher **MUST** span the full byte
+   sequence of that rune (1–4 bytes), not just the first byte.
+
+> **Note:** LaTeX math expressions are ASCII-dominant, so this rule applies
+> primarily to future extensions (e.g. Greek letters used as variables).  For
+> the current Tier 1 token set all char-mode arguments are single-byte ASCII
+> characters.  See issue [#3](https://github.com/stephen-mcelhose/goexeclatex/issues/3)
+> for the related (deferred) fix to error-message rune representation.
 
 ### 6.2 Argument Counts
 
@@ -160,6 +175,23 @@ the char-mode argument considered complete.
 
 This allows `2^{12}` to produce `NUMBER(2) POWER LPAREN({) NUMBER(12) RPAREN(})`
 rather than treating `{` alone as the exponent.
+
+**Group depth tracking.**  The recursive tokenisation function accepts an
+`inGroup` boolean parameter.  This parameter **MUST** be `true` when the
+call was initiated by a `{` opener and `false` at the top level and in all
+char-mode calls.
+
+**Unclosed group invariant.**  If `inGroup` is `true` and the lexer reaches
+end of input without having emitted a closing `}`, it **MUST** return an
+error of the form:
+
+```
+lexer: unexpected end of input: unclosed '{' group at position <n>
+```
+
+where `<n>` is the byte offset of the end of input.  This error condition
+**MUST** propagate through the enclosing char-mode and top-level calls so that
+`Lex` returns a `nil` token slice and a non-nil `error`.
 
 ### 6.4 Command Arity Table
 
@@ -224,8 +256,8 @@ the same pass).
 ## 8. EOF Token
 
 The lexer **MUST** append a single `EOF` token as the last element of the
-returned slice.  The `EOF` token's `Pos` field **MUST** be set to `len(input)`
-(after the pre-pass substitution).
+returned slice.  The `EOF` token's `Pos` field **MUST** be set to `len(input)`,
+where `input` is the caller-supplied string (no pre-pass rewriting occurs).
 
 ## 9. Error Conditions
 

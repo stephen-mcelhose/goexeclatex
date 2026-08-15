@@ -10,7 +10,7 @@
 \acsc{0}	domain error	2
 (-1)!	factorial	2
 1.5!	factorial	2
-undefined_var	undefined symbol: undefined_var	2
-my_var	undefined symbol: my_var	2
+undefinedvar	undefined symbol: undefinedvar	2
+myvar	undefined symbol: myvar	2
 # ── Lex errors (exit 1) ─────────────────────────────────────────────────────
 \frac{1}{2	unclosed '{'	1
