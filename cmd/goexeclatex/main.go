@@ -121,7 +121,7 @@ func parseVars(vars []string) (map[string]float64, error) {
 		if !ok {
 			return nil, fmt.Errorf("invalid -v value %q: expected name=value", v)
 		}
-		trimName := strings.TrimSpace(name)
+		trimName := strings.NewReplacer("{", "", "}", "").Replace(strings.TrimSpace(name))
 		if trimName == "" {
 			return nil, fmt.Errorf("invalid -v value %q: variable name cannot be empty", v)
 		}
