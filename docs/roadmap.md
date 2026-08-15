@@ -14,11 +14,12 @@ For architecture context see [[plan]]. For the decision to split these documents
 
 ## Current focus
 
-**v0.4 / [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) ready to close** after merge. Spec: [[specs/parser-extensions]]. Next: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed.
+**Process / agent workflow:** [#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15) C+B on branch `chore/15-host-agent-skills` (encode Phase 3 + host Tier A skills). Product next: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed. Spec for shipped v0.4: [[specs/parser-extensions]].
 
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
-| [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) | v0.4 parser extensions | **Merge / close** |
+| ~~[#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)~~ | ~~v0.4 parser extensions~~ | ✅ closed — merged #14 |
+| ~~[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)~~ | ~~Host agent skills (C+B)~~ | ✅ closed — landing via `chore/15-host-agent-skills` |
 | ~~[#1](https://github.com/stephen-mcelhose/goexeclatex/issues/1)~~ | ~~Pre-pass byte offset drift corrupts downstream error positions~~ | ✅ closed — ADR-013 |
 | ~~[#2](https://github.com/stephen-mcelhose/goexeclatex/issues/2)~~ | ~~Spec gaps identified in GAN review (§6.1.3, whitespace, group context)~~ | ✅ closed |
 | [#3](https://github.com/stephen-mcelhose/goexeclatex/issues/3) | UTF-8 char-mode error message shows raw byte instead of full rune | Low — deferred (ADR-002) |
@@ -27,6 +28,12 @@ For architecture context see [[plan]]. For the decision to split these documents
 ---
 
 ## ⚠️ Process — mandatory for all milestone work
+
+See root [`AGENTS.md`](../AGENTS.md) for the full loop. Summary:
+
+**Planning (non-trivial issues).** Prefer `/ac-plan-loop` → clarify + RFC2119 AC
+→ breakdown with `### Verify` per task. Artifacts:
+`.agents/issues/issue-<N>/`. Hosted skills live under `.agents/skills/`.
 
 **Phase 1 — Spec first.**
 Write or update the normative spec in `docs/specs/<name>.md` (OKF frontmatter,
@@ -40,8 +47,13 @@ reference explicitly.
 3. Implement until all tests pass (green).
 4. Commit with a conventional commit message.
 
+**Phase 3 — Closing review.**
+GAN-style docs pass, wiki lint on touched pages, goldens/tests green, tracking
+issue + roadmap updated.
+
 Do not write implementation code before the spec exists.
 Do not skip the red-phase confirmation.
+Plan aloud, then execute.
 
 ---
 

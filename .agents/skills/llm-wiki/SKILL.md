@@ -9,8 +9,12 @@ description: >
   "query the wiki about", "lint the wiki", "update my wiki", "add to my knowledge base", "put this
   in the wiki", "what does my wiki say about", or when the user shares a URL/file alongside any
   mention of a wiki or knowledge base. Also trigger on "/llm-wiki init" when the user wants
-  to bootstrap a new wiki from scratch.
+  to bootstrap a new wiki from scratch. For goexeclatex, this in-repo copy under
+  .agents/skills/llm-wiki/ is canonical; prefer it over ~/.cursor/skills/llm-wiki.
 version: "1.0.0"
+metadata:
+  hosted-in: goexeclatex
+  canonical: in-repo
 allowed-tools:
   - Read
   - Write
