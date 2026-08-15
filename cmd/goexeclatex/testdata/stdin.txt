@@ -73,6 +73,19 @@ e	2.718281828459045	0
 2^{10}+\sqrt{25}	1029	0
 \sin{0}+\cos{0}	1	0
 (\sqrt{9})^2	9	0
+# ── Cross-feature integration ────────────────────────────────────────────────
+# arccos(dfrac): arccos(1/2) = π/3
+\arccos{\dfrac{1}{2}}	1.0471975511965976	0
+# dfrac of a trig inverse: arctan(1)/π = (π/4)/π = 1/4
+\dfrac{\arctan{1}}{\pi}	0.25	0
+# exp undoes sum of logs: exp(ln 2 + ln 3) = exp(ln 6) = 6
+\exp{\ln{2} + \ln{3}}	6	0
+# ln of sqrt(e): ln(e^½) = ½
+\ln{\sqrt{\e}}	0.5	0
+# sin/cos ratio through dfrac (float drift: not exactly 1)
+\dfrac{\sin{\pi/6}}{\cos{\pi/3}}	0.9999999999999997	0
+# sqrt of a binomial coefficient: √C(4,2) = √6
+\sqrt{\binom{4}{2}}	2.449489742783178	0
 # ── ±Inf (ADR-010: exit 0) ───────────────────────────────────────────────────
 \csc{0}	+Inf	0
 # ── \infty constant ──────────────────────────────────────────────────────────

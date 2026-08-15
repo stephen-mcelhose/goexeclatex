@@ -145,6 +145,11 @@ func TestFlagCases(t *testing.T) {
 		{"var pythagorean", []string{"-v", "x=3", "-v", "y=4", "-e", `\sqrt{x^2+y^2}`}, "5", 0},
 		{"var override pi", []string{"-v", "pi=3", "-e", `\pi`}, "3", 0},
 		{"var float val", []string{"-v", "x=1.5", "-e", "x^2"}, "2.25", 0},
+
+		// v0.2 functions with user-supplied variables.
+		{"var greek sin", []string{"-v", "alpha=1.5", "-e", `\sin{\alpha}`}, "0.9974949866040544", 0},
+		{"var ln of var", []string{"-v", "x=1", "-e", `\ln{x}`}, "0", 0},
+		{"var binom n k", []string{"-v", "n=5", "-v", "k=2", "-e", `\binom{n}{k}`}, "10", 0},
 	}
 
 	for _, c := range cases {
