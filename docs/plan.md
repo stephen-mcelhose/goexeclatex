@@ -10,7 +10,8 @@ timestamp: 2026-08-15T03:04:00Z
 
 ## What it is
 
-A Go CLI that reads a LaTeX math expression and prints its numeric result.
+A Go CLI that evaluates a LaTeX math expression and prints its numeric result.
+Reads from stdin by default or via `-e`; supports variable bindings (`-v`) and output precision (`-p`).
 
 ```
 echo "\frac{1}{2} + \sqrt{9}" | goexeclatex
@@ -105,7 +106,7 @@ Built with [Cobra](https://github.com/spf13/cobra).
 ```
 goexeclatex [flags]
 
-Reads a LaTeX math expression from stdin, prints the result to stdout.
+Reads a LaTeX math expression from stdin (or -e), prints the result to stdout.
 
 Flags:
   -e, --expr string       expression to evaluate (skips stdin read)

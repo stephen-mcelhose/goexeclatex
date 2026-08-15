@@ -7,8 +7,9 @@ next milestone. Then read `docs/plan.md` for architecture context if needed.
 
 ## What this project is
 
-A Go CLI that reads a LaTeX math expression from stdin and prints its numeric
-result.
+A Go CLI that evaluates a LaTeX math expression and prints its numeric result.
+Reads from stdin by default or via `-e`; supports variable bindings (`-v`) and
+output precision (`-p`).
 
 ## Implementation strategy
 
