@@ -203,9 +203,36 @@ log_value → LPAREN('(') sum RPAREN(')')   // when subscript base present: requ
 | 1 (`x`) | `math.Log10(x)`; domain error if `x ≤ 0` |
 | 2 (`x`, `b`) | `math.Log(x)/math.Log(b)`; domain error if `x ≤ 0`, `b ≤ 0`, or `b == 1` |
 
-## 7. `\bmod` — *pending Task 6*
+## 7. `\bmod` — binary modulo
 
-Placeholder: binary remainder only; `\pmod`/`\mod`/`\pod` deferred.
+### 7.1 Lexer
+
+The lexer **MUST** remap COMMAND `\bmod` to token type `BMOD` with value
+`"bmod"` in the post-lex remap pass (same pattern as `\times` → `TIMES`).
+
+### 7.2 Parser
+
+`BMOD` **MUST** be parsed at the **product** precedence level as a binary
+operator (same band as `*` / `/`):
+
+```
+product → power { ('*' | '/' | BMOD) power | <implicit multiply> }
+```
+
+AST: `BinaryNode{Op: "bmod", Left, Right}`.
+
+`a \bmod b` **MUST NOT** parse as implicit multiply of `a`, symbol `bmod`, and
+`b`.
+
+### 7.3 Eval
+
+`bmod` **MUST** evaluate as `math.Mod(left, right)`. Division by zero (right
+`== 0`) **MUST** return an eval domain / division error.
+
+### 7.4 Deferred mod spellings
+
+`\pmod`, `\mod`, and `\pod` are **out of scope** for v0.4 (AMS congruence
+annotations, not binary remainder). They **MUST NOT** be remapped to `BMOD`.
 
 ## 8. Non-Scope
 

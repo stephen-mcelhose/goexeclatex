@@ -71,6 +71,11 @@ func applyBinary(op string, left, right float64) (float64, error) {
 		return left / right, nil
 	case "^":
 		return math.Pow(left, right), nil
+	case "bmod":
+		if right == 0 {
+			return 0, fmt.Errorf("eval: division by zero")
+		}
+		return math.Mod(left, right), nil
 	default:
 		return 0, fmt.Errorf("eval: unknown operator: %s", op)
 	}

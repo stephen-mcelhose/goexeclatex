@@ -24,13 +24,14 @@ const (
 	NORM                        // spec §3.3: \lVert / \rVert
 	FLOOR                       // parser-extensions §3.1: \lfloor / \rfloor
 	CEIL                        // parser-extensions §3.1: \lceil / \rceil
+	BMOD                        // parser-extensions §7.1: \bmod binary modulo
 	EOF                         // spec §8: synthetic end-of-input sentinel
 )
 
 var tokenTypeNames = [...]string{
 	"NUMBER", "SYMBOL", "COMMAND", "PLUS", "MINUS", "TIMES", "DIVIDE",
 	"POWER", "LPAREN", "RPAREN", "PIPE", "BANG", "COMMA", "UNDERSCORE",
-	"EQUALS", "NORM", "FLOOR", "CEIL", "EOF",
+	"EQUALS", "NORM", "FLOOR", "CEIL", "BMOD", "EOF",
 }
 
 // String returns the name of the token type.
@@ -57,7 +58,7 @@ type Token struct {
 // String returns a compact human-readable representation of the token.
 func (t Token) String() string {
 	switch t.Type {
-	case PLUS, MINUS, TIMES, DIVIDE, POWER, PIPE, BANG, COMMA, UNDERSCORE, EQUALS, NORM, EOF:
+	case PLUS, MINUS, TIMES, DIVIDE, POWER, PIPE, BANG, COMMA, UNDERSCORE, EQUALS, NORM, BMOD, EOF:
 		return t.Type.String()
 	default:
 		return t.Type.String() + "(" + t.Value + ")"

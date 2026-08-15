@@ -156,13 +156,17 @@ func (p *parser) parseProduct() (Node, error) {
 	}
 	for {
 		tok := p.peek()
-		if tok.Type == lexer.TIMES || tok.Type == lexer.DIVIDE {
+		if tok.Type == lexer.TIMES || tok.Type == lexer.DIVIDE || tok.Type == lexer.BMOD {
 			p.consume()
+			op := tok.Value
+			if tok.Type == lexer.BMOD {
+				op = "bmod"
+			}
 			right, err := p.parsePower()
 			if err != nil {
 				return nil, err
 			}
-			left = &BinaryNode{Op: tok.Value, Left: left, Right: right}
+			left = &BinaryNode{Op: op, Left: left, Right: right}
 			continue
 		}
 		// Implicit multiply (spec §5, ADR-006)

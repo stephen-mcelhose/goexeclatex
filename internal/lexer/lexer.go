@@ -293,6 +293,10 @@ func postLexRemap(in []Token) []Token {
 			// §7.2: absolute-value pipe remaps.
 			out = append(out, Token{Type: PIPE, Value: "|", Pos: tok.Pos})
 
+		case "bmod":
+			// parser-extensions §7.1: binary modulo operator.
+			out = append(out, Token{Type: BMOD, Value: "bmod", Pos: tok.Pos})
+
 		default:
 			// §7.3: normalise value; keep as COMMAND.
 			tok.Value = name
