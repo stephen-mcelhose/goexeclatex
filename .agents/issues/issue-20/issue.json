@@ -1,0 +1,7 @@
+{
+  "number": 20,
+  "title": "feat: expose a public Go library API (separate from CLI)",
+  "body": "See GitHub issue #20 — fetched via MCP when gh GraphQL was Forbidden in agent sandbox.",
+  "labels": [{"name": "enhancement"}],
+  "comments": [{"author": "stephen-mcelhose", "body": "minArgs/maxArgs panic risk note when public API may accept AST"}]
+}

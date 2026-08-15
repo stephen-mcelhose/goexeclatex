@@ -82,3 +82,19 @@ Gate A defaults-OK loop; require Completion strategy + Dangerous status quo; Sta
 ## [2026-08-15] decision | ADR-016 self-host Tier A agent skills (C+B)
 
 Accepted [[adrs/adr-016-self-host-agent-skills]]: encode loop + host Tier A; Tier B/community deferred; revisit on degraded experience (loop ignored, shadowing, net slowdown, proven better spare parts).
+
+## [2026-08-15] spec | #20 Task 0 — public library API ADR + spec
+
+Added [[adrs/adr-017-public-library-api]] and [[specs/library]]; roadmap current focus → [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) on `feat/20-public-library-api`. Planning artifacts: `.agents/issues/issue-20/` (process twin of issue-8).
+
+## [2026-08-15] feat | #20 public library API (Tasks 1–4)
+
+Shipped module-root `goexeclatex.Eval` + `SyntaxError`/`EvalError`; CLI rewires through public API (goldens green); `min`/`max`/`gcd` arity guards; README/AGENTS/plan/how-to/cli spec updated. Float precision helper omitted (ADR-017). Branch: `feat/20-public-library-api`.
+
+## [2026-08-15] lint | #20 GAN punch-list
+
+Fixed: library tests for empty expr (`*SyntaxError`), builtin override, `+\infty` success; `specs/library` §4.4 documents chosen empty behaviour; `examples.md` points at public API. Deferred: public `Format`; broader arity table; AST export; optional module split so library consumers need not pull Cobra via `go.mod`.
+
+## [2026-08-15] docs | zsh echo `\frac` footgun
+
+zsh `echo` interprets `\f`/`\b` escapes, so `echo '\frac{…}' | goexeclatex` fails as `undefined symbol: rac`. how-to/examples/cli/plan/README/CLI help now prefer `goexeclatex -e` or `printf '%s\n'`.

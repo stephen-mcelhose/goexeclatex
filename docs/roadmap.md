@@ -3,7 +3,7 @@ type: proposal
 title: goexeclatex — Roadmap
 description: Forward-looking milestone tracker for goexeclatex. Current focus, upcoming versions, issue links, and process reminder. Update every session.
 tags: [goexeclatex, roadmap, milestones]
-timestamp: 2026-08-15T03:04:00Z
+timestamp: 2026-08-15T18:20:00Z
 ---
 
 # goexeclatex — Roadmap
@@ -14,12 +14,15 @@ For architecture context see [[plan]]. For the decision to split these documents
 
 ## Current focus
 
-**Process / agent workflow:** [#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15) C+B on branch `chore/15-host-agent-skills` (encode Phase 3 + host Tier A skills). Product next: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed. Spec for shipped v0.4: [[specs/parser-extensions]].
+**Product:** [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) — public Go library API on `feat/20-public-library-api` (Tasks 0–4 done; GAN checklist posted; awaiting commit/PR/merge). Spec: [[specs/library]]; decision: [[adrs/adr-017-public-library-api]]. Artifacts: `.agents/issues/issue-20/`.
+
+After merge of #20: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed. Spec for shipped v0.4: [[specs/parser-extensions]].
 
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
+| [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) | Public Go library API (separate from CLI) | **Current** — implemented on branch; close on merge |
 | ~~[#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)~~ | ~~v0.4 parser extensions~~ | ✅ closed — merged #14 |
-| ~~[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)~~ | ~~Host agent skills (C+B)~~ | ✅ closed — [[adrs/adr-016-self-host-agent-skills]]; landing via `chore/15-host-agent-skills` |
+| ~~[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)~~ | ~~Host agent skills (C+B)~~ | ✅ closed — [[adrs/adr-016-self-host-agent-skills]] |
 | ~~[#1](https://github.com/stephen-mcelhose/goexeclatex/issues/1)~~ | ~~Pre-pass byte offset drift corrupts downstream error positions~~ | ✅ closed — ADR-013 |
 | ~~[#2](https://github.com/stephen-mcelhose/goexeclatex/issues/2)~~ | ~~Spec gaps identified in GAN review (§6.1.3, whitespace, group context)~~ | ✅ closed |
 | [#3](https://github.com/stephen-mcelhose/goexeclatex/issues/3) | UTF-8 char-mode error message shows raw byte instead of full rune | Low — deferred (ADR-002) |
