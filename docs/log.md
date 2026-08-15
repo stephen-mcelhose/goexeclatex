@@ -74,3 +74,7 @@ Decision C+B on [#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)
 ## [2026-08-15] lint | PR #21 GAN punch-list (process skills)
 
 Fixed: roadmap v0.4 “pending GAN” stale header; AGENTS/roadmap Phase 3 process vs plan.md Evaluator disambiguation; docs/AGENTS.md points at in-repo llm-wiki; skills.json registers local clarify/breakdown/ac-plan-loop. Deferred: Cursor slash `/skill` discovery vs description-only; personal ~/.cursor/skills shadowing; #15 closed before merge.
+
+## [2026-08-15] docs | ac-plan-loop v1.2 — restore #8 fidelity
+
+Gate A defaults-OK loop; require Completion strategy + Dangerous status quo; Stage C GAN discriminator table; gate-exit issue comments; worked example `.agents/issues/issue-8/`. clarify-issue gains matching sections.

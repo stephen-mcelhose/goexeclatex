@@ -7,7 +7,7 @@ description: >-
   Stage A.
 license: MIT
 metadata:
-  version: "1.2.0"
+  version: "1.2.1"
   hosted-in: goexeclatex
 ---
 
