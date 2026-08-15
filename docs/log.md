@@ -6,6 +6,7 @@
 ## [2026-08-14] ingest | LaTeX Math — Evaluable Subset Spec (updated: AMS short-math-guide.tex read via pandoc)
 ## [2026-08-14] ingest | evaluatex — Reference Implementation
 ## [2026-08-14] ingest | goexeclatex — Gap Analysis
+## [2026-08-15] restructure | plan/roadmap split (ADR-012); roadmap.md created; index updated
 ## [2026-08-15] lint | 22 pages checked, 18 issues found, 18 fixed
 
 Pages checked: 6 indexed + 16 discovered via glob. Issues found and fixed:

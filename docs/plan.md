@@ -1,12 +1,12 @@
 ---
-type: proposal
-title: goexeclatex — Implementation Plan
-description: Formal implementation plan for a Go CLI that numerically evaluates LaTeX math expressions read from stdin.
+type: concept
+title: goexeclatex — Architecture
+description: Stable architecture record for goexeclatex — pipeline design, grammar, package layout, CLI interface, error policy, and testing strategy.
 tags: [goexeclatex, plan, cli, go]
 timestamp: 2026-08-15T03:04:00Z
 ---
 
-# goexeclatex — Implementation Plan
+# goexeclatex — Architecture
 
 ## What it is
 
@@ -192,36 +192,7 @@ goexeclatex/
 - [x] `cmd/goexeclatex` — stdin pipe, `-var`, `-prec`, `-e` flags ([[specs/cli]])
 - [x] Table-driven unit tests for all of the above
 
-### v0.2 — Tier 2: function completeness ([#5](https://github.com/stephen-mcelhose/goexeclatex/issues/5))
-
-- [ ] `\arcsin/\arccos/\arctan` (canonical names)
-- [ ] `\ln`, `\exp`, `\log` (base 10)
-- [ ] `\dfrac`, `\tfrac`, `\cfrac` (aliases for `\frac`)
-- [ ] `\sinh/\cosh/\tanh/\coth/\sech/\csch`
-- [ ] `\min(a,b)`, `\max(a,b)` (variadic)
-- [ ] `\infty` → `math.Inf(1)`
-- [ ] `\lfloor x \rfloor`, `\lceil x \rceil`
-- [ ] `\sqrt[n]{x}` — optional arg before brace
-- [ ] `\gcd(a,b)` — Euclidean
-- [ ] `\binom{n}{k}`, `\dbinom`, `\tbinom`
-- [ ] `\mod`, `\pmod`, `\bmod`, `\pod`
-- [ ] Greek letter variables (`\alpha`, `\beta`, … — user-supplied via `-var`)
-
-### v0.3 — Tier 3: subscripts + big operators ([#6](https://github.com/stephen-mcelhose/goexeclatex/issues/6))
-
-- [ ] `\\_` → literal `_` pre-pass in lexer (before subscript tokenisation)
-- [ ] `_` token; subscript grammar rule
-- [ ] `\log_{b}(x)` — log base b
-- [ ] `x_{i}` — subscript variable lookup
-- [ ] `\sum_{i=a}^{b} f(i)` — discrete summation engine
-- [ ] `\prod_{i=a}^{b} f(i)` — discrete product engine
-- [ ] `\lVert v \rVert` — norm (double-pipe)
-
-### vFuture ([#7](https://github.com/stephen-mcelhose/goexeclatex/issues/7))
-
-- `\begin{cases}` conditional evaluation
-- Matrix input + `\det`
-- JSON output mode (`-json`)
+For upcoming milestones (v0.2, v0.3, vFuture) see [[roadmap]].
 
 ---
 
