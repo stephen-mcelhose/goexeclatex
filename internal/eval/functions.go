@@ -20,14 +20,7 @@ func callBuiltin(name string, args []float64) (float64, error) {
 
 	case "sqrt":
 		if len(args) == 2 {
-			x, n := args[0], args[1]
-			if n == 0 {
-				return 0, fmt.Errorf("eval: domain error: root index must not be zero")
-			}
-			if x < 0 {
-				return 0, fmt.Errorf("eval: domain error: root of negative")
-			}
-			return math.Pow(x, 1/n), nil
+			return nthRoot(args[0], args[1])
 		}
 		if args[0] < 0 {
 			return 0, fmt.Errorf("eval: domain error: sqrt of negative")
@@ -187,6 +180,33 @@ func gcd2(a, b int64) int64 {
 		return -a
 	}
 	return a
+}
+
+// nthRoot evaluates \sqrt[n]{x} (parser-extensions §4.3; ADR-015).
+func nthRoot(x, n float64) (float64, error) {
+	if n == 0 {
+		return 0, fmt.Errorf("eval: domain error: root index must not be zero")
+	}
+	if x >= 0 {
+		return math.Pow(x, 1/n), nil
+	}
+	// x < 0: real root only for odd integer indices (ADR-015).
+	if !isOddInteger(n) {
+		return 0, fmt.Errorf("eval: domain error: root of negative")
+	}
+	// math.Pow(negative, fraction) is NaN — use sign-preserving form.
+	return -math.Pow(-x, 1/n), nil
+}
+
+func isOddInteger(n float64) bool {
+	if math.IsInf(n, 0) || math.IsNaN(n) || n != math.Trunc(n) {
+		return false
+	}
+	ni := int64(n)
+	if ni == 0 {
+		return false
+	}
+	return ni%2 != 0
 }
 
 // binomCoeff computes C(n, k) = n! / (k! * (n-k)!) (spec §6.6.1).

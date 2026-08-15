@@ -13,6 +13,8 @@ func TestEvalSqrtNthRoot(t *testing.T) {
 		{`\sqrt[3]{27}`, 3},
 		{`\sqrt[2]{16}`, 4},
 		{`\sqrt[4]{16}`, 2},
+		{`\sqrt[3]{-8}`, -2},
+		{`\sqrt[5]{-32}`, -2},
 	}
 	for _, tt := range tests {
 		t.Run(tt.in, func(t *testing.T) {
@@ -26,5 +28,6 @@ func TestEvalSqrtNthRoot(t *testing.T) {
 
 func TestEvalSqrtNthRootDomain(t *testing.T) {
 	mustError(t, `\sqrt[0]{8}`, "eval: domain error:")
-	mustError(t, `\sqrt[3]{-8}`, "eval: domain error:")
+	mustError(t, `\sqrt[2]{-4}`, "eval: domain error:")
+	mustError(t, `\sqrt[1.5]{-8}`, "eval: domain error:")
 }

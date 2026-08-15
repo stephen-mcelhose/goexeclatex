@@ -374,8 +374,8 @@ handling policy`. Parse errors exit 1; eval errors exit 2.
 
 The following items are explicitly **out of scope** for this specification:
 
-- **`\log_{b}(x)`** — requires paren-argument support not yet implemented.
-  Deferred to issue #8.
+- **`\log_{b}(x)`** — shipped in v0.4; see [[specs/parser-extensions]] §6
+  (no longer deferred here).
 - **`x_{i}` where the subscript is a non-integer expression** — undefined;
   produces an eval error (§6.1).
 - **Nested large operators** — `\sum_{i=0}^{n} \sum_{j=0}^{m} f(i,j)` is

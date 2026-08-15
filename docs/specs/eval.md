@@ -272,17 +272,16 @@ internal/eval/
 └── eval_test.go   table-driven tests
 ```
 
-## 9. Deferred (out of scope for v0.2)
+## 9. Deferred / superseded
 
-Items below require parser changes or new syntax not yet supported. They are
-deferred rather than implemented with non-standard syntax.
+v0.4 ([[specs/parser-extensions]], issue #8) shipped the former Tier 2.1
+blockers. Remaining deferrals:
 
-| Feature                                 | Target   | Blocker                                 |
-| --------------------------------------- | -------- | --------------------------------------- |
-| `\lfloor x \rfloor`, `\lceil x \rceil` | Tier 2.1 | New token types + paired-bracket parser |
-| `\sqrt[n]{x}` n-th root                | Tier 2.1 | Optional `[n]` argument in parser       |
-| `\min(a,b)`, `\max(a,b)`               | Tier 2.1 | Variadic paren-arg parser support       |
-| `\gcd(a,b)`                            | Tier 2.1 | Variadic paren-arg parser support       |
-| `\mod`, `\pmod`, `\bmod`, `\pod`       | Tier 2.1 | Binary infix operator parser support    |
-| `\log_{b}(x)` subscript base           | Tier 0.3 | Subscript support                       |
-| NaN propagation mode                   | vFuture  |                                         |
+| Feature | Target | Notes |
+| ------- | ------ | ----- |
+| `\mod`, `\pmod`, `\pod` | deferred | AMS congruence annotations — not binary remainder; see [[specs/parser-extensions]] §7.4 |
+| NaN propagation mode | vFuture | |
+
+Shipped in v0.4 (do not treat as deferred): `\lfloor…\rfloor`, `\lceil…\rceil`,
+`\sqrt[n]{x}`, `\min`/`\max`/`\gcd`, `\bmod`, `\log_{b}(x)`.
+

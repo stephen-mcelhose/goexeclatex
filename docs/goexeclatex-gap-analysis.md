@@ -44,7 +44,8 @@ These should be the baseline of goexeclatex v0.
 
 Well-understood semantics; no new grammar machinery needed beyond Tier 1.
 
-✅ = implemented in v0.2. Remaining items require parser changes (deferred to #8).
+✅ = implemented in v0.2 unless noted. Parser-extension items shipped in **v0.4** (#8).
+`\mod`/`\pmod`/`\pod` remain deferred (congruence annotations, not `\bmod`).
 
 | Feature                    | LaTeX                          | Effort   | Status | Notes                                      |
 | -------------------------- | ------------------------------ | -------- | ------ | ------------------------------------------ |
@@ -72,7 +73,7 @@ Well-understood semantics; no new grammar machinery needed beyond Tier 1.
 
 Requires extending the parser with new production rules (subscripts, large operators).
 
-✅ = implemented in v0.3. Remaining items deferred to #8.
+✅ = implemented in v0.3. `\log_{b}(x)` shipped in v0.4 (#8).
 
 | Feature                     | LaTeX                        | Effort | Status   | Notes                                           |
 | --------------------------- | ---------------------------- | ------ | -------- | ----------------------------------------------- |

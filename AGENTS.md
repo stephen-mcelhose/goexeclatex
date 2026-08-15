@@ -42,10 +42,10 @@ red-phase confirmation.
 ## Package layout
 
 ```
-internal/lexer/    — done (Tier 1 + v0.3: UNDERSCORE, NORM tokens)
-internal/parser/   — done (Tier 1 + v0.3: subscript grammar, parseLargeOp, parseNorm)
-internal/eval/     — done (Tier 1 + v0.3: SubscriptNode, LargeOpNode, NormNode, ScopeLookup)
-cmd/goexeclatex/   — done (Tier 1 complete)
+internal/lexer/    — done (Tier 1 + v0.3 UNDERSCORE/NORM + v0.4 FLOOR/CEIL/BMOD)
+internal/parser/   — done (Tier 1 + v0.3 + v0.4 floor/ceil, sqrt[n], variadic, log_b, bmod)
+internal/eval/     — done (Tier 1 + v0.3 + v0.4 builtins; ADR-015 odd roots)
+cmd/goexeclatex/   — done (Tier 1 complete; goldens through v0.4)
 ```
 
 ## Key references

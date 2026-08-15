@@ -151,10 +151,10 @@ Source: AMS Short Math Guide v2.0 (2017), Michael Downes / AMS. Raw file:
 
 | LaTeX               | Meaning       | Evaluable? |
 | ------------------- | ------------- | ---------- |
-| `a \mod b`          | Modulo (spacing variant)   | ✅ |
-| `a \pmod{b}`        | Modulo with parens         | ✅ |
-| `a \bmod b`         | Modulo binary op form      | ✅ |
-| `a \pod{b}`         | Modulo parens, no "mod"    | ✅ |
+| `a \mod b`          | Modulo (spacing variant)   | ⏳ deferred — AMS congruence form; see [[specs/parser-extensions]] §7.4 |
+| `a \pmod{b}`        | Modulo with parens         | ⏳ deferred — AMS congruence form; see [[specs/parser-extensions]] §7.4 |
+| `a \bmod b`         | Modulo binary op form      | ✅ v0.4 — [[specs/parser-extensions]] §7 |
+| `a \pod{b}`         | Modulo parens, no "mod"    | ⏳ deferred — AMS congruence form; see [[specs/parser-extensions]] §7.4 |
 
 ---
 

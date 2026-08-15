@@ -14,11 +14,11 @@ For architecture context see [[plan]]. For the decision to split these documents
 
 ## Current focus
 
-**v0.4 implementation complete on branch — GAN closing review for [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8).** Spec: [[specs/parser-extensions]].
+**v0.4 / [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) ready to close** after merge. Spec: [[specs/parser-extensions]]. Next: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed.
 
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
-| [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) | v0.4 parser extensions | **GAN review** |
+| [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) | v0.4 parser extensions | **Merge / close** |
 | ~~[#1](https://github.com/stephen-mcelhose/goexeclatex/issues/1)~~ | ~~Pre-pass byte offset drift corrupts downstream error positions~~ | ✅ closed — ADR-013 |
 | ~~[#2](https://github.com/stephen-mcelhose/goexeclatex/issues/2)~~ | ~~Spec gaps identified in GAN review (§6.1.3, whitespace, group context)~~ | ✅ closed |
 | [#3](https://github.com/stephen-mcelhose/goexeclatex/issues/3) | UTF-8 char-mode error message shows raw byte instead of full rune | Low — deferred (ADR-002) |
@@ -78,11 +78,11 @@ Do not skip the red-phase confirmation.
 ## ~~v0.4 — Parser extensions ([#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8))~~ ✅ closed (pending GAN)
 
 - [x] Floor / ceil paired delimiters
-- [x] `\sqrt[n]{x}`
+- [x] `\sqrt[n]{x}` (incl. odd roots of negatives — [[adrs/adr-015-odd-integer-roots-of-negatives]])
 - [x] Variadic `\min` / `\max` / `\gcd`
 - [x] `\log_{b}(x)`
 - [x] `\bmod`
-- [ ] GAN-style closing review
+- [x] GAN-style closing review (docs punch-list cleared)
 
 ---
 

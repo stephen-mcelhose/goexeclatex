@@ -257,13 +257,16 @@ The parser **MUST** return a non-nil error for each of the following:
 func Parse(tokens []lexer.Token) (Node, error)
 ```
 
-## 10. Deferred (out of scope for v0.1)
+## 10. Deferred (historical — v0.1)
 
-| Feature                                     | Target |
-| ------------------------------------------- | ------ |
-| `\arcsin`, `\arccos`, `\arctan` canonical names | Tier 2 |
-| `\lVert…\rVert` norm (double-pipe)          | Tier 2 |
-| `\sqrt[n]{x}` optional argument            | Tier 2 |
-| `\min(a,b)`, `\max(a,b)` variadic          | Tier 2 |
-| Subscript `_` operator                      | Tier 3 |
-| `\sum`, `\prod` large operators               | Tier 3 |
+The original v0.1 deferred list is retained for history. Status as of v0.4:
+
+| Feature | Original target | Status |
+| ------- | --------------- | ------ |
+| `\arcsin`, `\arccos`, `\arctan` | Tier 2 | ✅ v0.2 |
+| `\lVert…\rVert` norm | Tier 2 | ✅ v0.3 |
+| `\sqrt[n]{x}` optional argument | Tier 2 | ✅ v0.4 — [[specs/parser-extensions]] |
+| `\min(a,b)`, `\max(a,b)` variadic | Tier 2 | ✅ v0.4 — [[specs/parser-extensions]] |
+| Subscript `_` operator | Tier 3 | ✅ v0.3 — [[specs/subscripts-largeops]] |
+| `\sum`, `\prod` large operators | Tier 3 | ✅ v0.3 — [[specs/subscripts-largeops]] |
+

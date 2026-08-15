@@ -18,6 +18,7 @@ sources:
   - docs/specs/eval.md
   - docs/adrs/adr-007-absdepth-pipe-ambiguity.md
   - docs/adrs/adr-014-mixed-floor-ceil-round-out-of-scope.md
+  - docs/adrs/adr-015-odd-integer-roots-of-negatives.md
   - .agents/issues/issue-8/clarification.md
 ---
 
@@ -134,7 +135,20 @@ sqrt and a brace group.
 | Args | Semantics |
 | ---- | --------- |
 | 1 (`x`) | `math.Sqrt(x)`; domain error if `x < 0` |
-| 2 (`x`, `n`) | `math.Pow(x, 1/n)`; domain error if `n == 0`; domain error if `x < 0` |
+| 2 (`x`, `n`) | Real nth root of `x` (see below); domain error if `n == 0` |
+
+For two-arg evaluation ([[adrs/adr-015-odd-integer-roots-of-negatives]]):
+
+- If `x >= 0`, the result **MUST** be `math.Pow(x, 1/n)`.
+- If `x < 0` and `n` is an odd integer (finite, `n == trunc(n)`, `|n| >= 1`,
+  and `n` is odd), the result **MUST** be the real odd root
+  `−math.Pow(−x, 1/n)` (Go’s `math.Pow` of a negative base is NaN and **MUST
+  NOT** be used directly).
+- If `x < 0` and `n` is not an odd integer, Eval **MUST** return a domain
+  error (no complex results).
+
+> **Supersedes:** the v0.4 draft rule that rejected all `x < 0` for two-arg
+> `\sqrt`. See ADR-015.
 
 ### 4.4 False-success regression
 

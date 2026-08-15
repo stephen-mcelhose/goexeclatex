@@ -3,7 +3,7 @@ type: how-to
 title: goexeclatex — Example Calls
 description: Concrete CLI invocations showing common evaluation patterns.
 tags: [goexeclatex, examples, cli]
-timestamp: 2026-08-14T23:00:00Z
+timestamp: 2026-08-15T16:25:00Z
 ---
 
 # goexeclatex — Example Calls
@@ -15,37 +15,22 @@ echo '2^{10}'                          | goexeclatex   # 1024
 echo '\frac{22}{7}'                    | goexeclatex   # 3.142857...
 goexeclatex -e '\sqrt{2}'                              # 1.414213...
 goexeclatex -e '\frac{1}{2} + \sqrt{9}'               # 3.5
+goexeclatex -e '\sqrt[3]{27}'                          # ~3 (v0.4)
+goexeclatex -e '\sqrt[3]{-8}'                          # ~-2 (v0.4, ADR-015)
+goexeclatex -e '\lfloor 3.2 \rfloor'                   # 3 (v0.4)
+goexeclatex -e '10 \bmod 3'                            # 1 (v0.4)
 ```
 
-> `\sqrt[3]{27}` (nth root) is deferred to a future milestone — see [[roadmap]].
-
 ## Trigonometry
+
+Brace args (LaTeX command style) and unary paren args both work:
 
 ```sh
 goexeclatex -e '\sin{\pi/6}'                           # 0.5
+goexeclatex -e '\sin(\pi/6)'                           # 0.5
 goexeclatex -e '\cos{0}'                               # 1
 goexeclatex -e '\tan{\pi/4}'                           # 1
 goexeclatex -e '\arctan{1} * 4'                        # 3.141592...
-```
-
-> `\\sqrt[3]{27}` (nth root) is deferred to a future milestone — see [[roadmap]].
-
-## Trigonometry
-
-```sh
-goexeclatex -e '\\sin{\\pi/6}'                          # 0.5
-goexeclatex -e '\\cos{0}'                              # 1
-goexeclatex -e '\\tan{\\pi/4}'                          # 1
-goexeclatex -e '\\arctan{1} * 4'                       # 3.141592...
-```
-
-## Trigonometry
-
-```sh
-goexeclatex -e '\sin(\pi / 6)'                        # 0.5
-goexeclatex -e '\cos(0)'                              # 1
-goexeclatex -e '\tan(\pi / 4)'                        # 1
-goexeclatex -e '\arctan(1) * 4'                       # 3.141592...  (v0.2)
 ```
 
 ## Variables
@@ -101,6 +86,7 @@ goexeclatex \
   -v 'w_{0}=1'  -v 'w_{1}=2'  -v 'w_{2}=3'  \
   -e '\frac{(x_{0}*w_{0})+(x_{1}*w_{1})+(x_{2}*w_{2})}{x_{0}+x_{1}+x_{2}}'
 # => 1.958333...
+```
 
 ## Townsend-Heuberger
 
@@ -136,6 +122,11 @@ goexeclatex -p 10 -e '\pi'            # 3.1415926536
 | ---------------------- | --------- | ------------------------------ |
 | Basic arithmetic       | v0.1      | `\frac`, `^`, arithmetic       |
 | Trig                   | v0.1      | `\sin/\cos/\tan`               |
-| `\arctan`, `\sqrt[n]`  | v0.2      | arc trig, nth root             |
+| `\arctan`              | v0.2      | arc trig aliases               |
+| `\sqrt[n]`, floor, `\bmod`, `\log_{b}` | v0.4 | [[specs/parser-extensions]] |
 | Plain variable calls   | v0.1      | symbol table                   |
 | Subscript variable calls | v0.3    | `_` token, subscript grammar   |
+
+## Sources
+
+- [[roadmap]], [[how-to]], [[specs/parser-extensions]]

@@ -41,3 +41,11 @@ Implemented: UNDERSCORE + NORM lexer tokens; subscript grammar (`x_{i}`, `x_i`);
 ## [2026-08-15] feat | v0.4 parser extensions implemented (#8) — GAN pending
 
 Branch `feat/8-parser-extensions-v0.4`: floor/ceil, `\sqrt[n]`, min/max/gcd, `\log_{b}(x)`, `\bmod`. Spec [[specs/parser-extensions]]; ADR-014 mixed round out of scope. Deferred: `\pmod`/`\mod`/`\pod`. Next: GAN-style closing review then merge/close #8.
+
+## [2026-08-15] decision | ADR-015 — odd-integer roots of negatives
+
+Accepted [[adrs/adr-015-odd-integer-roots-of-negatives]]: supersedes parser-extensions §4.3 blanket ban; `\sqrt[3]{-8}` → −2 via `−Pow(|x|,1/n)`.
+
+## [2026-08-15] lint | GAN punch-list docs drift cleared (v0.4)
+
+Pages updated: specs/eval §9, specs/parser §10, specs/subscripts-largeops §8, examples.md (deduped + v0.4 examples), latex-math-evaluable-spec modular table, gap-analysis intros, roadmap GAN checkbox, index (ADR-015), AGENTS.md package layout. Spec parser-extensions §4.3 amended for ADR-015.
