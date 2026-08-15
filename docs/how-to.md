@@ -3,7 +3,7 @@ type: how-to
 title: How to use goexeclatex
 description: User-facing guide covering stdin and -e flag usage, -p precision, -v variable binding, supported syntax, error handling, and shell composition patterns.
 tags: [goexeclatex, cli, how-to]
-timestamp: 2026-08-15T03:04:00Z
+timestamp: 2026-08-15T18:35:00Z
 ---
 
 # How to use goexeclatex
@@ -25,24 +25,48 @@ cd goexeclatex
 go build -o goexeclatex ./cmd/goexeclatex
 ```
 
+## Use as a Go library
+
+```go
+import "github.com/stephen-mcelhose/goexeclatex"
+
+v, err := goexeclatex.Eval(`\frac{1}{2} + \sqrt{9}`, nil)
+// v == 3.5
+
+v, err = goexeclatex.Eval(`x^2`, map[string]float64{"x": 3})
+// v == 9
+```
+
+See [[specs/library]] for the normative API (typed errors, nil `vars`, non-scope).
+
 ## Evaluate an expression from stdin
 
+Prefer `printf` (or `goexeclatex -e`) for LaTeX. On **zsh**, plain `echo` interprets
+escapes such as `\f` and `\b`, so `echo '\frac{…}'` becomes a form-feed plus
+`rac…` and fails with `undefined symbol: rac`.
+
 ```sh
-echo '\frac{1}{2} + \sqrt{9}' | goexeclatex
+printf '%s\n' '\frac{1}{2} + \sqrt{9}' | goexeclatex
 # 3.5
 
-echo '2^{10}' | goexeclatex
+printf '%s\n' '2^{10}' | goexeclatex
 # 1024
 
-echo '\sin{\pi/2}' | goexeclatex
+printf '%s\n' '\sin{\pi/2}' | goexeclatex
 # 1
 ```
 
 ## Evaluate an expression with the `-e` flag
 
+`-e` avoids the stdin/`echo` trap entirely and is the safest way to pass
+backslash-heavy LaTeX from an interactive shell:
+
 ```sh
 goexeclatex -e '\sqrt{2}'
 # 1.4142135623730951
+
+goexeclatex -e '\frac{1}{2} + \sqrt{9}'
+# 3.5
 
 goexeclatex -e '\frac{22}{7}'
 # 3.142857142857143
@@ -125,7 +149,7 @@ See [[examples]] for more complete invocation patterns.
 Parse errors (bad syntax) exit with code **1**:
 
 ```sh
-echo '\frac{1}{2' | goexeclatex
+printf '%s\n' '\frac{1}{2' | goexeclatex
 # error: unexpected end of input: unclosed '{' group at position 10
 # exit 1
 ```
@@ -133,15 +157,15 @@ echo '\frac{1}{2' | goexeclatex
 Evaluation errors (domain violations, undefined symbols) exit with code **2**:
 
 ```sh
-echo '1/0' | goexeclatex
+printf '%s\n' '1/0' | goexeclatex
 # error: division by zero
 # exit 2
 
-echo '\sqrt{-1}' | goexeclatex
+printf '%s\n' '\sqrt{-1}' | goexeclatex
 # error: domain error: sqrt of negative
 # exit 2
 
-echo 'undefined_var' | goexeclatex
+printf '%s\n' 'undefined_var' | goexeclatex
 # error: undefined symbol: undefined_var
 # exit 2
 ```
@@ -157,9 +181,9 @@ result=$(goexeclatex -e '\sqrt{x^2+y^2}' -v x=3 -v y=4) && echo "Distance: $resu
 
 ```sh
 # Feed results into further computation
-A=$(echo '3^2' | goexeclatex)
-B=$(echo '4^2' | goexeclatex)
-echo "$A + $B" | goexeclatex
+A=$(goexeclatex -e '3^2')
+B=$(goexeclatex -e '4^2')
+printf '%s\n' "$A + $B" | goexeclatex
 # 25
 
 # Use in a loop

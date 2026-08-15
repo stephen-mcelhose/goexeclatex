@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -8,9 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/stephen-mcelhose/goexeclatex/internal/eval"
-	"github.com/stephen-mcelhose/goexeclatex/internal/lexer"
-	"github.com/stephen-mcelhose/goexeclatex/internal/parser"
+	"github.com/stephen-mcelhose/goexeclatex"
 )
 
 func main() {
@@ -30,11 +29,11 @@ func rootCmd() *cobra.Command {
 		Short: "Evaluate a LaTeX math expression",
 		Long: `goexeclatex reads a LaTeX math expression and prints its numeric result.
 
-Reads from stdin by default:
-  echo '\frac{1}{2} + \sqrt{9}' | goexeclatex
+Prefer -e for LaTeX (zsh echo interprets \f in \frac as a form feed):
+  goexeclatex -e '\frac{1}{2} + \sqrt{9}'
 
-Or supply the expression directly with -e:
-  goexeclatex -e '\sin{\pi/6}'`,
+Or pipe with printf:
+  printf '%s\n' '\sin{\pi/6}' | goexeclatex`,
 		Args:          cobra.NoArgs,
 		SilenceUsage:  true,
 		SilenceErrors: true,
@@ -49,24 +48,13 @@ Or supply the expression directly with -e:
 				die(1, err)
 			}
 
-			tokens, err := lexer.Lex(input)
+			result, err := goexeclatex.Eval(input, userVars)
 			if err != nil {
-				die(1, err) // lex error → exit 1 (spec §8)
-			}
-
-			node, err := parser.Parse(tokens)
-			if err != nil {
-				die(1, err) // parse error → exit 1 (spec §8)
-			}
-
-			scope := eval.NewScope()
-			for k, v := range userVars {
-				scope[k] = v
-			}
-
-			result, err := eval.Eval(node, scope)
-			if err != nil {
-				die(2, err) // eval error → exit 2 (spec §8)
+				var syn *goexeclatex.SyntaxError
+				if errors.As(err, &syn) {
+					die(1, err) // lex/parse → exit 1 (spec §8)
+				}
+				die(2, err) // eval → exit 2 (spec §8)
 			}
 
 			fmt.Println(formatResult(result, prec))

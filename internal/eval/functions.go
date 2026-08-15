@@ -126,10 +126,19 @@ func callBuiltin(name string, args []float64) (float64, error) {
 		return binomCoeff(args[0], args[1])
 
 	case "min":
+		if len(args) < 2 {
+			return 0, fmt.Errorf("eval: min requires at least 2 arguments, got %d", len(args))
+		}
 		return minArgs(args), nil
 	case "max":
+		if len(args) < 2 {
+			return 0, fmt.Errorf("eval: max requires at least 2 arguments, got %d", len(args))
+		}
 		return maxArgs(args), nil
 	case "gcd":
+		if len(args) < 2 {
+			return 0, fmt.Errorf("eval: gcd requires at least 2 arguments, got %d", len(args))
+		}
 		return gcdArgs(args)
 
 	default:

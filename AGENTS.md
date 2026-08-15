@@ -7,9 +7,10 @@ next milestone. Then read `docs/plan.md` for architecture context if needed.
 
 ## What this project is
 
-A Go CLI that evaluates a LaTeX math expression and prints its numeric result.
-Reads from stdin by default or via `-e`; supports variable bindings (`-v`) and
-output precision (`-p`).
+A Go **library** and **CLI** that evaluate a LaTeX math expression and produce
+its numeric result. The importable API is module-root `package goexeclatex`
+(`Eval`). The CLI (`cmd/goexeclatex`) reads from stdin or `-e`, supports
+variable bindings (`-v`) and output precision (`-p`), and calls the public API.
 
 ## Working style
 
@@ -88,10 +89,12 @@ Before calling a milestone done:
 ## Package layout
 
 ```
-internal/lexer/    — done (Tier 1 + v0.3 UNDERSCORE/NORM + v0.4 FLOOR/CEIL/BMOD)
-internal/parser/   — done (Tier 1 + v0.3 + v0.4 floor/ceil, sqrt[n], variadic, log_b, bmod)
-internal/eval/     — done (Tier 1 + v0.3 + v0.4 builtins; ADR-015 odd roots)
-cmd/goexeclatex/   — done (Tier 1 complete; goldens through v0.4)
+goexeclatex.go / errors.go — public library API (Eval, SyntaxError, EvalError)
+internal/lexer/            — done (Tier 1 + v0.3 UNDERSCORE/NORM + v0.4 FLOOR/CEIL/BMOD)
+internal/parser/           — done (Tier 1 + v0.3 + v0.4 floor/ceil, sqrt[n], variadic, log_b, bmod)
+internal/eval/             — done (Tier 1 + v0.3 + v0.4 builtins; ADR-015 odd roots)
+cmd/goexeclatex/           — CLI; calls public Eval; goldens through v0.4
+docs/specs/library.md      — normative public API spec (ADR-017)
 ```
 
 ## Key references
@@ -101,6 +104,8 @@ cmd/goexeclatex/   — done (Tier 1 complete; goldens through v0.4)
 | `docs/roadmap.md`                                | **Start here** — current focus, open issues, milestones |
 | `docs/plan.md`                                   | Stable architecture: pipeline, grammar, error policy |
 | `docs/specs/lexer.md`                            | Normative lexer spec (worked example)                |
+| `docs/specs/library.md`                          | Normative public library API spec                    |
+| `docs/adrs/adr-017-public-library-api.md`        | Public API layout / errors / non-scope               |
 | `docs/evaluatex-reference-implementation.md`     | Reference impl summary                               |
 | `docs/raw/evaluatex-reference-implementation.md` | Raw reference source (read-only)                     |
 | `docs/log.md`                                    | Append-only session log                              |

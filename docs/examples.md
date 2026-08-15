@@ -1,18 +1,21 @@
 ---
 type: how-to
 title: goexeclatex — Example Calls
-description: Concrete CLI invocations showing common evaluation patterns.
-tags: [goexeclatex, examples, cli]
-timestamp: 2026-08-15T16:25:00Z
+description: Concrete CLI invocations and pointer to the public library API.
+tags: [goexeclatex, examples, cli, library]
+timestamp: 2026-08-15T18:30:00Z
 ---
 
 # goexeclatex — Example Calls
 
+For the importable Go API (`goexeclatex.Eval`), see the [README](../README.md)
+and [[specs/library]]. The rest of this page is CLI-oriented ([[how-to]]).
+
 ## Basic arithmetic
 
 ```sh
-echo '2^{10}'                          | goexeclatex   # 1024
-echo '\frac{22}{7}'                    | goexeclatex   # 3.142857...
+printf '%s\n' '2^{10}'                 | goexeclatex   # 1024
+goexeclatex -e '\frac{22}{7}'                          # 3.142857...
 goexeclatex -e '\sqrt{2}'                              # 1.414213...
 goexeclatex -e '\frac{1}{2} + \sqrt{9}'               # 3.5
 goexeclatex -e '\sqrt[3]{27}'                          # ~3 (v0.4)

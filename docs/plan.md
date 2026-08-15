@@ -10,15 +10,18 @@ timestamp: 2026-08-15T03:04:00Z
 
 ## What it is
 
-A Go CLI that evaluates a LaTeX math expression and prints its numeric result.
-Reads from stdin by default or via `-e`; supports variable bindings (`-v`) and output precision (`-p`).
+A Go **library** and **CLI** that evaluate a LaTeX math expression to a numeric
+result. External programs import `github.com/stephen-mcelhose/goexeclatex` and
+call `Eval` ([[specs/library]], [[adrs/adr-017-public-library-api]]). The CLI
+reads from stdin or `-e`, supports `-v` / `-p`, and calls the same public API.
 
 ```
-echo "\frac{1}{2} + \sqrt{9}" | goexeclatex
+goexeclatex -e '\frac{1}{2} + \sqrt{9}'
 # => 3.5
 ```
 
-Pipe-first design. No interactive mode, no streaming protocol — just stdin in, float64 out. Composable with shell pipelines.
+Pipe-first CLI design. No interactive mode, no streaming protocol — just stdin
+in, float64 out. Composable with shell pipelines.
 
 ---
 
@@ -104,6 +107,10 @@ Symbol table (`Scope`) is a `map[string]float64` pre-seeded with built-in consta
 
 ## CLI interface (`cmd/goexeclatex/main.go`) — [[specs/cli]]
 
+The CLI is a thin client of the public library ([[specs/library]]). It owns
+flags, stdin/`-e`, `-v` parsing, `-p` formatting, ADR-011 message stripping,
+and exit codes. Evaluation goes through `goexeclatex.Eval`.
+
 Built with [Cobra](https://github.com/spf13/cobra).
 
 ```
@@ -126,11 +133,11 @@ Exit codes:
 Usage examples:
 
 ```sh
-echo '\frac{22}{7}'                  | goexeclatex          # 3.142857...
-echo '\sin(\pi / 6)'                 | goexeclatex          # 0.5
-echo '2^{10}'                        | goexeclatex          # 1024
-goexeclatex -e '\sqrt{2}'                                   # 1.4142...
-goexeclatex -v x=3 -e 'x^2 + 2x + 1'                       # 16
+goexeclatex -e '\frac{22}{7}'                            # 3.142857...
+goexeclatex -e '\sin(\pi / 6)'                           # 0.5
+goexeclatex -e '2^{10}'                                  # 1024
+goexeclatex -e '\sqrt{2}'                                # 1.4142...
+goexeclatex -v x=3 -e 'x^2 + 2x + 1'                     # 16
 ```
 
 ---
@@ -139,21 +146,23 @@ goexeclatex -v x=3 -e 'x^2 + 2x + 1'                       # 16
 
 ```
 goexeclatex/
+├── goexeclatex.go           Public Eval facade ([[specs/library]])
+├── errors.go                SyntaxError, EvalError
+├── goexeclatex_test.go      External-style library tests
 ├── cmd/
 │   └── goexeclatex/
-│       └── main.go          CLI entry point; reads stdin, calls Parse+Eval
+│       └── main.go          CLI; calls goexeclatex.Eval; formats -p
 ├── internal/
 │   ├── lexer/
 │   │   ├── lexer.go         Lex(input string) ([]Token, error)
 │   │   ├── token.go         Token type + TokenType enum
 │   │   └── lexer_test.go
 │   ├── parser/
-│   │   ├── parser.go        Parse(tokens []Token, scope Scope) (Node, error)
-│   │   ├── arities.go       map[string]int — command → arg count
-│   │   ├── node.go          AST node types
+│   │   ├── parser.go        Parse(tokens []Token) (Node, error)
+│   │   ├── node.go          AST node types (unexported outside module)
 │   │   └── parser_test.go
 │   └── eval/
-│       ├── eval.go          Eval(node Node, scope Scope) (float64, error)
+│       ├── eval.go          Eval(node Node, scope ScopeLookup) (float64, error)
 │       ├── scope.go         Scope type, built-in seeds
 │       ├── functions.go     built-in function implementations
 │       └── eval_test.go
@@ -168,16 +177,16 @@ goexeclatex/
 │   │   ├── lexer.md                         normative lexer spec
 │   │   ├── parser.md                        normative parser spec
 │   │   ├── eval.md                          normative evaluator spec
-│   │   └── cli.md                           normative CLI spec
+│   │   ├── cli.md                           normative CLI spec
+│   │   └── library.md                       normative public library API
 │   ├── adrs/
-│   │   └── adr-001 … adr-011               architecture decision records
+│   │   └── adr-001 … adr-017               architecture decision records
 │   ├── runbooks/
 │   │   └── ingest-reference-implementation.md
 │   └── raw/                                 immutable source files
 ├── go.mod
 └── README.md
 ```
-
 ---
 
 ## Milestones

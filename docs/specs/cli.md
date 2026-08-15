@@ -71,12 +71,18 @@ number).
 
 ## 6. Pipeline
 
-The tool **MUST** execute:
+The tool **MUST** obtain a numeric result by calling the public library API
+([[specs/library]]):
 
 ```
-expression → lexer.Lex → parser.Parse → eval.Eval(scope) → format → stdout
+expression → goexeclatex.Eval(expr, vars) → format → stdout
 ```
 
+`Eval` runs `lexer.Lex` → `parser.Parse` → `eval.Eval` internally. The CLI
+**MUST NOT** import `internal/{lexer,parser,eval}` directly.
+
+Lex/parse failures (**MUST** be detectable as [[specs/library]] syntax-stage
+errors) exit 1. Eval failures exit 2 (§8).
 ## 7. Output Format
 
 On success the tool **MUST** print the result followed by a single newline to
@@ -145,14 +151,18 @@ Where `<message>` is the internal error string with the package prefix
 ## 9. Examples
 
 ```sh
-echo '\frac{1}{2} + \sqrt{9}'     | goexeclatex          # 3.5
-echo '\sin{\pi/2}'                 | goexeclatex          # 1
-echo '2^{10}'                      | goexeclatex          # 1024
+printf '%s\n' '\frac{1}{2} + \sqrt{9}' | goexeclatex          # 3.5
+printf '%s\n' '\sin{\pi/2}'            | goexeclatex          # 1
+printf '%s\n' '2^{10}'                 | goexeclatex          # 1024
 goexeclatex -e '\sqrt{2}'                                 # 1.4142135623730951
+goexeclatex -e '\frac{1}{2} + \sqrt{9}'                   # 3.5
 goexeclatex -e '\sqrt{2}' -p 4                            # 1.4142
 goexeclatex -v x=3 -e 'x^2 + 2*x + 1'                    # 16
 goexeclatex -v x=3 -v y=4 -e '\sqrt{x^2+y^2}'            # 5
 ```
+
+> **Shell note:** On zsh, `echo '\frac{…}'` interprets `\f` as a form feed.
+> Prefer `printf '%s\n' '…'` or `goexeclatex -e '…'` (see [[how-to]]).
 
 ## Sources
 
