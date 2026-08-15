@@ -1,7 +1,12 @@
 # Wiki Schema
 
 This wiki is maintained by an LLM using the llm-wiki skill
-(https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+(https://gist.github.com/karpathy/442a6bf555914893e9541c11519de94f).
+
+## Wiki Root
+
+`docs/` (the directory containing this file) is `WIKI_ROOT`.  All paths below
+are relative to it.
 
 ## Domain
 
@@ -9,12 +14,34 @@ Engineering knowledge base: Go, LaTeX, compilers, parsers, math evaluation,
 language design, and software architecture decisions encountered during
 development of goexeclatex and adjacent projects.
 
+## Directory Structure
+
+Pages are organised into subdirectories by kind.  The subdirectory **is part
+of the slug** (e.g. `specs/lexer`, `adrs/adr-001-char-mode`).
+
+| Directory  | Purpose                                              |
+| ---------- | ---------------------------------------------------- |
+| `specs/`     | RFC 2119-style normative specifications              |
+| `adrs/`      | Architecture Decision Records                        |
+| `runbooks/`  | Operational procedures with steps and verification   |
+| `raw/`       | Immutable raw sources (LLM reads; never writes)      |
+| *(root)*     | Concept pages, proposals, spikes, how-tos            |
+
+New subdirectories MAY be added as the domain grows; update this table when
+one is added.
+
 ## Conventions
 
-- **Page slugs**: kebab-case, flat — all pages live directly in the wiki root, never in subdirectories (e.g., `transformer-architecture.md`, `adr-001-some-decision.md`)
-- **Frontmatter**: OKF — `type` (default `concept`), `title`, `description`, `timestamp` (ISO-8601 UTC); optional `resource`, `tags`
-- **Cross-references**: `[[slug]]` wikilinks — slug is the filename without `.md`. Never use directory prefixes.
-- **Sources section**: every page ends with `## Sources` listing its raw inputs
+- **Page slugs**: `kebab-case`, relative to `WIKI_ROOT` including the
+  subdirectory — e.g. `specs/lexer`, `adrs/adr-001-char-mode`, `plan`.
+- **Filenames**: `<slug>.md` — the slug maps 1-to-1 to the file path under
+  `WIKI_ROOT`.
+- **Frontmatter**: OKF — required `type`, `title`, `description`, `timestamp`
+  (ISO-8601 UTC); optional `resource`, `tags`.
+- **Cross-references**: `[[slug]]` wikilinks where slug includes the
+  subdirectory prefix when the target is not in the root —
+  e.g. `[[specs/lexer]]`, `[[adrs/adr-001-char-mode]]`.
+- **Sources section**: every page ends with `## Sources` listing its raw inputs.
 
 ## Operations
 

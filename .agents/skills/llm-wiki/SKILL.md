@@ -42,15 +42,18 @@ Reference: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 Determine `WIKI_ROOT` before doing anything else:
 
 1. **Explicit path** — user passed a path argument (e.g., `/llm-wiki ~/wiki ingest …`). Use it.
-   - If the path exists and contains `index.md` + `log.md`: confirmed, proceed.
+   - If the path exists and contains `AGENTS.md`: confirmed, proceed.
    - If the path does not exist (or is empty): offer to initialize it there, then run **Init flow**.
 2. **Session context** — a wiki root was established earlier in this conversation. Use it.
-3. **Auto-discover** — check for an `index.md` + `log.md` pair in:
+3. **Auto-discover** — search for an `AGENTS.md` file (the canonical wiki schema marker) in:
    - Current working directory
+   - `docs/` under the current working directory  ← project wikis often live here
    - `~/wiki`
    - `~/notes/wiki`
    - `~/obsidian`
    - `~/Documents/wiki`
+   - Read any `AGENTS.md` found and check for a `## Wiki Root` section to confirm it is a
+     wiki schema (not an unrelated agents config). If confirmed, that directory is `WIKI_ROOT`.
 4. **Not found** — ask the user once:
 
 ```
@@ -105,7 +108,18 @@ When `WIKI_ROOT` doesn't exist yet:
 
 2. **Discuss takeaways.** Briefly surface (in chat) the 3–5 key ideas from the source. This is the human's chance to redirect focus before writes happen.
 
-3. **Determine the slug.** Derive a kebab-case slug from the source title (e.g., `transformer-architecture`, `karpathy-llm-wiki`). This becomes `WIKI_ROOT/<slug>.md`.
+3. **Determine the slug.** Derive a kebab-case slug from the source title. Place it in the
+   appropriate subdirectory based on the page `type` (read `AGENTS.md` for the directory table;
+   fall back to the defaults below). The full slug is `<subdir>/<name>` or just `<name>` for
+   root pages, and the file path is `WIKI_ROOT/<slug>.md`.
+
+   | Page type    | Default subdirectory |
+   | ------------ | -------------------- |
+   | `decision`   | `adrs/`              |
+   | `spec`       | `specs/`             |
+   | all others   | *(root)*             |
+
+   Create the subdirectory if it does not exist.
 
 4. **Write the source summary page** with OKF frontmatter (see `okf` skill). Infer `type` from the content — `concept` is the fallback when no other type fits better:
 
@@ -223,12 +237,13 @@ When `WIKI_ROOT` doesn't exist yet:
 
 | Convention            | Rule                                                                                       |
 | --------------------- | ------------------------------------------------------------------------------------------ |
-| **Page slugs**        | `kebab-case.md` derived from the concept title. **All pages live directly in `WIKI_ROOT/` — no subdirectories.** Organisation emerges from wikilinks and the graph, not from folders. |
-| **Frontmatter**       | OKF: required `type`, `title`, `description`, `timestamp`; optional `resource`, `tags`. Infer `type` from content (`concept` \| `how-to` \| `decision` \| `runbook` \| `proposal` \| `spike`); default to `concept`. |
-| **Cross-references**  | Use `[[slug]]` wikilinks where slug = filename without `.md`. Never use relative paths or directory prefixes. |
-| **Sources section**   | Every page ends with `## Sources` listing all raw docs it was derived from                 |
+| **Page slugs**        | `kebab-case`, relative to `WIKI_ROOT` and **including the subdirectory** — e.g. `specs/lexer`, `adrs/adr-001-char-mode`, `plan`. The file lives at `WIKI_ROOT/<slug>.md`. |
+| **Subdirectories**    | Determined by page `type` (see ingest §Step 3). Read `AGENTS.md` for the project-specific directory table. New subdirs are allowed; update `AGENTS.md` when adding one. |
+| **Frontmatter**       | OKF: required `type`, `title`, `description`, `timestamp`; optional `resource`, `tags`. Infer `type` from content (`concept` \| `how-to` \| `decision` \| `runbook` \| `proposal` \| `spike` \| `spec`); default to `concept`. |
+| **Cross-references**  | Use `[[slug]]` wikilinks where slug = path relative to `WIKI_ROOT` without `.md` extension — e.g. `[[specs/lexer]]`, `[[plan]]`. Never use absolute paths. |
+| **Sources section**   | Every page ends with `## Sources` listing all raw docs it was derived from.                |
 | **Raw sources**       | Always read-only. LLM never writes to source files.                                        |
-| **index.md**          | Updated on every write operation. One row per page.                                        |
+| **index.md**          | Updated on every write operation. One row per page. Slug column includes subdir prefix.    |
 | **log.md**            | Append-only. Never rewrite or delete entries.                                              |
 | **Synthesis over transcription** | Pages should integrate and cross-reference, not just summarize one source.    |
 | **Dates**             | Frontmatter `timestamp`: `date -u +%Y-%m-%dT%H:%M:%SZ`. Log entries: `YYYY-MM-DD`.         |
@@ -249,7 +264,7 @@ When `WIKI_ROOT` doesn't exist yet:
 
 ## Appendix A — `AGENTS.md` template
 
-Write this to `WIKI_ROOT/AGENTS.md` when initializing a new wiki. The user should edit it to fill in their domain.
+Write this to `WIKI_ROOT/AGENTS.md` when initializing a new wiki. The user should edit it to fill in their domain and directory structure.
 
 ```markdown
 # Wiki Schema
@@ -257,15 +272,30 @@ Write this to `WIKI_ROOT/AGENTS.md` when initializing a new wiki. The user shoul
 This wiki is maintained by an LLM using the llm-wiki skill
 (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
+## Wiki Root
+
+`<this directory>` is `WIKI_ROOT`. All paths below are relative to it.
+
 ## Domain
 
 <What is this wiki about? What topics does it cover?>
 
+## Directory Structure
+
+Pages are organised into subdirectories by kind. The subdirectory is part of the slug.
+
+| Directory  | Purpose                                              |
+| ---------- | ---------------------------------------------------- |
+| `specs/`   | RFC 2119-style normative specifications              |
+| `adrs/`    | Architecture Decision Records                        |
+| `raw/`     | Immutable raw sources (LLM reads; never writes)      |
+| *(root)*   | Concept pages, proposals, spikes, how-tos, runbooks  |
+
 ## Conventions
 
-- **Page slugs**: kebab-case, flat — all pages live directly in the wiki root, never in subdirectories (e.g., `transformer-architecture.md`, `adr-001-some-decision.md`)
+- **Page slugs**: `kebab-case`, relative to `WIKI_ROOT` including the subdirectory — e.g. `specs/lexer`, `adrs/adr-001-some-decision`, `plan`
 - **Frontmatter**: OKF — `type` (default `concept`), `title`, `description`, `timestamp` (ISO-8601 UTC); optional `resource`, `tags`
-- **Cross-references**: `[[slug]]` wikilinks — slug is the filename without `.md`. Never use directory prefixes.
+- **Cross-references**: `[[slug]]` wikilinks — slug includes subdirectory prefix when target is not in root, e.g. `[[specs/lexer]]`
 - **Sources section**: every page ends with `## Sources` listing its raw inputs
 
 ## Operations
