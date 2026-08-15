@@ -150,6 +150,22 @@ func TestFlagCases(t *testing.T) {
 		{"var greek sin", []string{"-v", "alpha=1.5", "-e", `\sin{\alpha}`}, "0.9974949866040544", 0},
 		{"var ln of var", []string{"-v", "x=1", "-e", `\ln{x}`}, "0", 0},
 		{"var binom n k", []string{"-v", "n=5", "-v", "k=2", "-e", `\binom{n}{k}`}, "10", 0},
+
+		// v0.3 subscript variables (spec §6.1).
+		{"subscript x_0", []string{"-v", "x_0=5", "-e", "x_{0}"}, "5", 0},
+		{"subscript x_1^2", []string{"-v", "x_1=3", "-e", "x_{1}^2"}, "9", 0},
+		{"subscript sum", []string{"-v", "x_0=1", "-v", "x_1=2", "-v", "x_2=3", "-e", "x_{0}+x_{1}+x_{2}"}, "6", 0},
+
+		// v0.3 big operators (spec §6.2).
+		{"sum 1..5", []string{"-e", `\sum_{i=1}^{5} i`}, "15", 0},
+		{"prod 1..5 factorial", []string{"-e", `\prod_{i=1}^{5} i`}, "120", 0},
+		{"sum with var bound", []string{"-v", "n=4", "-e", `\sum_{i=1}^{n} i`}, "10", 0},
+		{"subscript inside sum", []string{"-v", "x_0=10", "-v", "x_1=20", "-v", "x_2=30", "-e", `\sum_{i=0}^{2} x_{i}`}, "60", 0},
+
+		// v0.3 norm (spec §6.3).
+		{"norm negative", []string{"-e", `\lVert -4 \rVert`}, "4", 0},
+		{"norm positive", []string{"-e", `\lVert 3 \rVert`}, "3", 0},
+		{"norm expression", []string{"-v", "x=1", "-v", "y=4", "-e", `\lVert x - y \rVert`}, "3", 0},
 	}
 
 	for _, c := range cases {

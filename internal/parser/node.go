@@ -47,3 +47,29 @@ type FunctionNode struct {
 }
 
 func (n *FunctionNode) node() {}
+
+// SubscriptNode represents a subscripted variable x_{i} (spec §5.1).
+type SubscriptNode struct {
+	Base Node // the symbol being subscripted
+	Sub  Node // subscript index expression
+}
+
+func (n *SubscriptNode) node() {}
+
+// BigOpNode represents \sum or \prod over a discrete range (spec §5.2).
+type BigOpNode struct {
+	Op   string // "sum" or "prod"
+	Var  string // iteration variable name (e.g. "i")
+	From Node   // lower bound expression
+	To   Node   // upper bound expression
+	Body Node   // body expression (evaluated once per step)
+}
+
+func (n *BigOpNode) node() {}
+
+// NormNode represents \lVert expr \rVert — scalar absolute value (spec §5.3).
+type NormNode struct {
+	Arg Node
+}
+
+func (n *NormNode) node() {}

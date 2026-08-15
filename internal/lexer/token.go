@@ -20,12 +20,15 @@ const (
 	BANG                        // spec §3: !
 	COMMA                       // spec §3: ,
 	UNDERSCORE                  // spec §3: _ (Tier 0.3 — subscript)
+	EQUALS                      // spec §3.2: = (big-op bound only)
+	NORM                        // spec §3.3: \lVert / \rVert
 	EOF                         // spec §8: synthetic end-of-input sentinel
 )
 
 var tokenTypeNames = [...]string{
 	"NUMBER", "SYMBOL", "COMMAND", "PLUS", "MINUS", "TIMES", "DIVIDE",
-	"POWER", "LPAREN", "RPAREN", "PIPE", "BANG", "COMMA", "UNDERSCORE", "EOF",
+	"POWER", "LPAREN", "RPAREN", "PIPE", "BANG", "COMMA", "UNDERSCORE",
+	"EQUALS", "NORM", "EOF",
 }
 
 // String returns the name of the token type.
@@ -52,7 +55,7 @@ type Token struct {
 // String returns a compact human-readable representation of the token.
 func (t Token) String() string {
 	switch t.Type {
-	case PLUS, MINUS, TIMES, DIVIDE, POWER, PIPE, BANG, COMMA, UNDERSCORE, EOF:
+	case PLUS, MINUS, TIMES, DIVIDE, POWER, PIPE, BANG, COMMA, UNDERSCORE, EQUALS, NORM, EOF:
 		return t.Type.String()
 	default:
 		return t.Type.String() + "(" + t.Value + ")"

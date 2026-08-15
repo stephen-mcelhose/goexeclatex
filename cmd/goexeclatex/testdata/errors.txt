@@ -24,3 +24,7 @@ myvar	undefined symbol: myvar	2
 \binom{-1}{2}	domain error	2
 \binom{5}{1.5}	domain error	2
 \dfrac{1}{0}	division by zero	2
+# v0.3 errors
+\sum_{i=1}^{\infty} i	upper bound must be	2
+x_{-1}	non-negative integer	2
+x_{0}	undefined symbol: x_0	2
