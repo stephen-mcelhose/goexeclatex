@@ -548,10 +548,29 @@ func TestErrorEOFInCharMode(t *testing.T) {
 		}
 	}
 }
-// Known limitation: multi-byte UTF-8 runes in char-mode (e.g. 2^α) produce an
-// error with an escaped byte in the message (\xce) rather than the full rune (α).
-// LaTeX math expressions are ASCII-dominant so this is not fixed in Tier 1.
-// See GAN review §D advisory "Broken UTF-8 Representation in Unexpected Character Error".
+// ---- §6.1.3 Rune boundary in char mode (issue #2) ---------------------------
+
+// TestCharModeRuneBoundary verifies that char mode reads exactly one UTF-8
+// rune (spec §6.1.3), not one byte.  With the current ASCII-only pattern
+// table a multi-byte rune in char-mode position cannot be matched and always
+// produces an error — but the error MUST occur at the rune start position,
+// not at a mid-rune byte offset.
+//
+// No red-phase test is possible for position drift because nextN does not
+// advance l.pos on a failed match.  The rune-boundary fix matters for
+// correctness when non-ASCII patterns are added (Tier 2+).  This test guards
+// against regression to byte-mode reading by verifying the error is returned.
+//
+// The error message character representation is tracked separately in
+// issue #3 (deferred, ADR-002).
+func TestCharModeRuneBoundary(t *testing.T) {
+	// α (U+03B1) is 2 bytes in UTF-8; it is not in the Tier 1 pattern table.
+	// 2^α must error — char mode cannot match a raw Greek letter.
+	_, err := Lex("2^α")
+	if err == nil {
+		t.Error(`Lex("2^α"): expected error for unrecognised rune in char mode, got nil`)
+	}
+}
 
 // ---- Helpers ----------------------------------------------------------------
 

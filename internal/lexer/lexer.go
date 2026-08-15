@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 // commandArities maps normalised command names (backslash-stripped, lowercased)
@@ -173,13 +174,14 @@ func (l *lexer) next() (Token, error) {
 
 // nextCharToken implements the char-mode read rule from spec §6.1:
 //   - If the next non-whitespace character is \, read a full COMMAND token.
-//   - Otherwise read exactly one byte.
+//   - Otherwise read exactly one UTF-8 rune (spec §6.1.3).
 func (l *lexer) nextCharToken() (Token, error) {
 	l.skipWhitespace()
 	if l.pos < len(l.input) && l.input[l.pos] == '\\' {
 		return l.next()
 	}
-	return l.nextN(1)
+	_, size := utf8.DecodeRuneInString(l.input[l.pos:])
+	return l.nextN(size)
 }
 
 // nextN reads the next token from a window of at most maxLen bytes.
