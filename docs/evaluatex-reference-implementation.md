@@ -175,3 +175,4 @@ are merged into the default constants map.
 - Source code: `~/repos/evaluatex/src/`
 - Tests: `~/repos/evaluatex/test/evaluatex.spec.js`
 - TODO: `~/repos/evaluatex/TODO.txt`
+- Ingest procedure: [[runbooks/ingest-reference-implementation]]

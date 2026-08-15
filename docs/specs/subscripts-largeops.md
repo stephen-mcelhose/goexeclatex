@@ -388,7 +388,8 @@ The following items are explicitly **out of scope** for this specification:
 - **`\sum_{i=a}^{b}` with non-integer step** — step is always 1. No
   half-integer or floating-point stepping.
 - **`\lVert v \rVert` for vector `v`** — out of scope; only scalar norm
-  (= absolute value) is supported.
+  (= absolute value) is supported. (Scalar form shipped in v0.3; prior deferral
+  [[adrs/adr-004-lVert-deferred]] is superseded.)
 
 ## 9. Implementation Notes
 

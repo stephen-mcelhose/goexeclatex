@@ -3,7 +3,7 @@
 | Page                                        | Summary                                                                     | Tags                                          |
 | ------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
 | [[plan]]                                          | Stable architecture record: pipeline design, grammar, package layout, error policy   | goexeclatex, architecture, cli                      |
-| [[roadmap]]                                       | Forward-looking milestone tracker: current focus, v0.2/v0.3/vFuture, issue links    | goexeclatex, roadmap, milestones                    |
+| [[roadmap]]                                       | Forward-looking milestone tracker: current focus, v0.4/#8, vFuture                  | goexeclatex, roadmap, milestones                    |
 | [[examples]]                                      | Concrete CLI invocations: arithmetic, trig, AUPC, WI, TH                            | goexeclatex, examples, cli                          |
 | [[how-to]]                                        | User guide: stdin/-e/-p/-v flags, supported syntax, error handling, shell compose   | goexeclatex, cli, how-to                            |
 | [[latex-math-evaluable-spec]]                     | Catalogue of LaTeX math constructs with numeric evaluation semantics                 | latex, math, spec, goexeclatex                      |

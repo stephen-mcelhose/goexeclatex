@@ -110,7 +110,7 @@ places.
 
 ### 7.3 `±Inf`
 
-`±Inf` results **MUST** be printed and exit 0 (ADR-010). They are valid IEEE
+`±Inf` results **MUST** be printed and exit 0 ([[adrs/adr-010-inf-result-exits-zero]]). They are valid IEEE
 754 values — the evaluator succeeded.
 
 ### 7.4 `NaN`
@@ -127,7 +127,7 @@ error: <message>
 ```
 
 Where `<message>` is the internal error string with the package prefix
-(`eval: `, `lexer: `, `parser: `) stripped (ADR-011).
+(`eval: `, `lexer: `, `parser: `) stripped ([[adrs/adr-011-cli-error-prefix-stripping]]).
 
 | Condition              | Exit | Example stderr                                      |
 | ---------------------- | ---- | --------------------------------------------------- |
@@ -153,3 +153,8 @@ goexeclatex -e '\sqrt{2}' -p 4                            # 1.4142
 goexeclatex -v x=3 -e 'x^2 + 2*x + 1'                    # 16
 goexeclatex -v x=3 -v y=4 -e '\sqrt{x^2+y^2}'            # 5
 ```
+
+## Sources
+
+- [[plan]], [[specs/eval]]
+- [[adrs/adr-009-explicit-domain-errors-over-nan]], [[adrs/adr-010-inf-result-exits-zero]], [[adrs/adr-011-cli-error-prefix-stripping]]

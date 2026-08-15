@@ -175,8 +175,9 @@ Domain error message **MUST** be `eval: domain error: <name> argument out of ran
 where `<name>` is the name as it appeared in the expression (e.g. `arcsin`).
 
 **Divergence from evaluatex:** evaluatex supports only `\asin`/`\acos`/`\atan`
-and propagates `NaN` silently. goexeclatex supports both spellings and returns
-explicit domain errors.
+and propagates `NaN` silently. goexeclatex supports both spellings ([[adrs/adr-003-asin-not-arcsin]],
+later amended for aliases) and returns explicit domain errors
+([[adrs/adr-009-explicit-domain-errors-over-nan]]).
 
 ### 6.4 Logarithmic and Exponential
 
@@ -192,8 +193,8 @@ Domain error **MUST** be `eval: domain error: <name> argument out of range`.
 
 > **Divergence from evaluatex:** evaluatex does not expose `\ln`, `\log`, or
 > `\exp` as LaTeX commands. goexeclatex follows standard LaTeX convention:
-> `\ln` = natural log, `\log` = base-10 log. `\log_{b}(x)` subscript notation
-> is deferred to Tier 0.3 (subscript support).
+> `\ln` = natural log, `\log` = base-10 log. `\log_{b}(x)` subscript-base form
+> is defined in [[specs/parser-extensions]] §6 (v0.4).
 
 ### 6.5 Hyperbolic
 
@@ -284,4 +285,10 @@ blockers. Remaining deferrals:
 
 Shipped in v0.4 (do not treat as deferred): `\lfloor…\rfloor`, `\lceil…\rceil`,
 `\sqrt[n]{x}`, `\min`/`\max`/`\gcd`, `\bmod`, `\log_{b}(x)`.
+
+## Sources
+
+- [[plan]], [[evaluatex-reference-implementation]], [[latex-math-evaluable-spec]]
+- [[specs/parser-extensions]], [[specs/subscripts-largeops]]
+- [[adrs/adr-003-asin-not-arcsin]], [[adrs/adr-009-explicit-domain-errors-over-nan]], [[adrs/adr-010-inf-result-exits-zero]], [[adrs/adr-015-odd-integer-roots-of-negatives]]
 
