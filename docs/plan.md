@@ -3,7 +3,7 @@ type: proposal
 title: goexeclatex — Implementation Plan
 description: Formal implementation plan for a Go CLI that numerically evaluates LaTeX math expressions read from stdin.
 tags: [goexeclatex, plan, cli, go]
-timestamp: 2026-08-14T23:00:00Z
+timestamp: 2026-08-15T03:04:00Z
 ---
 
 # goexeclatex — Implementation Plan
@@ -29,7 +29,7 @@ Three-phase pipeline, mirroring evaluatex:
 stdin → Lexer → []Token → Parser → AST → Evaluator → float64 → stdout
 ```
 
-### Phase 1 — Lexer (`internal/lexer/`)
+### Phase 1 — Lexer (`internal/lexer/`) — [[specs/lexer]]
 
 Reads a `string` (entire stdin, trimmed), emits `[]Token`.
 
@@ -62,7 +62,7 @@ Post-lex passes:
 
 **Char-mode rule (from evaluatex):** After `^` or a single-arg command, consume exactly one character or one `{...}` group. This ensures `2^24` parses as `2^2 * 4` (LaTeX single-char superscript), not `2^24`.
 
-### Phase 2 — Parser (`internal/parser/`)
+### Phase 2 — Parser (`internal/parser/`) — [[specs/parser]]
 
 Recursive-descent. Grammar (precedence low → high):
 
@@ -87,7 +87,7 @@ atom       → NUMBER
 
 Arity table (`internal/parser/arities.go`) drives how many `{...}` arguments each `\command` consumes.
 
-### Phase 3 — Evaluator (`internal/eval/`)
+### Phase 3 — Evaluator (`internal/eval/`) — [[specs/eval]]
 
 Depth-first AST walk. Returns `(float64, error)`.
 
@@ -95,7 +95,7 @@ Symbol table (`Scope`) is a `map[string]float64` pre-seeded with built-in consta
 
 ---
 
-## CLI interface (`cmd/goexeclatex/main.go`)
+## CLI interface (`cmd/goexeclatex/main.go`) — [[specs/cli]]
 
 Built with [Cobra](https://github.com/spf13/cobra).
 
@@ -151,10 +151,22 @@ goexeclatex/
 │       ├── functions.go     built-in function implementations
 │       └── eval_test.go
 ├── docs/
-│   ├── plan.md              (this file)
-│   ├── latex-math-evaluable-spec.md
-│   ├── evaluatex-reference-implementation.md
-│   └── goexeclatex-gap-analysis.md
+│   ├── plan.md                              (this file)
+│   ├── how-to.md                            user guide
+│   ├── examples.md                          annotated CLI examples
+│   ├── latex-math-evaluable-spec.md         evaluable LaTeX subset catalogue
+│   ├── evaluatex-reference-implementation.md  reference impl deep-read
+│   ├── goexeclatex-gap-analysis.md          gap analysis + tiered roadmap
+│   ├── specs/
+│   │   ├── lexer.md                         normative lexer spec
+│   │   ├── parser.md                        normative parser spec
+│   │   ├── eval.md                          normative evaluator spec
+│   │   └── cli.md                           normative CLI spec
+│   ├── adrs/
+│   │   └── adr-001 … adr-011               architecture decision records
+│   ├── runbooks/
+│   │   └── ingest-reference-implementation.md
+│   └── raw/                                 immutable source files
 ├── go.mod
 └── README.md
 ```
@@ -163,22 +175,22 @@ goexeclatex/
 
 ## Milestones
 
-### v0.1 — Tier 1: evaluatex parity
+### v0.1 — Tier 1: evaluatex parity ✅ complete (2026-08-15)
 
 **Goal:** all features the JS reference covers, in Go.
 
-- [ ] `internal/lexer` — tokeniser + post-lex remaps
-- [ ] `internal/parser` — recursive descent, arity table, implicit multiply
-- [ ] `internal/eval` — AST evaluator, Scope, built-ins
-- [ ] Built-in constants: `\pi`, `e`, `\tau`, `\phi`
-- [ ] Trig: `\sin/\cos/\tan/\sec/\csc/\cot/\asin/\acos/\atan/\asec/\acsc/\acot`
-- [ ] `\frac{a}{b}`, `\sqrt{x}`, `\times`, `\cdot`
-- [ ] `|expr|` and `\lvert expr \rvert` absolute value
-- [ ] `expr!` factorial (integer only, error otherwise)
-- [ ] Implicit multiplication
-- [ ] `\left` / `\right` grouping
-- [ ] `cmd/goexeclatex` — stdin pipe, `-var`, `-prec`, `-e` flags
-- [ ] Table-driven unit tests for all of the above
+- [x] `internal/lexer` — tokeniser + post-lex remaps ([[specs/lexer]])
+- [x] `internal/parser` — recursive descent, arity table, implicit multiply ([[specs/parser]])
+- [x] `internal/eval` — AST evaluator, Scope, built-ins ([[specs/eval]])
+- [x] Built-in constants: `\pi`, `e`, `\tau`, `\phi`
+- [x] Trig: `\sin/\cos/\tan/\sec/\csc/\cot/\asin/\acos/\atan/\asec/\acsc/\acot`
+- [x] `\frac{a}{b}`, `\sqrt{x}`, `\times`, `\cdot`
+- [x] `|expr|` and `\lvert expr \rvert` absolute value
+- [x] `expr!` factorial (integer only, error otherwise)
+- [x] Implicit multiplication
+- [x] `\left` / `\right` grouping
+- [x] `cmd/goexeclatex` — stdin pipe, `-var`, `-prec`, `-e` flags ([[specs/cli]])
+- [x] Table-driven unit tests for all of the above
 
 ### v0.2 — Tier 2: function completeness
 
@@ -215,12 +227,15 @@ goexeclatex/
 
 ## Error handling policy
 
+See [[adrs/adr-009-explicit-domain-errors-over-nan]], [[adrs/adr-010-inf-result-exits-zero]], [[adrs/adr-011-cli-error-prefix-stripping]].
+
 - **Parse errors** → print `error: <message> at position <n>` to stderr, exit 1
 - **Eval errors** → print `error: <message>` to stderr, exit 2
   - Division by zero → `error: division by zero`
   - Domain error (e.g. `\sqrt{-1}`) → `error: domain error: sqrt of negative`
   - Undefined symbol → `error: undefined symbol: \foo`
   - Non-integer factorial → `error: factorial requires a non-negative integer`
+- **±Inf** → print `+Inf` / `-Inf` to stdout, exit 0 ([[adrs/adr-010-inf-result-exits-zero]])
 - **Success** → result on stdout, newline-terminated, exit 0
 
 ---
