@@ -15,6 +15,7 @@ import (
 
 func main() {
 	if err := rootCmd().Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
 	}
 }
@@ -34,6 +35,7 @@ Reads from stdin by default:
 
 Or supply the expression directly with -e:
   goexeclatex -e '\sin{\pi/6}'`,
+		Args:          cobra.NoArgs,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -97,8 +99,8 @@ func userMessage(err error) string {
 
 // readInput returns the expression from -e or stdin.
 func readInput(cmd *cobra.Command, expr string) (string, error) {
-	if expr != "" {
-		return strings.TrimSpace(expr), nil
+	if e := strings.TrimSpace(expr); e != "" {
+		return e, nil
 	}
 	b, err := io.ReadAll(cmd.InOrStdin())
 	if err != nil {
@@ -119,11 +121,15 @@ func parseVars(vars []string) (map[string]float64, error) {
 		if !ok {
 			return nil, fmt.Errorf("invalid -v value %q: expected name=value", v)
 		}
+		trimName := strings.TrimSpace(name)
+		if trimName == "" {
+			return nil, fmt.Errorf("invalid -v value %q: variable name cannot be empty", v)
+		}
 		val, err := strconv.ParseFloat(strings.TrimSpace(raw), 64)
 		if err != nil {
 			return nil, fmt.Errorf("invalid -v value %q: %w", v, err)
 		}
-		scope[strings.TrimSpace(name)] = val
+		scope[trimName] = val
 	}
 	return scope, nil
 }
@@ -134,6 +140,9 @@ func parseVars(vars []string) (map[string]float64, error) {
 func formatResult(v float64, prec int) string {
 	if prec < 0 {
 		return strconv.FormatFloat(v, 'g', -1, 64)
+	}
+	if prec > 100 {
+		prec = 100
 	}
 	return strconv.FormatFloat(v, 'f', prec, 64)
 }

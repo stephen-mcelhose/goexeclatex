@@ -3,12 +3,14 @@ package main_test
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 // bin is the path to the compiled binary, set once in TestMain.
@@ -19,21 +21,25 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		panic("mktemp: " + err.Error())
 	}
-	defer os.RemoveAll(tmp)
 
 	bin = filepath.Join(tmp, "goexeclatex")
 	out, err := exec.Command("go", "build", "-o", bin, ".").CombinedOutput()
 	if err != nil {
+		os.RemoveAll(tmp)
 		panic("build failed:\n" + string(out))
 	}
 
-	os.Exit(m.Run())
+	code := m.Run()
+	os.RemoveAll(tmp)
+	os.Exit(code)
 }
 
 // run executes the binary with the given args, optionally piping stdin.
-// Returns stdout, stderr, and the exit code.
+// Returns stdout, stderr, and the exit code. Aborts after 5 seconds.
 func run(stdin string, args ...string) (stdout, stderr string, exit int) {
-	cmd := exec.Command(bin, args...)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, bin, args...)
 	if stdin != "" {
 		cmd.Stdin = strings.NewReader(stdin)
 	}
@@ -164,6 +170,9 @@ func TestFlagErrors(t *testing.T) {
 		wantExit        int
 	}{
 		{"empty -e", []string{"-e", ""}, "", "no expression provided", 1},
+		{"whitespace -e", []string{"-e", "   "}, "", "no expression provided", 1},
+		{"positional arg", []string{"1+2"}, "", "unknown command", 1},
+		{"empty var name", []string{"-v", "=10", "-e", "1"}, "", "variable name cannot be empty", 1},
 		{"bad -v format", []string{"-v", "x", "-e", "1"}, "", "expected name=value", 1},
 		{"bad -v value", []string{"-v", "x=abc", "-e", "1"}, "", "invalid", 1},
 		{"eval error exit 2", []string{"-e", "1/0"}, "", "division by zero", 2},
