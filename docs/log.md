@@ -70,3 +70,7 @@ Advisory (not fixed — human judgment / intentional):
 ## [2026-08-15] ingest | #15 C+B — host Tier A skills + encode Phase 3
 
 Decision C+B on [#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15): encode planning/Phase 3 in root AGENTS.md + roadmap; vendor genericized `clarify-issue`, `breakdown-issue`, `ac-plan-loop` under `.agents/skills/`; declare in-repo `llm-wiki` canonical. Artifacts: `.agents/issues/issue-<N>/`. Tier B / community pack deferred. Issue closed.
+
+## [2026-08-15] lint | PR #21 GAN punch-list (process skills)
+
+Fixed: roadmap v0.4 “pending GAN” stale header; AGENTS/roadmap Phase 3 process vs plan.md Evaluator disambiguation; docs/AGENTS.md points at in-repo llm-wiki; skills.json registers local clarify/breakdown/ac-plan-loop. Deferred: Cursor slash `/skill` discovery vs description-only; personal ~/.cursor/skills shadowing; #15 closed before merge.

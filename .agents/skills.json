@@ -1,6 +1,9 @@
 {
   "skills": [
     "local/llm-wiki",
+    "local/clarify-issue",
+    "local/breakdown-issue",
+    "local/ac-plan-loop",
     "csgdaa-core/commit",
     "csgdaa-core/explore",
     "csgdaa-core/lint",

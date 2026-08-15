@@ -65,7 +65,11 @@ The lexer spec at `docs/specs/lexer.md` is the worked example to follow.
 Do not write implementation code before the spec exists. Do not skip the
 red-phase confirmation.
 
-### Phase 3 — Closing review
+### Phase 3 — Closing review (process)
+
+> Not the same as `docs/plan.md` “Phase 3 — Evaluator”. That is the architecture
+> build order for `internal/eval/`. **This** Phase 3 is the end-of-milestone
+> discriminator pass before calling work done.
 
 Before calling a milestone done:
 
