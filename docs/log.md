@@ -66,3 +66,7 @@ Advisory (not fixed — human judgment / intentional):
 - Specs/ADRs use hybrid frontmatter (`id`/`status`/`date` plus OKF `type`); full OKF-only upgrade left as prior advisory.
 - `evaluatex-reference-implementation.md` SYMBOL row still shows evaluatex’s `[A-Za-z_…]` pattern — correct for that reference, not goexeclatex (divergence documented in ADR-013).
 - `raw/` is read-only; not indexed (by design).
+
+## [2026-08-15] ingest | #15 C+B — host Tier A skills + encode Phase 3
+
+Decision C+B on [#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15): encode planning/Phase 3 in root AGENTS.md + roadmap; vendor genericized `clarify-issue`, `breakdown-issue`, `ac-plan-loop` under `.agents/skills/`; declare in-repo `llm-wiki` canonical. Artifacts: `.agents/issues/issue-<N>/`. Tier B / community pack deferred. Issue closed.
