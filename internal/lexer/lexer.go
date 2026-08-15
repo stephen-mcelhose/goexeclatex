@@ -104,72 +104,88 @@ func (l *lexer) lexExpression(charMode, inGroup bool) error {
 		// next()—so trailing spaces do not cause a spurious end-of-input error.
 		l.skipWhitespace()
 		if l.pos >= len(l.input) {
-			if charMode {
-				return fmt.Errorf("lexer: unexpected end of input at position %d", l.pos)
-			}
-			if inGroup {
-				return fmt.Errorf("lexer: unexpected end of input: unclosed '{' group at position %d", l.pos)
-			}
-			break
+			return l.errAtEOF(charMode, inGroup)
 		}
 
-		var (
-			tok Token
-			err error
-		)
-		if charMode {
-			tok, err = l.nextCharToken()
-		} else {
-			tok, err = l.next()
-		}
+		tok, err := l.readToken(charMode)
 		if err != nil {
 			return err
 		}
 		l.tokens = append(l.tokens, tok)
 
-		switch tok.Type {
-		case POWER:
-			// §6.2: POWER reads exactly 1 char-mode argument.
-			if err := l.lexExpression(true, false); err != nil {
-				return err
-			}
-
-		case COMMAND:
-			// §6.2: COMMAND reads N char-mode arguments where N is the arity.
-			// Normalise now (strip \, lowercase) to look up the arity table.
-			// Final normalisation of the token value happens in postLexRemap (§7.3),
-			// but we need the name here too.
-			name := strings.ToLower(tok.Value[1:]) // strip leading backslash
-			arity := commandArities[name]           // 0 if not in table — spec §6.4
-			for i := 0; i < arity; i++ {
-				if err := l.lexExpression(true, false); err != nil {
-					return err
-				}
-			}
-
-		case LPAREN:
-			if tok.Value == "{" {
-				// §6.3: { opens a group — recurse in normal mode until matching }.
-				// inGroup=true so EOF inside returns an error (spec §9).
-				if err := l.lexExpression(false, true); err != nil {
-					return err
-				}
-			}
-			// Other LPAREN values ((, [, \left() are not group openers for
-			// the purposes of char-mode expansion.
+		if err := l.expandArgs(tok); err != nil {
+			return err
 		}
 
 		// Exit conditions (spec §6):
 		//   - char mode: return after emitting exactly one token (plus its args).
 		//   - group mode: return after the closing } is emitted.
-		if charMode {
-			return nil
-		}
-		if tok.Type == RPAREN && tok.Value == "}" {
+		if charMode || isGroupCloser(tok) {
 			return nil
 		}
 	}
+}
+
+// errAtEOF handles end-of-input for lexExpression (spec §9).
+// Top-level EOF is success (nil); char-mode and unclosed groups are errors.
+func (l *lexer) errAtEOF(charMode, inGroup bool) error {
+	if charMode {
+		return fmt.Errorf("lexer: unexpected end of input at position %d", l.pos)
+	}
+	if inGroup {
+		return fmt.Errorf("lexer: unexpected end of input: unclosed '{' group at position %d", l.pos)
+	}
 	return nil
+}
+
+// readToken selects the next token using char-mode or normal scanning (spec §6.1).
+func (l *lexer) readToken(charMode bool) (Token, error) {
+	if charMode {
+		return l.nextCharToken()
+	}
+	return l.next()
+}
+
+// expandArgs consumes char-mode / group arguments required by tok (spec §6.2–§6.3).
+func (l *lexer) expandArgs(tok Token) error {
+	switch tok.Type {
+	case POWER:
+		// §6.2: POWER reads exactly 1 char-mode argument.
+		return l.lexExpression(true, false)
+
+	case COMMAND:
+		// §6.2: COMMAND reads N char-mode arguments where N is the arity.
+		// Normalise now (strip \, lowercase) to look up the arity table.
+		// Final normalisation of the token value happens in postLexRemap (§7.3),
+		// but we need the name here too.
+		name := strings.ToLower(tok.Value[1:])     // strip leading backslash
+		return l.lexCharArgs(commandArities[name]) // 0 if not in table — spec §6.4
+
+	case LPAREN:
+		if tok.Value == "{" {
+			// §6.3: { opens a group — recurse in normal mode until matching }.
+			// inGroup=true so EOF inside returns an error (spec §9).
+			return l.lexExpression(false, true)
+		}
+		// Other LPAREN values ((, [, \left() are not group openers for
+		// the purposes of char-mode expansion.
+	}
+	return nil
+}
+
+// lexCharArgs reads n successive char-mode arguments (spec §6.2).
+func (l *lexer) lexCharArgs(n int) error {
+	for i := 0; i < n; i++ {
+		if err := l.lexExpression(true, false); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// isGroupCloser reports whether tok closes a {…} group (spec §6.3).
+func isGroupCloser(tok Token) bool {
+	return tok.Type == RPAREN && tok.Value == "}"
 }
 
 // next reads the next non-whitespace token from the remaining input.
