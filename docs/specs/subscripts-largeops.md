@@ -374,8 +374,8 @@ handling policy`. Parse errors exit 1; eval errors exit 2.
 
 The following items are explicitly **out of scope** for this specification:
 
-- **`\log_{b}(x)`** — requires paren-argument support not yet implemented.
-  Deferred to issue #8.
+- **`\log_{b}(x)`** — shipped in v0.4; see [[specs/parser-extensions]] §6
+  (no longer deferred here).
 - **`x_{i}` where the subscript is a non-integer expression** — undefined;
   produces an eval error (§6.1).
 - **Nested large operators** — `\sum_{i=0}^{n} \sum_{j=0}^{m} f(i,j)` is
@@ -388,7 +388,8 @@ The following items are explicitly **out of scope** for this specification:
 - **`\sum_{i=a}^{b}` with non-integer step** — step is always 1. No
   half-integer or floating-point stepping.
 - **`\lVert v \rVert` for vector `v`** — out of scope; only scalar norm
-  (= absolute value) is supported.
+  (= absolute value) is supported. (Scalar form shipped in v0.3; prior deferral
+  [[adrs/adr-004-lVert-deferred]] is superseded.)
 
 ## 9. Implementation Notes
 

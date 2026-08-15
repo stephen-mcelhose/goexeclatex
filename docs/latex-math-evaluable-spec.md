@@ -90,7 +90,7 @@ Source: AMS Short Math Guide v2.0 (2017), Michael Downes / AMS. Raw file:
 | ---------------------------- | ------------- | ---------- |
 | `\lfloor x \rfloor`          | Floor         | ✅          |
 | `\lceil x \rceil`            | Ceiling       | ✅          |
-| `\lfloor x \rceil`           | Round (nearest) | ✅ (convention) |
+| `\lfloor x \rceil`           | Round (nearest) | ❌ out of scope — [[adrs/adr-014-mixed-floor-ceil-round-out-of-scope]] |
 
 > **Note (from AMS guide §Vertical bar notations):** `|...|` is ambiguous for
 > spacing. The guide recommends `\lvert...\rvert` for absolute value and
@@ -151,10 +151,10 @@ Source: AMS Short Math Guide v2.0 (2017), Michael Downes / AMS. Raw file:
 
 | LaTeX               | Meaning       | Evaluable? |
 | ------------------- | ------------- | ---------- |
-| `a \mod b`          | Modulo (spacing variant)   | ✅ |
-| `a \pmod{b}`        | Modulo with parens         | ✅ |
-| `a \bmod b`         | Modulo binary op form      | ✅ |
-| `a \pod{b}`         | Modulo parens, no "mod"    | ✅ |
+| `a \mod b`          | Modulo (spacing variant)   | ⏳ deferred — AMS congruence form; see [[specs/parser-extensions]] §7.4 |
+| `a \pmod{b}`        | Modulo with parens         | ⏳ deferred — AMS congruence form; see [[specs/parser-extensions]] §7.4 |
+| `a \bmod b`         | Modulo binary op form      | ✅ v0.4 — [[specs/parser-extensions]] §7 |
+| `a \pod{b}`         | Modulo parens, no "mod"    | ⏳ deferred — AMS congruence form; see [[specs/parser-extensions]] §7.4 |
 
 ---
 

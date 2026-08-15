@@ -95,14 +95,17 @@ goexeclatex -v pi=3 -e '\pi * r^2' -v r=1
 | Exponentiation (right-assoc)  | `2^3`, `2^{10}`, `2^{3^2}`                           |
 | Grouping                      | `(1+2)*3`, `[a+b]`, `{c+d}`                          |
 | Fractions                     | `\frac{1}{2}`, `\dfrac{1}{2}`, `\tfrac{1}{2}`        |
-| Square root                   | `\sqrt{4}`, `\sqrt{x^2+y^2}`                         |
+| Square root                   | `\sqrt{4}`, `\sqrt[3]{27}`                           |
+| Floor / ceiling               | `\lfloor 3.2 \rfloor`, `\lceil 3.2 \rceil`           |
 | Absolute value                | `\|-3\|`, `\lvert -5 \rvert`                         |
 | Factorial                     | `5!`, `0!`                                           |
 | Implicit multiply             | `2\pi`, `3\sqrt{4}`                                  |
 | Trig functions                | `\sin`, `\cos`, `\tan`, `\sec`, `\csc`, `\cot`       |
 | Inverse trig                  | `\arcsin`, `\arccos`, `\arctan` (also `\asin` etc.)  |
 | Hyperbolic trig               | `\sinh`, `\cosh`, `\tanh`, `\coth`, `\sech`, `\csch` |
-| Log / exp                     | `\ln`, `\log` (base 10), `\exp`                      |
+| Log / exp                     | `\ln`, `\log` (base 10), `\log_{2}(8)`, `\exp`     |
+| Min / max / gcd               | `\min(a,b)`, `\max(a,b,c)`, `\gcd(a,b)`              |
+| Binary modulo                 | `a \bmod b`                                          |
 | Binomial coefficient          | `\binom{n}{k}`, `\dbinom{n}{k}`, `\tbinom{n}{k}`    |
 | Built-in constants            | `\pi`, `e`, `\tau`, `\phi`, `\infty`                 |
 

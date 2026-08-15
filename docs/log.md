@@ -37,3 +37,32 @@ Fixed: index gap (specs/subscripts-largeops added to index.md); ADR-004 status u
 ## [2026-08-15] feat | v0.3 complete — subscripts, big operators, norm (closes #6)
 
 Implemented: UNDERSCORE + NORM lexer tokens; subscript grammar (`x_{i}`, `x_i`); `\sum`/`\prod` with integer bounds and iteration scope; `\lVert…\rVert` norm. Key design decisions: `ScopeLookup` interface for inner-scope shadowing; `parseSuperArg` to enforce `x_{i}^2` ordering; `normDepth` guard mirrors `absDepth`. `\\_` and `\log_b` deferred to #8. Specs: `docs/specs/subscripts-largeops.md`. testdata: `cmd/goexeclatex/testdata/stdin.txt` extended with v0.3 cases.
+
+## [2026-08-15] feat | v0.4 parser extensions implemented (#8) — GAN pending
+
+Branch `feat/8-parser-extensions-v0.4`: floor/ceil, `\sqrt[n]`, min/max/gcd, `\log_{b}(x)`, `\bmod`. Spec [[specs/parser-extensions]]; ADR-014 mixed round out of scope. Deferred: `\pmod`/`\mod`/`\pod`. Next: GAN-style closing review then merge/close #8.
+
+## [2026-08-15] decision | ADR-015 — odd-integer roots of negatives
+
+Accepted [[adrs/adr-015-odd-integer-roots-of-negatives]]: supersedes parser-extensions §4.3 blanket ban; `\sqrt[3]{-8}` → −2 via `−Pow(|x|,1/n)`.
+
+## [2026-08-15] lint | GAN punch-list docs drift cleared (v0.4)
+
+Pages updated: specs/eval §9, specs/parser §10, specs/subscripts-largeops §8, examples.md (deduped + v0.4 examples), latex-math-evaluable-spec modular table, gap-analysis intros, roadmap GAN checkbox, index (ADR-015), AGENTS.md package layout. Spec parser-extensions §4.3 amended for ADR-015.
+
+## [2026-08-15] lint | 30 content pages checked, 12 issues found, 12 fixed
+
+Inventory: 33 md under docs/ (excl. counting raw separately). Content pages ~30 + index/log/AGENTS.
+
+Issues found and fixed:
+- Stale (2): specs/parser.md §4.2 still deferred `\lVert` to Tier 2 → updated to NORM/v0.3 + ADR links; specs/eval.md §6.4 still deferred `\log_{b}` to Tier 0.3 → points at [[specs/parser-extensions]].
+- Contradiction (1): specs/lexer.md §3 SYMBOL table still had `_` in pattern → aligned with ADR-013; added EQUALS/NORM/FLOOR/CEIL/BMOD rows.
+- Orphans (8): ADRs 001–006, 008 and runbooks/ingest had only index inbound links → added body `[[wikilink]]`s from lexer/parser/eval/cli/subscripts/evaluatex Sources or related sections.
+- Frontmatter (1): adr-013 missing `timestamp` → added.
+- Index summary (1): roadmap blurb still said v0.2/v0.3 → v0.4/#8.
+- Wrong ADR cite (1): parser.md implicit-multiply row cited ADR-003 → [[adrs/adr-006-implicit-multiply-at-product]].
+
+Advisory (not fixed — human judgment / intentional):
+- Specs/ADRs use hybrid frontmatter (`id`/`status`/`date` plus OKF `type`); full OKF-only upgrade left as prior advisory.
+- `evaluatex-reference-implementation.md` SYMBOL row still shows evaluatex’s `[A-Za-z_…]` pattern — correct for that reference, not goexeclatex (divergence documented in ADR-013).
+- `raw/` is read-only; not indexed (by design).

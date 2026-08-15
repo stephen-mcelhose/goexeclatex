@@ -85,10 +85,15 @@ forms. Both are remapped to `PIPE` by the lexer (§3.2), so the parser sees only
 
 The result **MUST** be represented as `FunctionNode{Name: "abs", Args: [inner]}`.
 
-**Divergence from evaluable subset spec:** `docs/latex-math-evaluable-spec.md`
-also lists `\lVert…\rVert` (capital V, double-pipe norm). The lexer does **not**
-remap `\lVert`/`\rVert` to `PIPE`; they arrive as COMMAND tokens. Support for
-the norm form is **deferred to Tier 2**.
+**Divergence from early Tier 1 draft:** `docs/latex-math-evaluable-spec.md`
+also lists `\lVert…\rVert` (capital V, double-pipe norm). That form is **not**
+remapped to `PIPE`; v0.3 introduced a dedicated `NORM` token — see
+[[specs/subscripts-largeops]] (§3.3, §4.3). The prior deferral
+[[adrs/adr-004-lVert-deferred]] is **superseded**.
+
+Absolute-value `PIPE` nesting uses `absDepth` ([[adrs/adr-007-absdepth-pipe-ambiguity]]).
+Bracket matching uses last-character rules ([[adrs/adr-008-lparen-last-char-matching]]).
+Groups are transparent — no `GroupNode` ([[adrs/adr-005-no-group-node]]).
 
 ### 4.3 Bracket Matching
 
@@ -126,7 +131,7 @@ A token can begin a `power` if it is one of:
 | ------------ | ---------------- | ------------------------------------------ |
 | `2x`         | `2 * x`          |                                            |
 | `2(3+4)`     | `2 * (3+4)`      |                                            |
-| `x y`        | `x * y`          | `xy` (no space) is one identifier (ADR-003 evaluatex convention) |
+| `x y`        | `x * y`          | `xy` (no space) is one identifier (evaluatex convention; see [[adrs/adr-006-implicit-multiply-at-product]]) |
 | `2\sin x`    | `2 * sin(x)`     |                                            |
 | `2\|x\|`     | `2 * abs(x)`     | PIPE only starts implicit-multiply when absDepth == 0 (ADR-007) |
 
@@ -257,13 +262,22 @@ The parser **MUST** return a non-nil error for each of the following:
 func Parse(tokens []lexer.Token) (Node, error)
 ```
 
-## 10. Deferred (out of scope for v0.1)
+## 10. Deferred (historical — v0.1)
 
-| Feature                                     | Target |
-| ------------------------------------------- | ------ |
-| `\arcsin`, `\arccos`, `\arctan` canonical names | Tier 2 |
-| `\lVert…\rVert` norm (double-pipe)          | Tier 2 |
-| `\sqrt[n]{x}` optional argument            | Tier 2 |
-| `\min(a,b)`, `\max(a,b)` variadic          | Tier 2 |
-| Subscript `_` operator                      | Tier 3 |
-| `\sum`, `\prod` large operators               | Tier 3 |
+The original v0.1 deferred list is retained for history. Status as of v0.4:
+
+| Feature | Original target | Status |
+| ------- | --------------- | ------ |
+| `\arcsin`, `\arccos`, `\arctan` | Tier 2 | ✅ v0.2 |
+| `\lVert…\rVert` norm | Tier 2 | ✅ v0.3 |
+| `\sqrt[n]{x}` optional argument | Tier 2 | ✅ v0.4 — [[specs/parser-extensions]] |
+| `\min(a,b)`, `\max(a,b)` variadic | Tier 2 | ✅ v0.4 — [[specs/parser-extensions]] |
+| Subscript `_` operator | Tier 3 | ✅ v0.3 — [[specs/subscripts-largeops]] |
+| `\sum`, `\prod` large operators | Tier 3 | ✅ v0.3 — [[specs/subscripts-largeops]] |
+
+## Sources
+
+- [[plan]], [[evaluatex-reference-implementation]], [[latex-math-evaluable-spec]]
+- [[specs/lexer]], [[specs/subscripts-largeops]], [[specs/parser-extensions]]
+- [[adrs/adr-004-lVert-deferred]], [[adrs/adr-005-no-group-node]], [[adrs/adr-006-implicit-multiply-at-product]], [[adrs/adr-007-absdepth-pipe-ambiguity]], [[adrs/adr-008-lparen-last-char-matching]]
+

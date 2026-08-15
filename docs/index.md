@@ -3,7 +3,7 @@
 | Page                                        | Summary                                                                     | Tags                                          |
 | ------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------- |
 | [[plan]]                                          | Stable architecture record: pipeline design, grammar, package layout, error policy   | goexeclatex, architecture, cli                      |
-| [[roadmap]]                                       | Forward-looking milestone tracker: current focus, v0.2/v0.3/vFuture, issue links    | goexeclatex, roadmap, milestones                    |
+| [[roadmap]]                                       | Forward-looking milestone tracker: current focus, v0.4/#8, vFuture                  | goexeclatex, roadmap, milestones                    |
 | [[examples]]                                      | Concrete CLI invocations: arithmetic, trig, AUPC, WI, TH                            | goexeclatex, examples, cli                          |
 | [[how-to]]                                        | User guide: stdin/-e/-p/-v flags, supported syntax, error handling, shell compose   | goexeclatex, cli, how-to                            |
 | [[latex-math-evaluable-spec]]                     | Catalogue of LaTeX math constructs with numeric evaluation semantics                 | latex, math, spec, goexeclatex                      |
@@ -14,6 +14,7 @@
 | [[specs/eval]]                                    | Normative RFC 2119 evaluator spec: scope, function dispatch, domain errors           | eval, spec, goexeclatex                             |
 | [[specs/cli]]                                     | Normative RFC 2119 CLI spec: flags, input resolution, exit codes, output format      | cli, spec, goexeclatex                              |
 | [[specs/subscripts-largeops]]                     | Normative RFC 2119 spec: subscript grammar, \sum/\prod bounds, \lVert norm (v0.3)   | parser, eval, spec, goexeclatex, subscripts         |
+| [[specs/parser-extensions]]                       | Normative RFC 2119 spec: floor/ceil, \sqrt[n], variadic parens, log_b, \bmod (v0.4) | parser, eval, spec, goexeclatex, issue-8            |
 | [[adrs/adr-001-lexer-ingroup-param]]              | ADR-001: Add inGroup param to lexExpression for unclosed-brace detection             | adr, lexer                                          |
 | [[adrs/adr-002-utf8-error-deferred]]              | ADR-002: Defer UTF-8 char-mode error quality to post-Tier-1                         | adr, lexer, deferred                                |
 | [[adrs/adr-003-asin-not-arcsin]]                  | ADR-003: asin/acos/atan for Tier 1; arcsin/arccos/arctan added as aliases in v0.2   | adr, eval, trig                                     |
@@ -27,4 +28,6 @@
 | [[adrs/adr-011-cli-error-prefix-stripping]]       | ADR-011: CLI strips internal package prefixes from user-facing error messages        | adr, cli, errors                                    |
 | [[adrs/adr-012-plan-roadmap-separation]]          | ADR-012: Separate stable architecture plan from forward-looking roadmap              | adr, docs, project-management                       |
 | [[adrs/adr-013-drop-underscore-from-symbol]]      | ADR-013: Drop underscore from SYMBOL pattern; remove `\_` pre-pass                  | adr, lexer, symbol, underscore                      |
+| [[adrs/adr-014-mixed-floor-ceil-round-out-of-scope]] | ADR-014: Mixed `\lfloor…\rceil` round convention is out of scope                 | adr, parser, floor, ceil, round, out-of-scope       |
+| [[adrs/adr-015-odd-integer-roots-of-negatives]]   | ADR-015: Allow real odd-integer roots of negative radicands                     | adr, eval, sqrt, domain, v0.4                       |
 | [[runbooks/ingest-reference-implementation]]      | How to clone, read, and ingest a reference implementation into the wiki              | runbook, llm-wiki, ingest, reference-implementation |

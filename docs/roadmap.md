@@ -14,10 +14,11 @@ For architecture context see [[plan]]. For the decision to split these documents
 
 ## Current focus
 
-**v0.3 complete.** Next: vFuture items or #8 (paired brackets, variadic args, `\log_b`). No blocking issues.
+**v0.4 / [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) ready to close** after merge. Spec: [[specs/parser-extensions]]. Next: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed.
 
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
+| [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) | v0.4 parser extensions | **Merge / close** |
 | ~~[#1](https://github.com/stephen-mcelhose/goexeclatex/issues/1)~~ | ~~Pre-pass byte offset drift corrupts downstream error positions~~ | ✅ closed — ADR-013 |
 | ~~[#2](https://github.com/stephen-mcelhose/goexeclatex/issues/2)~~ | ~~Spec gaps identified in GAN review (§6.1.3, whitespace, group context)~~ | ✅ closed |
 | [#3](https://github.com/stephen-mcelhose/goexeclatex/issues/3) | UTF-8 char-mode error message shows raw byte instead of full rune | Low — deferred (ADR-002) |
@@ -53,11 +54,12 @@ Do not skip the red-phase confirmation.
 - [x] `\infty` → `math.Inf(1)`
 - [x] `\binom{n}{k}`, `\dbinom`, `\tbinom`
 - [x] Greek letter variables (`\alpha`, `\beta`, … — user-supplied via `-v`)
-- [ ] `\min(a,b)`, `\max(a,b)` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: variadic paren args)
-- [ ] `\lfloor x \rfloor`, `\lceil x \rceil` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: paired brackets)
-- [ ] `\sqrt[n]{x}` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: optional arg)
-- [ ] `\gcd(a,b)` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: variadic paren args)
-- [ ] `\mod`, `\pmod`, `\bmod`, `\pod` — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) (parser: binary infix)
+- [x] `\min(a,b)`, `\max(a,b)` — shipped in [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) / v0.4 (n≥2)
+- [x] `\lfloor x \rfloor`, `\lceil x \rceil` — shipped in [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) / v0.4
+- [x] `\sqrt[n]{x}` — shipped in [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) / v0.4
+- [x] `\gcd(a,b)` — shipped in [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) / v0.4 (n≥2)
+- [x] `\bmod` — shipped in [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) / v0.4
+- [ ] `\mod`, `\pmod`, `\pod` — still deferred (AMS congruence annotations; see [[specs/parser-extensions]] §7.4)
 
 ---
 
@@ -68,8 +70,19 @@ Do not skip the red-phase confirmation.
 - [x] `\\sum_{i=a}^{b} f(i)` — discrete summation engine
 - [x] `\\prod_{i=a}^{b} f(i)` — discrete product engine
 - [x] `\\lVert v \\rVert` — norm (double-pipe)
-- [ ] `\\_` → literal `_` pre-pass — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)
-- [ ] `\\log_{b}(x)` — log base b — deferred to [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)
+- [x] `\\_` → literal `_` pre-pass — **won't do** ([[adrs/adr-013-drop-underscore-from-symbol]]; not evaluable-math)
+- [x] `\\log_{b}(x)` — shipped in [#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8) / v0.4
+
+---
+
+## ~~v0.4 — Parser extensions ([#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8))~~ ✅ closed (pending GAN)
+
+- [x] Floor / ceil paired delimiters
+- [x] `\sqrt[n]{x}` (incl. odd roots of negatives — [[adrs/adr-015-odd-integer-roots-of-negatives]])
+- [x] Variadic `\min` / `\max` / `\gcd`
+- [x] `\log_{b}(x)`
+- [x] `\bmod`
+- [x] GAN-style closing review (docs punch-list cleared)
 
 ---
 

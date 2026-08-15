@@ -19,6 +19,9 @@ func callBuiltin(name string, args []float64) (float64, error) {
 		return args[0] / args[1], nil
 
 	case "sqrt":
+		if len(args) == 2 {
+			return nthRoot(args[0], args[1])
+		}
 		if args[0] < 0 {
 			return 0, fmt.Errorf("eval: domain error: sqrt of negative")
 		}
@@ -26,6 +29,12 @@ func callBuiltin(name string, args []float64) (float64, error) {
 
 	case "abs":
 		return math.Abs(args[0]), nil
+
+	case "floor":
+		return math.Floor(args[0]), nil
+
+	case "ceil":
+		return math.Ceil(args[0]), nil
 
 	// §6.2 Trigonometric
 	case "sin":
@@ -80,6 +89,16 @@ func callBuiltin(name string, args []float64) (float64, error) {
 		return math.Log(args[0]), nil
 
 	case "log":
+		if len(args) == 2 {
+			x, b := args[0], args[1]
+			if x <= 0 {
+				return 0, fmt.Errorf("eval: domain error: log argument out of range")
+			}
+			if b <= 0 || b == 1 {
+				return 0, fmt.Errorf("eval: domain error: log base out of range")
+			}
+			return math.Log(x) / math.Log(b), nil
+		}
 		if args[0] <= 0 {
 			return 0, fmt.Errorf("eval: domain error: log argument out of range")
 		}
@@ -106,9 +125,88 @@ func callBuiltin(name string, args []float64) (float64, error) {
 	case "binom", "dbinom", "tbinom":
 		return binomCoeff(args[0], args[1])
 
+	case "min":
+		return minArgs(args), nil
+	case "max":
+		return maxArgs(args), nil
+	case "gcd":
+		return gcdArgs(args)
+
 	default:
 		return 0, fmt.Errorf("eval: unknown function: %s", name)
 	}
+}
+
+func minArgs(args []float64) float64 {
+	m := args[0]
+	for _, v := range args[1:] {
+		if v < m {
+			m = v
+		}
+	}
+	return m
+}
+
+func maxArgs(args []float64) float64 {
+	m := args[0]
+	for _, v := range args[1:] {
+		if v > m {
+			m = v
+		}
+	}
+	return m
+}
+
+func gcdArgs(args []float64) (float64, error) {
+	vals := make([]int64, len(args))
+	for i, v := range args {
+		if v < 0 || v != math.Trunc(v) {
+			return 0, fmt.Errorf("eval: domain error: gcd requires non-negative integers")
+		}
+		vals[i] = int64(v)
+	}
+	g := vals[0]
+	for _, v := range vals[1:] {
+		g = gcd2(g, v)
+	}
+	return float64(g), nil
+}
+
+func gcd2(a, b int64) int64 {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	if a < 0 {
+		return -a
+	}
+	return a
+}
+
+// nthRoot evaluates \sqrt[n]{x} (parser-extensions §4.3; ADR-015).
+func nthRoot(x, n float64) (float64, error) {
+	if n == 0 {
+		return 0, fmt.Errorf("eval: domain error: root index must not be zero")
+	}
+	if x >= 0 {
+		return math.Pow(x, 1/n), nil
+	}
+	// x < 0: real root only for odd integer indices (ADR-015).
+	if !isOddInteger(n) {
+		return 0, fmt.Errorf("eval: domain error: root of negative")
+	}
+	// math.Pow(negative, fraction) is NaN — use sign-preserving form.
+	return -math.Pow(-x, 1/n), nil
+}
+
+func isOddInteger(n float64) bool {
+	if math.IsInf(n, 0) || math.IsNaN(n) || n != math.Trunc(n) {
+		return false
+	}
+	ni := int64(n)
+	if ni == 0 {
+		return false
+	}
+	return ni%2 != 0
 }
 
 // binomCoeff computes C(n, k) = n! / (k! * (n-k)!) (spec §6.6.1).

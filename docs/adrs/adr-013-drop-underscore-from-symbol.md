@@ -9,6 +9,7 @@ description: >
   exist in this domain.
 status: accepted
 date: 2026-08-15
+timestamp: 2026-08-15T00:00:00Z
 supersedes: plan.md §Phase 1 "Escape rule" and SYMBOL pattern row
 tags: [adr, lexer, symbol, underscore]
 ---

@@ -56,7 +56,10 @@ Token types:
 | PIPE      | `\|`                                          |
 | BANG      | `!`                                           |
 | COMMA     | `,`                                           |
-| UNDERSCORE| `_`  (Tier 3)                                 |
+| UNDERSCORE| `_`  (v0.3 — [[specs/subscripts-largeops]])   |
+| NORM      | `\lVert` / `\rVert` (v0.3)                    |
+| FLOOR/CEIL| `\lfloor`/`\rfloor`, `\lceil`/`\rceil` (v0.4) |
+| BMOD      | remapped from `\bmod` (v0.4)                  |
 | EOF       | end of input                                  |
 
 Post-lex passes:

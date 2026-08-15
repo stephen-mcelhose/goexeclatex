@@ -37,7 +37,7 @@ produce any other type.
 | Type         | Source pattern / origin                              | Tier |
 | ------------ | ---------------------------------------------------- | ---- |
 | `NUMBER`     | `\d+(\.\d+)?([eE][+-]?\d+)?`                        | 0.1  |
-| `SYMBOL`     | `[A-Za-z_][A-Za-z_0-9]*`                            | 0.1  |
+| `SYMBOL`     | `[A-Za-z][A-Za-z0-9]*` (no `_` — [[adrs/adr-013-drop-underscore-from-symbol]]) | 0.1  |
 | `COMMAND`    | `\\[A-Za-z]+`, normalised (see §7)                   | 0.1  |
 | `PLUS`       | `+`                                                  | 0.1  |
 | `MINUS`      | `-`                                                  | 0.1  |
@@ -50,6 +50,11 @@ produce any other type.
 | `BANG`       | `!`                                                  | 0.1  |
 | `COMMA`      | `,`                                                  | 0.1  |
 | `UNDERSCORE` | `_`                                                  | 0.3  |
+| `EQUALS`     | `=` (large-op bounds only)                           | 0.3  |
+| `NORM`       | `\lVert` / `\rVert`                                  | 0.3  |
+| `FLOOR`      | `\lfloor` / `\rfloor`                                | 0.4  |
+| `CEIL`       | `\lceil` / `\rceil`                                  | 0.4  |
+| `BMOD`       | remapped from `\bmod`                                | 0.4  |
 | `EOF`        | Synthetic end-of-input sentinel                      | 0.1  |
 
 The `Value` field of a token **MUST** contain the raw matched text, except:
@@ -179,7 +184,7 @@ rather than treating `{` alone as the exponent.
 **Group depth tracking.**  The recursive tokenisation function accepts an
 `inGroup` boolean parameter.  This parameter **MUST** be `true` when the
 call was initiated by a `{` opener and `false` at the top level and in all
-char-mode calls.
+char-mode calls. See [[adrs/adr-001-lexer-ingroup-param]].
 
 **Unclosed group invariant.**  If `inGroup` is `true` and the lexer reaches
 end of input without having emitted a closing `}`, it **MUST** return an
@@ -268,3 +273,16 @@ where `input` is the caller-supplied string (no pre-pass rewriting occurs).
 | Unexpected end of input in char mode         | Return error                      |
 
 On error the lexer **MUST** return a `nil` token slice and a non-nil `error`.
+
+## 10. Related decisions
+
+- [[adrs/adr-001-lexer-ingroup-param]] — `inGroup` for unclosed `{`
+- [[adrs/adr-002-utf8-error-deferred]] — UTF-8 char-mode error display quality
+- [[adrs/adr-013-drop-underscore-from-symbol]] — SYMBOL pattern; no `\_` pre-pass
+
+Extensions in later specs: [[specs/subscripts-largeops]], [[specs/parser-extensions]].
+
+## Sources
+
+- [[plan]], [[evaluatex-reference-implementation]]
+- [[adrs/adr-001-lexer-ingroup-param]], [[adrs/adr-002-utf8-error-deferred]], [[adrs/adr-013-drop-underscore-from-symbol]]

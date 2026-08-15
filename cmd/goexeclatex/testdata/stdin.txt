@@ -177,3 +177,17 @@ e	2.718281828459045	0
 \lVert -4 \rVert	4	0
 \lVert 3 \rVert	3	0
 \lVert 0 \rVert	0	0
+
+# v0.4 parser extensions (#8)
+\lfloor 3.2 \rfloor	3	0
+\lceil 3.2 \rceil	4	0
+\lfloor -2.1 \rfloor	-3	0
+\sqrt[3]{27}	2.9999999999999996	0
+\sqrt{9}	3	0
+\min(3,1,2)	1	0
+\max(3,1,2)	3	0
+\gcd(12,8)	4	0
+\log_{2}(8)	3	0
+\log{100}	2	0
+10 \bmod 3	1	0
+\min(\sin(\pi/6), \cos(0))	0.49999999999999994	0

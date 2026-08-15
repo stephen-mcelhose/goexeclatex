@@ -13,7 +13,7 @@ import (
 var commandArities = map[string]int{
 	// Arithmetic
 	"frac": 2, "dfrac": 2, "tfrac": 2, "cfrac": 2,
-	"sqrt": 1,
+	// sqrt arity 0 in lexer — parser owns [n] and radicand (parser-extensions §4.1)
 	// Trigonometric
 	"sin": 1, "cos": 1, "tan": 1,
 	"sec": 1, "csc": 1, "cot": 1,
@@ -22,7 +22,8 @@ var commandArities = map[string]int{
 	"asec": 1, "acsc": 1, "acot": 1,
 	"arcsin": 1, "arccos": 1, "arctan": 1,
 	// Logarithmic and exponential
-	"ln": 1, "log": 1, "exp": 1,
+	"ln": 1, "exp": 1,
+	// log arity 0 — parser handles optional _{b} and value (parser-extensions §6.1)
 	// Hyperbolic
 	"sinh": 1, "cosh": 1, "tanh": 1,
 	"coth": 1, "sech": 1, "csch": 1,
@@ -55,6 +56,9 @@ var patterns = []scanPattern{
 	// Priority 11a: NORM — \lVert / \rVert (capital V) before generic COMMAND.
 	// \lvert / \rvert (lowercase) fall through to COMMAND and are remapped to PIPE.
 	{NORM, regexp.MustCompile(`^\\(?:lVert|rVert)`)},
+	// Priority 11b: FLOOR / CEIL before COMMAND (parser-extensions §3.1).
+	{FLOOR, regexp.MustCompile(`^\\(?:lfloor|rfloor)`)},
+	{CEIL, regexp.MustCompile(`^\\(?:lceil|rceil)`)},
 	// Priority 12: COMMAND before SYMBOL so \sin isn't SYMBOL(sin) — spec §5.2
 	{COMMAND, regexp.MustCompile(`^\\[A-Za-z]+`)},
 	// Priority 13: SYMBOL — spec §5.2 and ADR-013 (no underscore in names)
@@ -259,6 +263,12 @@ func (l *lexer) skipWhitespace() {
 func postLexRemap(in []Token) []Token {
 	out := make([]Token, 0, len(in))
 	for _, tok := range in {
+		if tok.Type == FLOOR || tok.Type == CEIL {
+			// parser-extensions §3.1: strip leading backslash from delimiter values.
+			tok.Value = strings.TrimPrefix(tok.Value, `\`)
+			out = append(out, tok)
+			continue
+		}
 		if tok.Type != COMMAND {
 			out = append(out, tok)
 			continue
@@ -282,6 +292,10 @@ func postLexRemap(in []Token) []Token {
 		case "lvert", "rvert":
 			// §7.2: absolute-value pipe remaps.
 			out = append(out, Token{Type: PIPE, Value: "|", Pos: tok.Pos})
+
+		case "bmod":
+			// parser-extensions §7.1: binary modulo operator.
+			out = append(out, Token{Type: BMOD, Value: "bmod", Pos: tok.Pos})
 
 		default:
 			// §7.3: normalise value; keep as COMMAND.

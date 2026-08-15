@@ -175,8 +175,9 @@ Domain error message **MUST** be `eval: domain error: <name> argument out of ran
 where `<name>` is the name as it appeared in the expression (e.g. `arcsin`).
 
 **Divergence from evaluatex:** evaluatex supports only `\asin`/`\acos`/`\atan`
-and propagates `NaN` silently. goexeclatex supports both spellings and returns
-explicit domain errors.
+and propagates `NaN` silently. goexeclatex supports both spellings ([[adrs/adr-003-asin-not-arcsin]],
+later amended for aliases) and returns explicit domain errors
+([[adrs/adr-009-explicit-domain-errors-over-nan]]).
 
 ### 6.4 Logarithmic and Exponential
 
@@ -192,8 +193,8 @@ Domain error **MUST** be `eval: domain error: <name> argument out of range`.
 
 > **Divergence from evaluatex:** evaluatex does not expose `\ln`, `\log`, or
 > `\exp` as LaTeX commands. goexeclatex follows standard LaTeX convention:
-> `\ln` = natural log, `\log` = base-10 log. `\log_{b}(x)` subscript notation
-> is deferred to Tier 0.3 (subscript support).
+> `\ln` = natural log, `\log` = base-10 log. `\log_{b}(x)` subscript-base form
+> is defined in [[specs/parser-extensions]] §6 (v0.4).
 
 ### 6.5 Hyperbolic
 
@@ -272,17 +273,22 @@ internal/eval/
 └── eval_test.go   table-driven tests
 ```
 
-## 9. Deferred (out of scope for v0.2)
+## 9. Deferred / superseded
 
-Items below require parser changes or new syntax not yet supported. They are
-deferred rather than implemented with non-standard syntax.
+v0.4 ([[specs/parser-extensions]], issue #8) shipped the former Tier 2.1
+blockers. Remaining deferrals:
 
-| Feature                                 | Target   | Blocker                                 |
-| --------------------------------------- | -------- | --------------------------------------- |
-| `\lfloor x \rfloor`, `\lceil x \rceil` | Tier 2.1 | New token types + paired-bracket parser |
-| `\sqrt[n]{x}` n-th root                | Tier 2.1 | Optional `[n]` argument in parser       |
-| `\min(a,b)`, `\max(a,b)`               | Tier 2.1 | Variadic paren-arg parser support       |
-| `\gcd(a,b)`                            | Tier 2.1 | Variadic paren-arg parser support       |
-| `\mod`, `\pmod`, `\bmod`, `\pod`       | Tier 2.1 | Binary infix operator parser support    |
-| `\log_{b}(x)` subscript base           | Tier 0.3 | Subscript support                       |
-| NaN propagation mode                   | vFuture  |                                         |
+| Feature | Target | Notes |
+| ------- | ------ | ----- |
+| `\mod`, `\pmod`, `\pod` | deferred | AMS congruence annotations — not binary remainder; see [[specs/parser-extensions]] §7.4 |
+| NaN propagation mode | vFuture | |
+
+Shipped in v0.4 (do not treat as deferred): `\lfloor…\rfloor`, `\lceil…\rceil`,
+`\sqrt[n]{x}`, `\min`/`\max`/`\gcd`, `\bmod`, `\log_{b}(x)`.
+
+## Sources
+
+- [[plan]], [[evaluatex-reference-implementation]], [[latex-math-evaluable-spec]]
+- [[specs/parser-extensions]], [[specs/subscripts-largeops]]
+- [[adrs/adr-003-asin-not-arcsin]], [[adrs/adr-009-explicit-domain-errors-over-nan]], [[adrs/adr-010-inf-result-exits-zero]], [[adrs/adr-015-odd-integer-roots-of-negatives]]
+
