@@ -128,9 +128,22 @@ Prioritise by impact.
 
 Related work explicitly not being done based on the issue as written.
 
-#### 3f. Open Items
+#### 3f. Dangerous status quo / false-success probes
 
-Blockers to starting breakdown.
+Inputs or behaviours that today **succeed wrongly** (wrong AST, wrong value,
+silent accept) or that must become hard errors. If none, say so explicitly.
+When running under `ac-plan-loop`, this section is **required** before Gate A.
+
+#### 3g. Completion strategy
+
+Short Phase 0→3 (or equivalent): clarify/AC → spec(+ADRs) → TDD slice order →
+GAN close. When running under `ac-plan-loop`, this section is **required**
+before Gate A.
+
+#### 3h. Open Items
+
+Blockers to starting breakdown. Can overlap with questions above, but frames
+them as "we cannot proceed until this is answered."
 
 ### 4. Write the Artifact
 
@@ -144,7 +157,10 @@ than overwriting.
 - Tell the user where the artifact was written.
 - Summarize the most impactful clarifying questions in chat (all if ≤5, else
   top 5).
-- Ask how to proceed: answer now / review doc / looks good — next steps.
+- If questions remain unanswered, offer a **defaults table** the user can
+  accept with “defaults OK” (record under `## Answers`, then re-present).
+- Ask how to proceed: answer now / defaults OK / review doc / looks good —
+  next steps.
 
 **If the user answers in chat:** record under `## Answers` in
 `clarification.md`, then re-present the gate.
@@ -156,7 +172,9 @@ the full loop.
 ## Quality Bar
 
 A good clarification document makes it possible to write a task breakdown
-**without going back to the issue or re-reading the code**.
+**without going back to the issue or re-reading the code**. For milestone
+work, it should also make Phase 3 GAN’s false-success hunt obvious from the
+dangerous-status-quo section.
 
 ## Safety
 
