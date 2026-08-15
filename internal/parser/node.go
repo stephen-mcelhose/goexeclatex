@@ -11,6 +11,7 @@ type NumberNode struct {
 	Pos   int
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *NumberNode) node() {}
 
 // SymbolNode represents a variable or arity-0 constant command (spec §7.2).
@@ -19,6 +20,7 @@ type SymbolNode struct {
 	Pos  int
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *SymbolNode) node() {}
 
 // BinaryNode represents a binary infix operation (spec §7.3).
@@ -28,6 +30,7 @@ type BinaryNode struct {
 	Right Node
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *BinaryNode) node() {}
 
 // UnaryNode represents a prefix or postfix unary operation (spec §7.4).
@@ -37,6 +40,7 @@ type UnaryNode struct {
 	Operand Node
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *UnaryNode) node() {}
 
 // FunctionNode represents an arity ≥ 1 command or absolute value (spec §7.5).
@@ -46,6 +50,7 @@ type FunctionNode struct {
 	Pos  int
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *FunctionNode) node() {}
 
 // SubscriptNode represents a subscripted variable x_{i} (spec §5.1).
@@ -54,6 +59,7 @@ type SubscriptNode struct {
 	Sub  Node // subscript index expression
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *SubscriptNode) node() {}
 
 // LargeOpNode represents \sum or \prod over a discrete range (spec §5.2).
@@ -65,6 +71,7 @@ type LargeOpNode struct {
 	Body Node   // body expression (evaluated once per step)
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *LargeOpNode) node() {}
 
 // NormNode represents \lVert expr \rVert — scalar absolute value (spec §5.3).
@@ -72,4 +79,5 @@ type NormNode struct {
 	Arg Node
 }
 
+// node implements Node. Empty marker method; see go/ast.Node.
 func (n *NormNode) node() {}
