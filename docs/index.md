@@ -9,6 +9,7 @@
 | [[latex-math-evaluable-spec]]                     | Catalogue of LaTeX math constructs with numeric evaluation semantics                 | latex, math, spec, goexeclatex                      |
 | [[evaluatex-reference-implementation]]            | Deep read of arthanzel/evaluatex JS parser-evaluator; architecture + gaps            | reference-implementation, javascript, latex         |
 | [[goexeclatex-gap-analysis]]                      | Gap analysis: evaluatex coverage vs full spec; tiered roadmap                        | goexeclatex, gap-analysis, latex                    |
+| [[spike-matrix-math]]                             | Spike charter: matrix LaTeX — evaluable subset, gonum, usability vs scalar Eval (#24) | goexeclatex, spike, matrix, gonum, evaluable        |
 | [[specs/lexer]]                                   | Normative RFC 2119 lexer spec: token types, char-mode algorithm, pre/post-lex passes | lexer, spec, goexeclatex                           |
 | [[specs/parser]]                                  | Normative RFC 2119 parser spec: grammar, AST node types, error policy               | parser, spec, goexeclatex                           |
 | [[specs/eval]]                                    | Normative RFC 2119 evaluator spec: scope, function dispatch, domain errors           | eval, spec, goexeclatex                             |

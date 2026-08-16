@@ -95,8 +95,8 @@ These are symbolic or require a CAS. Intentionally excluded from goexeclatex.
 | `\lim_{x\to a}`      | Symbolic limits                             |
 | `\sum_{i=1}^{\infty}` | Requires convergence analysis              |
 | `\partial`           | Symbolic partial derivative                 |
-| Matrix environments  | Linear algebra; separate domain            |
-| `\det` of a matrix   | Needs matrix type                           |
+| Matrix environments  | Linear algebra; separate domain — spike [[spike-matrix-math]] / #24 |
+| `\det` of a matrix   | Needs matrix type — same spike                                      |
 | `\begin{cases}`      | Conditional — possible future extension     |
 
 ---
@@ -113,7 +113,7 @@ v0.2 — Tier 2 functions & constants
 v0.3 — Tier 3: subscripts + large operators
   _ token, \log_b, \sum, \prod with discrete bounds
 
-vFuture — \begin{cases} conditional eval, matrix support
+vFuture — \begin{cases} conditional eval; matrix support gated on [[spike-matrix-math]] (#24)
 ```
 
 ## Sources

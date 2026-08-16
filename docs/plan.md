@@ -240,6 +240,6 @@ See [[adrs/adr-009-explicit-domain-errors-over-nan]], [[adrs/adr-010-inf-result-
 
 - `\int`, `\lim`, `\partial` — symbolic ops
 - `\sum_{i=1}^{\infty}` — infinite series
-- Matrix environments
+- Matrix environments — under review: [[spike-matrix-math]] / [#24](https://github.com/stephen-mcelhose/goexeclatex/issues/24); remains out until spike recommends otherwise
 - Interactive / REPL mode
 - Streaming protocol (use shell pipes instead)

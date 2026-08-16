@@ -106,3 +106,7 @@ Amended [[adrs/adr-016-self-host-agent-skills]]: capability twin (#8) vs packagi
 ## [2026-08-15] docs | examples — named AUPC/WI/TH/subsample cases
 
 Expanded [[examples]] with named calculated-process cases: AUPC step + `\sum` forms (PestProgress/EpidemicCurve/SpikeAndFade), WI/TH severity-class sets, PlotStripFive subsample aggregates. Links [[specs/subscripts-largeops]] for the sum engine.
+
+## [2026-08-15] spike | matrix math charter (#24)
+
+Opened [#24](https://github.com/stephen-mcelhose/goexeclatex/issues/24) and [[spike-matrix-math]]: explore evaluable subset (`\det` vs matrix×matrix), gonum dependency, usability vs scalar `Eval`. Roadmap vFuture + [[latex-math-evaluable-spec]] cross-linked; no implementation.

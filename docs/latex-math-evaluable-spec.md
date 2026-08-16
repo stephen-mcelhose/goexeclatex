@@ -79,7 +79,7 @@ Source: AMS Short Math Guide v2.0 (2017), Michael Downes / AMS. Raw file:
 | `\max`        | Maximum           | ✅          |
 | `\gcd`        | Greatest common divisor | ✅   |
 | `\lcm`        | Least common multiple | ✅     |
-| `\det`        | Determinant       | ⚠️ needs matrix |
+| `\det`        | Determinant       | ⚠️ needs matrix — spike [[spike-matrix-math]] / [#24](https://github.com/stephen-mcelhose/goexeclatex/issues/24) |
 | `\operatorname{name}` | Custom named op | ✅ (lookup) |
 
 ---
@@ -162,7 +162,7 @@ Source: AMS Short Math Guide v2.0 (2017), Michael Downes / AMS. Raw file:
 
 - `\int`, `\oint`, `\iint`, `\iiint` — integration
 - `\lim` with symbolic variable (`x \to \infty`)
-- `\begin{matrix}...\end{matrix}` and all matrix environments
+- `\begin{matrix}...\end{matrix}` and all matrix environments — under review in [[spike-matrix-math]] (#24); may reopen a scalar-only slice (`\det` / `vmatrix`) without treating matrix×matrix as Eval-evaluable
 - `\begin{cases}...\end{cases}` — piecewise (could be conditional eval)
 - `\partial` — partial derivative (symbolic)
 - `\nabla` — gradient (symbolic)

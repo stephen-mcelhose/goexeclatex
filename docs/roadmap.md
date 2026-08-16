@@ -3,7 +3,7 @@ type: proposal
 title: goexeclatex — Roadmap
 description: Forward-looking milestone tracker for goexeclatex. Current focus, upcoming versions, issue links, and process reminder. Update every session.
 tags: [goexeclatex, roadmap, milestones]
-timestamp: 2026-08-15T18:20:00Z
+timestamp: 2026-08-15T20:00:00Z
 ---
 
 # goexeclatex — Roadmap
@@ -16,11 +16,12 @@ For architecture context see [[plan]]. For the decision to split these documents
 
 **Product:** [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) — public Go library API on `feat/20-public-library-api` (Tasks 0–4 done; GAN checklist posted; awaiting commit/PR/merge). Spec: [[specs/library]]; decision: [[adrs/adr-017-public-library-api]]. Artifacts: `.agents/issues/issue-20/`.
 
-After merge of #20: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed. Spec for shipped v0.4: [[specs/parser-extensions]].
+After merge of #20: vFuture (#7) or remaining `\mod`/`\pmod`/`\pod` if needed. Spec for shipped v0.4: [[specs/parser-extensions]]. Matrix work stays behind spike [#24](https://github.com/stephen-mcelhose/goexeclatex/issues/24) / [[spike-matrix-math]] until a recommendation lands.
 
 | Issue | Title | Priority |
 | ----- | ----- | -------- |
 | [#20](https://github.com/stephen-mcelhose/goexeclatex/issues/20) | Public Go library API (separate from CLI) | **Current** — implemented on branch; close on merge |
+| [#24](https://github.com/stephen-mcelhose/goexeclatex/issues/24) | SPIKE: matrix math (evaluable subset, gonum, usability) | Exploration — no implementation |
 | ~~[#8](https://github.com/stephen-mcelhose/goexeclatex/issues/8)~~ | ~~v0.4 parser extensions~~ | ✅ closed — merged #14 |
 | ~~[#15](https://github.com/stephen-mcelhose/goexeclatex/issues/15)~~ | ~~Host agent skills (C+B)~~ | ✅ closed — [[adrs/adr-016-self-host-agent-skills]] |
 | ~~[#1](https://github.com/stephen-mcelhose/goexeclatex/issues/1)~~ | ~~Pre-pass byte offset drift corrupts downstream error positions~~ | ✅ closed — ADR-013 |
@@ -107,7 +108,7 @@ Plan aloud, then execute.
 **Depends on:** v0.3 (#6) closed. Each item needs its own issue, spec, and ADR before implementation.
 
 - `\begin{cases}…\end{cases}` — conditional piecewise evaluation
-- Matrix input + `\det` — determinant of a matrix literal
+- Matrix input + `\det` — **spike first:** [#24](https://github.com/stephen-mcelhose/goexeclatex/issues/24) / [[spike-matrix-math]] (evaluable subset; **may be separate library API + CLI subcommand**; gonum; usability)
 - JSON output mode (`-json`) — structured output for tooling integration
 
 ---
